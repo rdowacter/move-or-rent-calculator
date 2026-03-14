@@ -547,3 +547,52 @@ export interface VerdictResult {
   /** Side-by-side comparison of key metrics across all three scenarios. */
   keyMetrics: { label: string; baseline: string; scenarioA: string; scenarioB: string }[]
 }
+
+// ---- Sensitivity Analysis Types -------------------------------------------
+
+/**
+ * Result of testing a single input variable for its breakeven threshold —
+ * the value at which the verdict's recommendation would change.
+ *
+ * This answers the question: "How wrong can this assumption be before
+ * the recommendation flips?" A large margin means the recommendation is
+ * robust to that variable; a thin margin means it's fragile.
+ */
+export interface BreakevenResult {
+  /** Human-readable name of the variable tested (e.g., "Home appreciation rate"). */
+  inputName: string
+  /** The user's current input value for this variable. */
+  currentValue: number
+  /**
+   * Value at which the verdict recommendation would change.
+   * If no breakeven exists within the search range, this equals
+   * the search boundary (indicating the recommendation holds).
+   */
+  breakevenValue: number
+  /** Direction from the current value toward the breakeven: 'below' means the variable
+   *  would need to decrease, 'above' means it would need to increase. */
+  direction: 'below' | 'above'
+  /**
+   * What happens at the breakeven point.
+   * E.g., "Scenario B overtakes in net worth" or "Recommendation holds across all tested values".
+   */
+  consequence: string
+  /**
+   * How much buffer exists between the current value and the breakeven.
+   * - 'comfortable': current value has more than 2x buffer to breakeven
+   * - 'thin': 1-2x buffer
+   * - 'at_risk': less than 1x buffer (the assumption doesn't have room to be wrong)
+   */
+  margin: 'comfortable' | 'thin' | 'at_risk'
+}
+
+/**
+ * Complete sensitivity analysis output — wraps all breakeven results
+ * with a human-readable summary.
+ */
+export interface SensitivityResult {
+  /** Breakeven results for each tested variable. */
+  breakevens: BreakevenResult[]
+  /** One-sentence summary of overall robustness (e.g., "Your recommendation holds under most tested conditions"). */
+  summary: string
+}
