@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { Controller, type Control, type FieldValues, type Path } from 'react-hook-form'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -49,10 +50,22 @@ function PercentInput<T extends FieldValues>({
       render={({ field, fieldState }) => {
         // Convert decimal form value to percentage for display
         // e.g., 0.06 -> "6", 0.025 -> "2.5"
-        const displayValue =
-          field.value === '' || field.value === undefined || field.value === null
+        const computeDisplay = (val: unknown) =>
+          val === '' || val === undefined || val === null
             ? ''
-            : parseFloat((Number(field.value) * PERCENT_DISPLAY_MULTIPLIER).toFixed(10)).toString()
+            : parseFloat((Number(val) * PERCENT_DISPLAY_MULTIPLIER).toFixed(10)).toString()
+
+        // Local state preserves intermediate typing states like "2." or ".5"
+        // that would be lost if we converted to Number on every keystroke
+        const [localValue, setLocalValue] = useState(() => computeDisplay(field.value))
+        const [isFocused, setIsFocused] = useState(false)
+
+        // Sync from form state when not actively editing
+        useEffect(() => {
+          if (!isFocused) {
+            setLocalValue(computeDisplay(field.value))
+          }
+        }, [field.value, isFocused])
 
         return (
           <div className={cn('space-y-1.5', className)}>
@@ -63,12 +76,28 @@ function PercentInput<T extends FieldValues>({
                 inputMode="decimal"
                 placeholder={placeholder}
                 className="pr-7"
-                value={displayValue}
-                onBlur={field.onBlur}
+                value={localValue}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => {
+                  setIsFocused(false)
+                  // Normalize display on blur
+                  const trimmed = localValue.trim()
+                  if (trimmed === '') {
+                    field.onChange('')
+                  } else {
+                    const parsed = Number(trimmed)
+                    if (!isNaN(parsed)) {
+                      setLocalValue(parsed.toString())
+                      field.onChange(parsed / PERCENT_DISPLAY_MULTIPLIER)
+                    }
+                  }
+                  field.onBlur()
+                }}
                 ref={field.ref}
                 name={field.name}
                 onChange={(e) => {
                   const rawValue = e.target.value
+                  setLocalValue(rawValue)
                   if (rawValue === '') {
                     field.onChange('')
                     return

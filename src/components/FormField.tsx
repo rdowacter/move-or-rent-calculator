@@ -80,7 +80,7 @@ function FormField<T extends FieldValues>({
                 // For numeric fields, convert the final string to a Number
                 // so the form value is the correct type for the engine.
                 if (type === 'number' || inputMode === 'decimal') {
-                  const rawValue = e.target.value
+                  const rawValue = e.target.value.trim()
                   if (rawValue === '') return
                   const parsed = Number(rawValue)
                   if (!isNaN(parsed)) {
