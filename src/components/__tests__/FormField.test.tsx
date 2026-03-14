@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react'
-import { useForm, FormProvider } from 'react-hook-form'
+import { useForm, FormProvider, useWatch } from 'react-hook-form'
 import { describe, it, expect } from 'vitest'
 import { FormField } from '../FormField'
 import { CurrencyInput } from '../CurrencyInput'
@@ -12,7 +12,8 @@ import { PercentInput } from '../PercentInput'
  */
 interface WrapperProps {
   defaultValues?: Record<string, unknown>
-  children: (props: { control: ReturnType<typeof useForm>['control'] }) => React.ReactNode
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  children: (props: { control: any }) => React.ReactNode
 }
 
 function FormWrapper({ defaultValues = {}, children }: WrapperProps) {
@@ -212,23 +213,19 @@ describe('PercentInput', () => {
 
   it('converts user-entered percentage to decimal on change (3 -> 0.03)', () => {
     // When user types "3", the form value should be 0.03
-    let formControl: ReturnType<typeof useForm>['control'] | undefined
-
     function CaptureControl() {
       const methods = useForm({ defaultValues: { rate: 0 } })
-      formControl = methods.control
       return (
         <FormProvider {...methods}>
-          <PercentInput name="rate" label="Interest Rate" control={methods.control} />
-          {/* Hidden element to read form value for testing */}
-          <TestValueDisplay control={methods.control} name="rate" />
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          <PercentInput name="rate" label="Interest Rate" control={methods.control as any} />
+          <TestValueDisplay />
         </FormProvider>
       )
     }
 
-    function TestValueDisplay({ control, name }: { control: ReturnType<typeof useForm>['control']; name: string }) {
-      const { useWatch } = require('react-hook-form')
-      const value = useWatch({ control, name })
+    function TestValueDisplay() {
+      const value = useWatch({ name: 'rate' })
       return <span data-testid="form-value">{String(value)}</span>
     }
 
