@@ -5,6 +5,7 @@ import { scenarioInputsSchema } from '@/schemas/scenarioInputs'
 import type { ScenarioInputs } from '@/engine/types'
 import { useFormPersistence } from '@/hooks/useFormPersistence'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { ScenarioModelProvider } from '@/components/ScenarioModelProvider'
 import { DesktopLayout } from '@/components/DesktopLayout'
 import { MobileLayout } from '@/components/MobileLayout'
 import { InputAccordion } from '@/components/InputAccordion'
@@ -57,11 +58,13 @@ function App() {
 
   return (
     <FormProvider {...methods}>
-      {isDesktop ? (
-        <DesktopLayout inputs={inputsContent} results={resultsContent} />
-      ) : (
-        <MobileLayout inputs={inputsContent} results={resultsContent} />
-      )}
+      <ScenarioModelProvider>
+        {isDesktop ? (
+          <DesktopLayout inputs={inputsContent} results={resultsContent} />
+        ) : (
+          <MobileLayout inputs={inputsContent} results={resultsContent} />
+        )}
+      </ScenarioModelProvider>
     </FormProvider>
   )
 }
