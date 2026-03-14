@@ -11,17 +11,11 @@ import {
   AlertTriangle,
   Info,
   DollarSign,
-  Building2,
-  PiggyBank,
-  Wallet,
-  Receipt,
-  Home,
-  TrendingDown,
 } from 'lucide-react'
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { useModelOutput } from '@/components/ScenarioModelProvider'
 import { formatCurrency } from '@/utils/formatters'
-import type { Warning, WarningCategory, WarningSeverity } from '@/engine/types'
+import type { Warning, WarningSeverity } from '@/engine/types'
 import { cn } from '@/lib/utils'
 
 // ---------------------------------------------------------------------------
@@ -34,28 +28,6 @@ const SEVERITY_ORDER: Record<WarningSeverity, number> = {
   critical: 0,
   warning: 1,
   info: 2,
-}
-
-// ---------------------------------------------------------------------------
-// Category → icon mapping — gives users a visual cue about what domain
-// each warning relates to without reading the full text.
-// ---------------------------------------------------------------------------
-
-function getCategoryIcon(category: WarningCategory) {
-  switch (category) {
-    case 'lending':
-      return Building2
-    case 'retirement':
-      return PiggyBank
-    case 'liquidity':
-      return Wallet
-    case 'tax':
-      return Receipt
-    case 'landlord':
-      return Home
-    case 'market':
-      return TrendingDown
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -134,7 +106,6 @@ export function WarningsList() {
 
 function WarningAlert({ warning }: { warning: TaggedWarning }) {
   const SeverityIcon = getSeverityIcon(warning.severity)
-  const _CategoryIcon = getCategoryIcon(warning.category)
 
   // Determine variant and additional styling based on severity
   const variant = warning.severity === 'critical' ? 'destructive' : 'default'

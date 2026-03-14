@@ -1,3 +1,4 @@
+import { cloneElement } from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import type { ModelOutput, ScenarioInputs } from '@/engine/types'
@@ -53,16 +54,13 @@ vi.mock('recharts', async () => {
       children,
     }: {
       children: React.ReactElement
-    }) => {
+    }) => (
       // Clone the child (LineChart) and inject width/height props
       // since jsdom can't measure container dimensions.
-      const { cloneElement } = require('react')
-      return (
-        <div style={{ width: 500, height: 300 }}>
-          {cloneElement(children, { width: 500, height: 300 })}
-        </div>
-      )
-    },
+      <div style={{ width: 500, height: 300 }}>
+        {cloneElement(children as React.ReactElement<{ width: number; height: number }>, { width: 500, height: 300 })}
+      </div>
+    ),
   }
 })
 

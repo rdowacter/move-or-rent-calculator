@@ -9,6 +9,7 @@ import { ScenarioModelProvider } from '@/components/ScenarioModelProvider'
 import { DesktopLayout } from '@/components/DesktopLayout'
 import { MobileLayout } from '@/components/MobileLayout'
 import { InputAccordion } from '@/components/InputAccordion'
+import { ResultsSections } from '@/components/results/ResultsSections'
 import { Button } from '@/components/ui/button'
 
 function App() {
@@ -50,11 +51,7 @@ function App() {
     </div>
   )
 
-  const resultsContent = (
-    <div className="flex h-full items-center justify-center text-muted-foreground">
-      <p>Results will appear here once the financial engine is wired up.</p>
-    </div>
-  )
+  const resultsContent = <ResultsSections />
 
   return (
     <FormProvider {...methods}>
