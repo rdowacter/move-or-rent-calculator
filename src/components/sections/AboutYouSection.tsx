@@ -1,11 +1,8 @@
-import { useState } from 'react'
 import { useFormContext, Controller } from 'react-hook-form'
 import type { ScenarioInputs } from '@/engine/types'
 import { CurrencyInput } from '@/components/CurrencyInput'
 import { PercentInput } from '@/components/PercentInput'
 import { FormField } from '@/components/FormField'
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
-import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -24,16 +21,14 @@ const FILING_STATUS_OPTIONS = [
 
 /**
  * About You section — collects personal financial profile inputs.
- * Primary fields cover the essentials (age, income, filing status, expenses, savings).
- * Advanced fields cover salary growth, debt, and state tax rate.
+ * Fields cover age, income, filing status, expenses, savings,
+ * salary growth, debt, and state tax rate.
  */
 function AboutYouSection() {
   const { control } = useFormContext<ScenarioInputs>()
-  const [advancedOpen, setAdvancedOpen] = useState(false)
 
   return (
     <div className="space-y-4">
-      {/* Primary fields */}
       <FormField
         name="personal.age"
         label="Age"
@@ -96,40 +91,26 @@ function AboutYouSection() {
         description="Cash on hand available for down payment and closing costs"
       />
 
-      {/* Advanced fields */}
-      <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
-        <CollapsibleTrigger
-          render={
-            <Button variant="ghost" size="sm" className="w-full" />
-          }
-        >
-          {advancedOpen ? 'Hide Advanced' : 'Show Advanced'}
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <div className="space-y-4 pt-4">
-            <PercentInput
-              name="personal.annualSalaryGrowthRate"
-              label="Salary Growth Rate"
-              control={control}
-              description="Expected annual salary increase (e.g. 3%)"
-            />
+      <PercentInput
+        name="personal.annualSalaryGrowthRate"
+        label="Salary Growth Rate"
+        control={control}
+        description="Expected annual salary increase (e.g. 3%)"
+      />
 
-            <CurrencyInput
-              name="personal.monthlyDebtPayments"
-              label="Monthly Debt Payments"
-              control={control}
-              description="Car loans, student loans, credit cards — affects DTI ratio"
-            />
+      <CurrencyInput
+        name="personal.monthlyDebtPayments"
+        label="Monthly Debt Payments"
+        control={control}
+        description="Car loans, student loans, credit cards — affects DTI ratio"
+      />
 
-            <PercentInput
-              name="personal.stateIncomeTaxRate"
-              label="State Income Tax Rate"
-              control={control}
-              description="0% for Texas residents"
-            />
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
+      <PercentInput
+        name="personal.stateIncomeTaxRate"
+        label="State Income Tax Rate"
+        control={control}
+        description="0% for Texas residents"
+      />
     </div>
   )
 }
