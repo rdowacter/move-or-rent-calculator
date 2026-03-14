@@ -72,8 +72,8 @@ describe('ResultsSections integration', () => {
     // ResultSection wrapper renders "Warnings & Risks" heading
     expect(screen.getByText('Warnings & Risks')).toBeInTheDocument()
 
-    // ReserveRunway has both a ResultSection heading and a CardTitle
-    expect(screen.getAllByText('Reserve Runway').length).toBeGreaterThanOrEqual(1)
+    // StressTests section heading
+    expect(screen.getByText('What-If Stress Tests')).toBeInTheDocument()
 
     // UpfrontCapital renders its section with aria-label
     expect(
@@ -97,6 +97,6 @@ describe('ResultsSections integration', () => {
     // The wrapper headings like "Net Worth Over Time" will still be in the DOM.
     // Verify that child-specific content (e.g., chart containers) is absent.
     expect(screen.queryByTestId('responsive-container')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('reserve-runway-baseline')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('stress-tests')).not.toBeInTheDocument()
   })
 })
