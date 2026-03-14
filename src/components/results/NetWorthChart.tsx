@@ -28,9 +28,9 @@ import {
  * concrete color values here. These match the --chart-N tokens in index.css.
  */
 const CHART_COLORS = {
-  baseline: '#5b9bd5',   // --chart-1: oklch(0.809 0.105 251.813) ≈ steel blue
-  scenarioA: '#3366cc',  // --chart-2: oklch(0.623 0.214 259.815) ≈ medium blue
-  scenarioB: '#2d4a8c',  // --chart-3: oklch(0.546 0.245 262.881) ≈ dark blue
+  baseline: '#6366f1',   // indigo — the "status quo" line
+  scenarioA: '#10b981',  // emerald green — the "sell and simplify" option
+  scenarioB: '#f59e0b',  // amber — the "risky rental" option, caution connotation
 }
 
 /** Shape of each data point fed to the chart. */

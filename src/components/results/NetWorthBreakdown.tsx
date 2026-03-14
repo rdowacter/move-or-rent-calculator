@@ -98,13 +98,22 @@ export function NetWorthBreakdown() {
                 Component
               </th>
               <th className="pb-2 px-4 text-right font-medium text-muted-foreground">
-                Baseline
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: '#6366f1' }} />
+                  Baseline
+                </span>
               </th>
               <th className="pb-2 px-4 text-right font-medium text-muted-foreground">
-                Scenario A
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: '#10b981' }} />
+                  Scenario A
+                </span>
               </th>
               <th className="pb-2 pl-4 text-right font-medium text-muted-foreground">
-                Scenario B
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: '#f59e0b' }} />
+                  Scenario B
+                </span>
               </th>
             </tr>
           </thead>
@@ -113,7 +122,7 @@ export function NetWorthBreakdown() {
               <tr
                 key={row.label}
                 className={
-                  row.isBold ? 'border-t font-semibold' : 'border-b'
+                  row.isBold ? 'border-t font-semibold' : 'border-b hover:bg-muted/50 transition-colors'
                 }
               >
                 <td className="py-2 pr-4">{row.label}</td>

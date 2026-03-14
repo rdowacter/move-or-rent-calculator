@@ -117,7 +117,12 @@ function WarningAlert({ warning }: { warning: TaggedWarning }) {
 
   return (
     <Alert variant={variant} className={severityClassName}>
-      <SeverityIcon className="size-4" />
+      <SeverityIcon className={cn(
+        "size-4",
+        warning.severity === 'critical' && 'text-red-600 dark:text-red-400',
+        warning.severity === 'warning' && 'text-amber-600 dark:text-amber-400',
+        warning.severity === 'info' && 'text-muted-foreground'
+      )} />
       <AlertTitle className="flex items-center gap-2">
         <span>{warning.message}</span>
         {warning.dollarImpact !== undefined && (

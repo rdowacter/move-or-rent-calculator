@@ -30,10 +30,10 @@ import {
  * so CSS custom properties (var(--chart-N)) don't resolve. We must use
  * concrete color values here. These match the --chart-N tokens in index.css.
  */
-/** Chart color for Scenario A — IRA kept intact + contributing. Matches --chart-1. */
-const SCENARIO_A_COLOR = '#5b9bd5'
-/** Chart color for Scenario B — IRA withdrawn, rebuilding from zero. Matches --chart-2. */
-const SCENARIO_B_COLOR = '#3366cc'
+/** Chart color for Scenario A — IRA kept intact + contributing. Emerald green = positive. */
+const SCENARIO_A_COLOR = '#10b981'
+/** Chart color for Scenario B — IRA withdrawn, rebuilding from zero. Amber = caution. */
+const SCENARIO_B_COLOR = '#f59e0b'
 
 interface ChartDataPoint {
   year: number
