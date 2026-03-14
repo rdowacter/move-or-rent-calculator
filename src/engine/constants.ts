@@ -29,8 +29,6 @@ export const WORK_HOURS_PER_YEAR = 2080
 // Tax is computed marginally — only income within each range is taxed at
 // that range's rate.
 
-import type { TaxBracket } from './types'
-
 /**
  * 2024 federal income tax brackets for all filing statuses.
  * Source: IRS Rev. Proc. 2023-34, §3.01
