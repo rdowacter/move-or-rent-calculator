@@ -30,7 +30,7 @@ describe('InputAccordion', () => {
     expect(screen.getByText('Current Home (Kyle)')).toBeInTheDocument()
     expect(screen.getByText('New Home (Austin)')).toBeInTheDocument()
     expect(screen.getByText('Commute')).toBeInTheDocument()
-    expect(screen.getByText('Costs & Projection')).toBeInTheDocument()
+    expect(screen.getByText('Costs & Assumptions')).toBeInTheDocument()
   })
 
   it('renders "About You" primary fields when section is open', () => {

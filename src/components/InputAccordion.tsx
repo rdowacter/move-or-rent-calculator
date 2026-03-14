@@ -128,8 +128,8 @@ function InputAccordion({ defaultOpenSections = ['about-you'] }: InputAccordionP
               <Settings className="h-4 w-4" />
             </div>
             <div className="text-left">
-              <div className="text-sm font-semibold">Costs &amp; Projection</div>
-              <div className="text-xs font-normal text-muted-foreground">Moving costs, time horizon, escalation rates</div>
+              <div className="text-sm font-semibold">Costs &amp; Assumptions</div>
+              <div className="text-xs font-normal text-muted-foreground">Moving costs, escalation rates, insurance</div>
             </div>
           </div>
         </AccordionTrigger>

@@ -2,41 +2,19 @@ import { useFormContext } from 'react-hook-form'
 import type { ScenarioInputs } from '@/engine/types'
 import { CurrencyInput } from '@/components/CurrencyInput'
 import { PercentInput } from '@/components/PercentInput'
-import { FormField } from '@/components/FormField'
 
 /**
- * Costs & Projection section — collects time horizon, rental exit timing,
- * moving costs, escalation rates, tax prep costs, and umbrella insurance.
+ * Costs section — collects moving costs, escalation rates, tax prep costs,
+ * and umbrella insurance. Projection timeline controls (time horizon, rental
+ * exit year) are displayed in the results panel where they belong.
  */
 function CostsProjectionSection() {
   const { control } = useFormContext<ScenarioInputs>()
 
   return (
     <div className="space-y-4">
-      {/* Projection timeline */}
-      <div className="space-y-3">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Projection Timeline</p>
-        <FormField
-          name="projection.timeHorizonYears"
-          label="Time Horizon (Years)"
-          control={control}
-          type="number"
-          inputMode="numeric"
-          description="Number of years to project forward"
-        />
-
-        <FormField
-          name="projection.plannedRentalExitYear"
-          label="Planned Rental Exit Year"
-          control={control}
-          type="number"
-          inputMode="numeric"
-          description="Year to sell the rental property"
-        />
-      </div>
-
       {/* One-time costs */}
-      <div className="space-y-3 border-t pt-4">
+      <div className="space-y-3">
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">One-Time Costs</p>
         <CurrencyInput
           name="costs.movingCosts"
