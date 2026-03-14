@@ -1,24 +1,18 @@
-import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import type { ScenarioInputs } from '@/engine/types'
 import { CurrencyInput } from '@/components/CurrencyInput'
 import { FormField } from '@/components/FormField'
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
-import { Button } from '@/components/ui/button'
 
 /**
  * Commute section — collects current and projected commute costs.
- * Primary fields cover round-trip distance, time saved, and toll costs.
- * Advanced fields cover work days, IRS mileage rate, new commute distance,
- * new tolls, and landlord time commitment.
+ * Fields cover round-trip distance, time saved, toll costs, work days,
+ * IRS mileage rate, new commute distance, new tolls, and landlord time.
  */
 function CommuteSection() {
   const { control } = useFormContext<ScenarioInputs>()
-  const [advancedOpen, setAdvancedOpen] = useState(false)
 
   return (
     <div className="space-y-4">
-      {/* Primary fields */}
       <FormField
         name="commute.currentRoundTripMiles"
         label="Current Round-Trip Miles"
@@ -44,60 +38,46 @@ function CommuteSection() {
         description="Current monthly toll road costs"
       />
 
-      {/* Advanced fields */}
-      <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
-        <CollapsibleTrigger
-          render={
-            <Button variant="ghost" size="sm" className="w-full" />
-          }
-        >
-          {advancedOpen ? 'Hide Advanced' : 'Show Advanced'}
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <div className="space-y-4 pt-4">
-            <FormField
-              name="commute.workDaysPerYear"
-              label="Work Days Per Year"
-              control={control}
-              type="number"
-              inputMode="numeric"
-              description="Typical: 250 (5 days/week × 50 weeks)"
-            />
+      <FormField
+        name="commute.workDaysPerYear"
+        label="Work Days Per Year"
+        control={control}
+        type="number"
+        inputMode="numeric"
+        description="Typical: 250 (5 days/week × 50 weeks)"
+      />
 
-            <CurrencyInput
-              name="commute.irsMileageRate"
-              label="IRS Mileage Rate"
-              control={control}
-              description="Standard mileage rate per mile (for cost estimation)"
-            />
+      <CurrencyInput
+        name="commute.irsMileageRate"
+        label="IRS Mileage Rate"
+        control={control}
+        description="Standard mileage rate per mile (for cost estimation)"
+      />
 
-            <FormField
-              name="commute.newRoundTripMiles"
-              label="New Round-Trip Miles"
-              control={control}
-              type="number"
-              inputMode="decimal"
-              description="Expected round-trip commute from Austin home"
-            />
+      <FormField
+        name="commute.newRoundTripMiles"
+        label="New Round-Trip Miles"
+        control={control}
+        type="number"
+        inputMode="decimal"
+        description="Expected round-trip commute from Austin home"
+      />
 
-            <CurrencyInput
-              name="commute.newMonthlyTolls"
-              label="New Monthly Tolls"
-              control={control}
-              description="Expected monthly tolls from new location"
-            />
+      <CurrencyInput
+        name="commute.newMonthlyTolls"
+        label="New Monthly Tolls"
+        control={control}
+        description="Expected monthly tolls from new location"
+      />
 
-            <FormField
-              name="commute.landlordHoursPerMonth"
-              label="Landlord Hours Per Month"
-              control={control}
-              type="number"
-              inputMode="decimal"
-              description="Time spent on landlord duties in Scenario B"
-            />
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
+      <FormField
+        name="commute.landlordHoursPerMonth"
+        label="Landlord Hours Per Month"
+        control={control}
+        type="number"
+        inputMode="decimal"
+        description="Time spent on landlord duties in Scenario B"
+      />
     </div>
   )
 }

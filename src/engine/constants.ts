@@ -303,6 +303,7 @@ export const DEFAULT_RETIREMENT_INPUTS = {
   iraExpectedAnnualReturn: 0.07,
   annualIRAContributionScenarioA: 7_000,
   annualIRAContributionScenarioB: 0,
+  iraWithdrawalAmountScenarioB: 30_000, // Default: full balance (matches iraBalance default)
   hasEmployerMatch: false,
   employerMatchPercentage: 0.0,
   hasOtherRetirementSavings: false,

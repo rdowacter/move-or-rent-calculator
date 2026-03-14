@@ -39,6 +39,7 @@ const coupleInputs: ScenarioInputs = {
     iraExpectedAnnualReturn: 0.07,
     annualIRAContributionScenarioA: 7_000,
     annualIRAContributionScenarioB: 0,
+    iraWithdrawalAmountScenarioB: 50_000, // Full balance
     hasEmployerMatch: false,
     employerMatchPercentage: 0.0,
     hasOtherRetirementSavings: false,

@@ -65,6 +65,8 @@ const retirementInputsSchema = z.object({
   annualIRAContributionScenarioA: currency(),
   /** Annual IRA contribution in Scenario B (IRA withdrawn). */
   annualIRAContributionScenarioB: currency(),
+  /** Amount to withdraw from IRA in Scenario B. Defaults to full balance. */
+  iraWithdrawalAmountScenarioB: currency(),
   /** Whether the user has an employer 401(k) with matching. */
   hasEmployerMatch: z.boolean(),
   /** Employer 401(k) match percentage (e.g. 0.03 for 3%). */
