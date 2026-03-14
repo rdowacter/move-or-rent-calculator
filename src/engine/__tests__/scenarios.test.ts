@@ -293,7 +293,7 @@ describe('projectScenarioA', () => {
   it('Austin monthly payment matches Phase 1 calculation', () => {
     // Austin loan = 300000 × 0.80 = 240,000
     // Monthly PI = calculateMonthlyPayment(240000, 0.06, 30) ≈ $1,438.92
-    const expectedPayment = calculateMonthlyPayment(240_000, 0.06, 30)
+    // expectedPayment = calculateMonthlyPayment(240000, 0.06, 30) ≈ $1,438.92
     // Verify via mortgage balance declining correctly
     const year1MortgageBalance = result.yearlySnapshots[0].newHomeMortgageBalance
     expect(year1MortgageBalance).toBeLessThan(240_000)
@@ -383,13 +383,8 @@ describe('projectScenarioB', () => {
     // Austin loan = $270,000
     // Annual PMI = 270000 × 0.007 = $1,890
     // This affects monthly cash flow (PMI is in the housing cost)
-    const austinLoan = 300_000 * 0.9
-    const monthlyPI = calculateMonthlyPayment(austinLoan, 0.06, 30)
-    const pitiWithPMI =
-      monthlyPI +
-      (300_000 * 0.02) / 12 +
-      2_400 / 12 +
-      (austinLoan * 0.007) / 12
+    // Austin loan = $270,000, monthly PI ≈ calculateMonthlyPayment(270000, 0.06, 30)
+    // PITI w/ PMI = PI + (300000 × 0.02)/12 + 2400/12 + (270000 × 0.007)/12
 
     // DTI should include PMI
     expect(result.dtiResult.frontEndDTI).toBeGreaterThan(0.25)

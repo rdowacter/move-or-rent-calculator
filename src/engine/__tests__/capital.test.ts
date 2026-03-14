@@ -13,7 +13,6 @@ import {
   reserveRunwayMonths,
   stressTest,
 } from '../capital'
-import type { UpfrontCapital, StressTestResult } from '../types'
 
 // ---- calculateUpfrontCapital ------------------------------------------------
 

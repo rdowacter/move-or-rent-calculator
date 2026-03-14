@@ -28,8 +28,6 @@ import {
   PMI_REQUEST_CANCELLATION_LTV,
   DTI_HARD_MAX,
   DTI_BACK_END_TARGET,
-  STANDARD_DEDUCTION,
-  EARLY_WITHDRAWAL_AGE_THRESHOLD,
 } from './constants'
 
 import {
@@ -59,7 +57,6 @@ import {
 
 import {
   calculateUpfrontCapital,
-  monthlyBurnRate,
   reserveRunwayMonths,
   stressTest,
 } from './capital'
@@ -233,7 +230,6 @@ export function projectBaseline(inputs: ScenarioInputs): ScenarioOutput {
   let kyleHomeValue = currentHome.homeValue
   let iraBalance = retirement.iraBalance
   let liquidSavings = personal.liquidSavings
-  let cumulativeCommuteSavings = 0
 
   // Track how many payments have been made into the loan at projection start
   let paymentsMade = currentHome.yearsIntoLoan * MONTHS_PER_YEAR
@@ -337,7 +333,7 @@ export function projectBaseline(inputs: ScenarioInputs): ScenarioOutput {
   }
 
   // ---- Warnings ----
-  const warnings = generateBaselineWarnings(inputs, snapshots, dtiResult, upfrontCapital)
+  const warnings = generateBaselineWarnings(inputs)
 
   // ---- Reserve runway ----
   const year1Snapshot = snapshots[0]
@@ -923,7 +919,7 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
 
     // Monthly cash flow
     const monthlyNetIncome = (annualIncome - federalTax) / MONTHS_PER_YEAR
-    let monthlyExpenses =
+    const monthlyExpenses =
       austinMonthlyPayment +
       escalatedAustinPropertyTax / MONTHS_PER_YEAR +
       escalatedAustinInsurance / MONTHS_PER_YEAR +
@@ -1054,10 +1050,7 @@ function projectIRAAtAge65(
 }
 
 function generateBaselineWarnings(
-  inputs: ScenarioInputs,
-  snapshots: YearlySnapshot[],
-  dtiResult: DTIResult,
-  upfrontCapital: UpfrontCapital
+  inputs: ScenarioInputs
 ): Warning[] {
   const warnings: Warning[] = []
 
@@ -1251,27 +1244,6 @@ function generateScenarioBWarnings(
       message: `Projected retirement savings of $${Math.round(iraAt65).toLocaleString()} at age 65`,
       dollarImpact: iraAt65,
     })
-  }
-
-  // Rental cash flow warning (Year 1 rental cash flow negative after tax benefit)
-  if (
-    year1.rentalGrossIncome !== undefined &&
-    year1.monthlyCashFlowBestCase < year1.monthlyCashFlowWorstCase
-  ) {
-    // Rental is contributing negatively
-  }
-  // Check if rental net monthly cash flow is negative
-  // We can infer this from the rental-specific fields
-  if (year1.rentalGrossIncome !== undefined) {
-    // Compute approximate rental monthly cash flow from the difference
-    // between best case with and without rental
-    // A simpler check: if the snapshot shows rental activity and worst case is bad
-    const rentalMonthlyCF =
-      year1.monthlyCashFlowBestCase -
-      (year1.monthlyCashFlowBestCase - (year1.monthlyCashFlowBestCase - year1.monthlyCashFlowWorstCase))
-    // Actually, let's just check if best case minus worst case is > 0 (rental volatility)
-    // and generate a landlord warning based on the actual rental CF calculation
-    // We know rental loses money in year 1 with Preston defaults
   }
 
   // Passive loss phase-out: check if AGI >= $150k
