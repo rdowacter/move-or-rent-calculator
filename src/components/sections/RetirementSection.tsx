@@ -29,119 +29,130 @@ function RetirementSection() {
 
   return (
     <div className="space-y-4">
-      <CurrencyInput
-        name="retirement.iraBalance"
-        label="IRA Balance"
-        control={control}
-        description="Current balance of IRA account"
-      />
-
-      <div className="space-y-1.5">
-        <Label htmlFor="retirement.iraType">IRA Type</Label>
-        <Controller
-          name="retirement.iraType"
+      {/* IRA details */}
+      <div className="space-y-3">
+        <CurrencyInput
+          name="retirement.iraBalance"
+          label="IRA Balance"
           control={control}
-          render={({ field }) => (
-            <Select
-              value={field.value}
-              onValueChange={(value) => field.onChange(value)}
-            >
-              <SelectTrigger id="retirement.iraType" className="w-full">
-                <SelectValue placeholder="Select IRA type" />
-              </SelectTrigger>
-              <SelectContent>
-                {IRA_TYPE_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+          description="Current balance of IRA account"
         />
-        <p className="text-xs text-muted-foreground">
-          Traditional withdrawals are taxed as ordinary income; Roth withdrawals of contributions are tax-free
-        </p>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="retirement.iraType">IRA Type</Label>
+          <Controller
+            name="retirement.iraType"
+            control={control}
+            render={({ field }) => (
+              <Select
+                value={field.value}
+                onValueChange={(value) => field.onChange(value)}
+              >
+                <SelectTrigger id="retirement.iraType" className="w-full">
+                  <SelectValue placeholder="Select IRA type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {IRA_TYPE_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+          <p className="text-xs text-muted-foreground">
+            Traditional withdrawals are taxed as ordinary income; Roth withdrawals of contributions are tax-free
+          </p>
+        </div>
+
+        <CurrencyInput
+          name="retirement.iraWithdrawalAmountScenarioB"
+          label="IRA Withdrawal Amount — Scenario B"
+          control={control}
+          description="How much to withdraw from IRA for down payment. Set to full balance for complete withdrawal."
+        />
       </div>
 
-      <CurrencyInput
-        name="retirement.iraWithdrawalAmountScenarioB"
-        label="IRA Withdrawal Amount — Scenario B"
-        control={control}
-        description="How much to withdraw from IRA for down payment. Set to full balance for complete withdrawal."
-      />
-
-      <CurrencyInput
-        name="retirement.annualIRAContributionScenarioA"
-        label="Annual Contribution — Scenario A"
-        control={control}
-        description="Yearly IRA contribution if you sell Kyle and keep IRA intact"
-      />
-
-      <CurrencyInput
-        name="retirement.annualIRAContributionScenarioB"
-        label="Annual Contribution — Scenario B"
-        control={control}
-        description="Yearly IRA contribution if you keep Kyle as rental and withdraw IRA"
-      />
-
-      <PercentInput
-        name="retirement.iraExpectedAnnualReturn"
-        label="Expected Annual Return"
-        control={control}
-        description="Average annual return on IRA investments (e.g. 7%)"
-      />
-
-      <div className="space-y-1.5">
-        <Controller
-          name="retirement.hasEmployerMatch"
+      {/* Contributions */}
+      <div className="space-y-3 border-t pt-4">
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Contributions</p>
+        <CurrencyInput
+          name="retirement.annualIRAContributionScenarioA"
+          label="Annual Contribution — Scenario A"
           control={control}
-          render={({ field }) => (
-            <label className="flex items-center gap-2 cursor-pointer">
-              <Input
-                type="checkbox"
-                className="h-4 w-4"
-                checked={field.value}
-                onChange={(e) => field.onChange(e.target.checked)}
-              />
-              <span className="text-sm font-medium">Employer 401(k) Match</span>
-            </label>
-          )}
+          description="Yearly IRA contribution if you sell Kyle and keep IRA intact"
         />
-        {hasEmployerMatch && (
-          <PercentInput
-            name="retirement.employerMatchPercentage"
-            label="Employer Match Percentage"
-            control={control}
-            description="Percentage of salary your employer matches"
-          />
-        )}
+
+        <CurrencyInput
+          name="retirement.annualIRAContributionScenarioB"
+          label="Annual Contribution — Scenario B"
+          control={control}
+          description="Yearly IRA contribution if you keep Kyle as rental and withdraw IRA"
+        />
       </div>
 
-      <div className="space-y-1.5">
-        <Controller
-          name="retirement.hasOtherRetirementSavings"
+      {/* Other retirement */}
+      <div className="space-y-3 border-t pt-4">
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Other Retirement</p>
+        <PercentInput
+          name="retirement.iraExpectedAnnualReturn"
+          label="Expected Annual Return"
           control={control}
-          render={({ field }) => (
-            <label className="flex items-center gap-2 cursor-pointer">
-              <Input
-                type="checkbox"
-                className="h-4 w-4"
-                checked={field.value}
-                onChange={(e) => field.onChange(e.target.checked)}
-              />
-              <span className="text-sm font-medium">Other Retirement Savings</span>
-            </label>
-          )}
+          description="Average annual return on IRA investments (e.g. 7%)"
         />
-        {hasOtherRetirementSavings && (
-          <CurrencyInput
-            name="retirement.otherRetirementBalance"
-            label="Other Retirement Balance"
+
+        <div className="space-y-1.5">
+          <Controller
+            name="retirement.hasEmployerMatch"
             control={control}
-            description="Balance of 401(k), pension, or other retirement accounts"
+            render={({ field }) => (
+              <label className="flex items-center gap-2 cursor-pointer">
+                <Input
+                  type="checkbox"
+                  className="h-4 w-4"
+                  checked={field.value}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                />
+                <span className="text-sm font-medium">Employer 401(k) Match</span>
+              </label>
+            )}
           />
-        )}
+          {hasEmployerMatch && (
+            <PercentInput
+              name="retirement.employerMatchPercentage"
+              label="Employer Match Percentage"
+              control={control}
+              description="Percentage of salary your employer matches"
+            />
+          )}
+        </div>
+
+        <div className="space-y-1.5">
+          <Controller
+            name="retirement.hasOtherRetirementSavings"
+            control={control}
+            render={({ field }) => (
+              <label className="flex items-center gap-2 cursor-pointer">
+                <Input
+                  type="checkbox"
+                  className="h-4 w-4"
+                  checked={field.value}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                />
+                <span className="text-sm font-medium">Other Retirement Savings</span>
+              </label>
+            )}
+          />
+          {hasOtherRetirementSavings && (
+            <CurrencyInput
+              name="retirement.otherRetirementBalance"
+              label="Other Retirement Balance"
+              control={control}
+              description="Balance of 401(k), pension, or other retirement accounts"
+            />
+          )}
+        </div>
       </div>
     </div>
   )
