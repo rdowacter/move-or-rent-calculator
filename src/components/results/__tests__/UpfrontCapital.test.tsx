@@ -37,12 +37,12 @@ const prestonInputs: ScenarioInputs = {
 const realModelOutput: ModelOutput = runModel(prestonInputs)
 
 // ---- Mock the useModelOutput hook ----
-vi.mock('@/hooks/useModelOutput', () => ({
+vi.mock('@/components/ScenarioModelProvider', () => ({
   useModelOutput: vi.fn(),
 }))
 
 // Import the mock after vi.mock so we can control its return value per test
-import { useModelOutput } from '@/hooks/useModelOutput'
+import { useModelOutput } from '@/components/ScenarioModelProvider'
 const mockUseModelOutput = vi.mocked(useModelOutput)
 
 // ===========================================================================
@@ -51,13 +51,13 @@ const mockUseModelOutput = vi.mocked(useModelOutput)
 
 describe('UpfrontCapital', () => {
   it('renders nothing when modelOutput is null', () => {
-    mockUseModelOutput.mockReturnValue({ modelOutput: null })
+    mockUseModelOutput.mockReturnValue({ modelOutput: null, isComputing: false })
     const { container } = render(<UpfrontCapital />)
     expect(container.innerHTML).toBe('')
   })
 
   it('renders the section heading', () => {
-    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput })
+    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput, isComputing: false })
     render(<UpfrontCapital />)
     expect(
       screen.getByText('Upfront Capital Requirements')
@@ -65,7 +65,7 @@ describe('UpfrontCapital', () => {
   })
 
   it('renders a card for each scenario', () => {
-    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput })
+    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput, isComputing: false })
     render(<UpfrontCapital />)
 
     // All three scenario names should appear
@@ -75,7 +75,7 @@ describe('UpfrontCapital', () => {
   })
 
   it('shows "No capital event" message for baseline', () => {
-    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput })
+    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput, isComputing: false })
     render(<UpfrontCapital />)
 
     // Baseline requires no capital event (stay in Kyle, no home purchase)
@@ -85,7 +85,7 @@ describe('UpfrontCapital', () => {
   })
 
   it('shows line items for Scenario A: down payment, closing costs, moving costs', () => {
-    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput })
+    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput, isComputing: false })
     render(<UpfrontCapital />)
 
     const capitalA = realModelOutput.scenarioA.upfrontCapital
@@ -111,7 +111,7 @@ describe('UpfrontCapital', () => {
   })
 
   it('shows home sale net proceeds as a funding source for Scenario A', () => {
-    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput })
+    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput, isComputing: false })
     render(<UpfrontCapital />)
 
     const capitalA = realModelOutput.scenarioA.upfrontCapital
@@ -124,7 +124,7 @@ describe('UpfrontCapital', () => {
   })
 
   it('shows IRA withdrawal as a funding source for Scenario B', () => {
-    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput })
+    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput, isComputing: false })
     render(<UpfrontCapital />)
 
     const capitalB = realModelOutput.scenarioB.upfrontCapital
@@ -139,7 +139,7 @@ describe('UpfrontCapital', () => {
   it('shows surplus with positive styling when cash available exceeds needed', () => {
     // Use a modified output where Scenario A has a surplus
     const capitalA = realModelOutput.scenarioA.upfrontCapital
-    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput })
+    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput, isComputing: false })
     render(<UpfrontCapital />)
 
     if (capitalA.surplus >= 0) {
@@ -171,7 +171,7 @@ describe('UpfrontCapital', () => {
       },
     }
 
-    mockUseModelOutput.mockReturnValue({ modelOutput: shortfallOutput })
+    mockUseModelOutput.mockReturnValue({ modelOutput: shortfallOutput, isComputing: false })
     render(<UpfrontCapital />)
 
     // Both shortfall scenarios should show "Shortfall" alert title
@@ -188,7 +188,7 @@ describe('UpfrontCapital', () => {
   })
 
   it('shows Total Available for scenarios with capital events', () => {
-    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput })
+    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput, isComputing: false })
     render(<UpfrontCapital />)
 
     // Both Scenario A and Scenario B should show Total Available
@@ -196,7 +196,7 @@ describe('UpfrontCapital', () => {
   })
 
   it('does not show IRA withdrawal line for Scenario A (IRA kept intact)', () => {
-    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput })
+    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput, isComputing: false })
     render(<UpfrontCapital />)
 
     const capitalA = realModelOutput.scenarioA.upfrontCapital
@@ -210,7 +210,7 @@ describe('UpfrontCapital', () => {
   })
 
   it('does not show home sale line for Scenario B (home kept as rental)', () => {
-    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput })
+    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput, isComputing: false })
     render(<UpfrontCapital />)
 
     const capitalB = realModelOutput.scenarioB.upfrontCapital
@@ -224,7 +224,7 @@ describe('UpfrontCapital', () => {
   })
 
   it('renders in a responsive grid layout', () => {
-    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput })
+    mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput, isComputing: false })
     render(<UpfrontCapital />)
 
     // The grid container should have the responsive grid classes

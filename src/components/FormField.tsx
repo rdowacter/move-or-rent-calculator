@@ -47,7 +47,9 @@ function FormField<T extends FieldValues>({
     <Controller
       name={name}
       control={control}
-      render={({ field, fieldState }) => (
+      render={({ field, fieldState }) => {
+        const descriptionId = description ? `${name}-description` : undefined
+        return (
         <div className={cn('space-y-1.5', className)}>
           <Label htmlFor={name}>{label}</Label>
           <div className="relative flex items-center">
@@ -61,6 +63,7 @@ function FormField<T extends FieldValues>({
               type={type}
               inputMode={inputMode}
               placeholder={placeholder}
+              aria-describedby={descriptionId}
               className={cn(
                 prefix && 'pl-7',
                 suffix && 'pr-7',
@@ -68,10 +71,25 @@ function FormField<T extends FieldValues>({
               {...field}
               value={field.value ?? ''}
               onChange={(e) => {
-                // Always pass the raw string during typing so intermediate
-                // states like "12." or "0.0" are preserved. Conversion to
-                // Number happens on blur.
-                field.onChange(e.target.value)
+                const rawValue = e.target.value
+                if (type === 'number' || inputMode === 'decimal') {
+                  if (rawValue === '') {
+                    field.onChange(undefined)
+                  } else if (rawValue.endsWith('.')) {
+                    // User still typing a decimal — keep raw string
+                    field.onChange(rawValue)
+                  } else {
+                    const parsed = Number(rawValue)
+                    if (!isNaN(parsed)) {
+                      field.onChange(parsed)
+                    } else {
+                      // Invalid number — pass raw string, let validation handle it
+                      field.onChange(rawValue)
+                    }
+                  }
+                } else {
+                  field.onChange(rawValue)
+                }
               }}
               onBlur={(e) => {
                 // Let react-hook-form know the field was touched
@@ -99,7 +117,7 @@ function FormField<T extends FieldValues>({
             )}
           </div>
           {description && (
-            <p className="text-xs text-muted-foreground">{description}</p>
+            <p id={descriptionId} className="text-xs text-muted-foreground">{description}</p>
           )}
           {fieldState.error?.message && (
             <p className="text-xs text-destructive" role="alert">
@@ -107,7 +125,8 @@ function FormField<T extends FieldValues>({
             </p>
           )}
         </div>
-      )}
+        )
+      }}
     />
   )
 }

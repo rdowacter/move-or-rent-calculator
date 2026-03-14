@@ -9,7 +9,7 @@
 // financial calculations — it only formats and renders engine outputs.
 // ---------------------------------------------------------------------------
 
-import { useModelOutput } from '@/hooks/useModelOutput'
+import { useModelOutput } from '@/components/ScenarioModelProvider'
 import {
   Card,
   CardHeader,

@@ -19,7 +19,7 @@ function TestWrapper({ children }: { children: React.ReactNode }) {
 }
 
 describe('InputAccordion', () => {
-  it('renders all 5 section headers', () => {
+  it('renders all 6 section headers', () => {
     render(
       <TestWrapper>
         <InputAccordion />
@@ -31,6 +31,7 @@ describe('InputAccordion', () => {
     expect(screen.getByText('Current Home (Kyle)')).toBeInTheDocument()
     expect(screen.getByText('New Home (Austin)')).toBeInTheDocument()
     expect(screen.getByText('Commute')).toBeInTheDocument()
+    expect(screen.getByText('Costs & Projection')).toBeInTheDocument()
   })
 
   it('renders "About You" primary fields when section is open', () => {
@@ -144,13 +145,14 @@ describe('InputAccordion', () => {
     expect(screen.getByText('IRA Balance')).toBeInTheDocument()
   })
 
-  it('exports ALL_SECTIONS constant with all 5 section values', () => {
+  it('exports ALL_SECTIONS constant with all 6 section values', () => {
     expect(ALL_SECTIONS).toEqual([
       'about-you',
       'retirement',
       'current-home',
       'new-home',
       'commute',
+      'costs-projection',
     ])
   })
 })

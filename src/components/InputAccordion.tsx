@@ -9,6 +9,7 @@ import { RetirementSection } from '@/components/sections/RetirementSection'
 import { CurrentHomeSection } from '@/components/sections/CurrentHomeSection'
 import { NewHomeSection } from '@/components/sections/NewHomeSection'
 import { CommuteSection } from '@/components/sections/CommuteSection'
+import { CostsProjectionSection } from '@/components/sections/CostsProjectionSection'
 
 /** All accordion section values for programmatic control */
 const ALL_SECTIONS = [
@@ -17,6 +18,7 @@ const ALL_SECTIONS = [
   'current-home',
   'new-home',
   'commute',
+  'costs-projection',
 ] as const
 
 interface InputAccordionProps {
@@ -25,7 +27,7 @@ interface InputAccordionProps {
 }
 
 /**
- * InputAccordion renders 5 collapsible sections for all scenario inputs.
+ * InputAccordion renders 6 collapsible sections for all scenario inputs.
  * Uses shadcn Accordion with `multiple` so users can keep several sections
  * open at once. Each section uses progressive disclosure — primary fields
  * are always visible when expanded, advanced fields are behind a toggle.
@@ -65,6 +67,13 @@ function InputAccordion({ defaultOpenSections = ['about-you'] }: InputAccordionP
         <AccordionTrigger>Commute</AccordionTrigger>
         <AccordionContent>
           <CommuteSection />
+        </AccordionContent>
+      </AccordionItem>
+
+      <AccordionItem value="costs-projection">
+        <AccordionTrigger>Costs &amp; Projection</AccordionTrigger>
+        <AccordionContent>
+          <CostsProjectionSection />
         </AccordionContent>
       </AccordionItem>
     </Accordion>

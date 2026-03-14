@@ -102,7 +102,7 @@ function PercentInputInner({
             // Normalize display on blur
             const trimmed = localValue.trim()
             if (trimmed === '') {
-              field.onChange('')
+              field.onChange(undefined)
             } else {
               const parsed = Number(trimmed)
               if (!isNaN(parsed)) {
@@ -118,7 +118,7 @@ function PercentInputInner({
             const rawValue = e.target.value
             setLocalValue(rawValue)
             if (rawValue === '') {
-              field.onChange('')
+              field.onChange(undefined)
               return
             }
             const parsed = Number(rawValue)

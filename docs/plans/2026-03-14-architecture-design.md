@@ -77,9 +77,8 @@ Dynamic recommendations + production readiness.
 In priority order:
 1. Verdict engine — plain-language synthesis adapting to user's numbers
 2. Sensitivity analysis — what-if tables for appreciation, rent, vacancy
-3. Print/export summary — clean view for taking to a CPA
-4. URL state — shareable configurations via query params
-5. Mobile refinements
+3. URL state — shareable configurations via query params
+4. Mobile refinements
 
 ## Engine Architecture
 

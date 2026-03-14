@@ -5,6 +5,28 @@
  * These are thin wrappers — no financial logic lives here.
  */
 
+/** Cached Intl.NumberFormat instances — created once at module scope for performance. */
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+})
+const currencyWithCentsFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})
+const percentFormatter = new Intl.NumberFormat('en-US', {
+  style: 'percent',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2,
+})
+const numberFormatter = new Intl.NumberFormat('en-US', {
+  maximumFractionDigits: 0,
+})
+
 interface FormatCurrencyOptions {
   /** Show cents (2 decimal places). Default: false (rounds to whole dollars). */
   cents?: boolean;
@@ -30,12 +52,7 @@ export function formatCurrency(
   // Normalize negative zero to zero
   const normalizedValue = Object.is(value, -0) ? 0 : value;
 
-  const formatter = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: cents ? 2 : 0,
-    maximumFractionDigits: cents ? 2 : 0,
-  });
+  const formatter = cents ? currencyWithCentsFormatter : currencyFormatter;
 
   return formatter.format(normalizedValue);
 }
@@ -52,13 +69,7 @@ export function formatCurrency(
  * formatPercent(0)      → "0%"
  */
 export function formatPercent(value: number): string {
-  const formatter = new Intl.NumberFormat('en-US', {
-    style: 'percent',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  });
-
-  return formatter.format(value);
+  return percentFormatter.format(value);
 }
 
 /**
@@ -68,11 +79,7 @@ export function formatPercent(value: number): string {
  * formatNumber(12345) → "12,345"
  */
 export function formatNumber(value: number): string {
-  const formatter = new Intl.NumberFormat('en-US', {
-    maximumFractionDigits: 0,
-  });
-
-  return formatter.format(value);
+  return numberFormatter.format(value);
 }
 
 /**

@@ -25,10 +25,10 @@ import {
   formatCompactCurrency,
 } from '@/utils/formatters'
 
-/** Chart color for Scenario A — IRA kept intact + contributing. */
-const SCENARIO_A_COLOR = '#2563eb' // Blue-600
-/** Chart color for Scenario B — IRA withdrawn, rebuilding from zero. */
-const SCENARIO_B_COLOR = '#dc2626' // Red-600
+/** Chart color for Scenario A — IRA kept intact + contributing. Uses theme chart token. */
+const SCENARIO_A_COLOR = 'oklch(var(--chart-1))'
+/** Chart color for Scenario B — IRA withdrawn, rebuilding from zero. Uses theme chart token. */
+const SCENARIO_B_COLOR = 'oklch(var(--chart-2))'
 
 interface ChartDataPoint {
   year: number
@@ -52,8 +52,8 @@ function IRATooltipContent({
   if (!active || !payload || payload.length === 0) return null
 
   return (
-    <div className="rounded-md border border-gray-200 bg-white px-3 py-2 shadow-sm">
-      <p className="mb-1 text-sm font-medium text-gray-700">Year {label}</p>
+    <div className="rounded-md border border-border bg-background px-3 py-2 shadow-sm">
+      <p className="mb-1 text-sm font-medium text-foreground">Year {label}</p>
       {payload.map((entry) => (
         <p
           key={entry.name}
@@ -107,7 +107,7 @@ export function IRATrajectoryChart() {
 
   return (
     <div className="w-full">
-      <h3 className="mb-4 text-lg font-semibold text-gray-900">
+      <h3 className="mb-4 text-lg font-semibold text-foreground">
         IRA Balance Trajectory
       </h3>
 
@@ -117,7 +117,7 @@ export function IRATrajectoryChart() {
             data={chartData}
             margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
             <XAxis
               dataKey="year"
               label={{
@@ -159,7 +159,7 @@ export function IRATrajectoryChart() {
       </div>
 
       {/* Dollar gap callout — highlights the retirement cost of the early withdrawal */}
-      <p className="mt-3 text-center text-sm text-gray-600">
+      <p className="mt-3 text-center text-sm text-muted-foreground">
         Scenario A IRA is {formatCurrency(Math.abs(gap))} higher at year{' '}
         {finalYear}
       </p>
