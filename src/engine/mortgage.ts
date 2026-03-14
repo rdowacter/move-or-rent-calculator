@@ -163,12 +163,17 @@ export function calculateYearInterestPaid(
 ): number {
   if (principal === 0 || annualRate === 0) return 0
 
+  const totalPayments = termYears * MONTHS_PER_YEAR
+  const paymentsBeforeThisYear = (year - 1) * MONTHS_PER_YEAR
+
+  // Loan is fully paid off — no interest accrues after the final payment
+  if (paymentsBeforeThisYear >= totalPayments) return 0
+
   const monthlyRate = annualRate / MONTHS_PER_YEAR
   const monthlyPayment = calculateMonthlyPayment(principal, annualRate, termYears)
 
   // Start from the balance at the beginning of this year
   // (i.e., after all payments in previous years)
-  const paymentsBeforeThisYear = (year - 1) * MONTHS_PER_YEAR
   let balance = calculateRemainingBalance(
     principal,
     annualRate,
@@ -210,11 +215,16 @@ export function calculateYearPrincipalPaid(
 ): number {
   if (principal === 0) return 0
 
+  const totalPayments = termYears * MONTHS_PER_YEAR
+  const paymentsBeforeThisYear = (year - 1) * MONTHS_PER_YEAR
+
+  // Loan is fully paid off — no principal payments after the final payment
+  if (paymentsBeforeThisYear >= totalPayments) return 0
+
   // At 0% interest, every payment is pure principal
   // Monthly payment = principal / total months
   // Annual principal = 12 × monthly payment
   if (annualRate === 0) {
-    const totalPayments = termYears * MONTHS_PER_YEAR
     const monthlyPayment = principal / totalPayments
     return monthlyPayment * MONTHS_PER_YEAR
   }

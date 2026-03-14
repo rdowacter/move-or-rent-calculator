@@ -232,6 +232,17 @@ describe('calculateYearPrincipalPaid', () => {
     expect(year20Principal).toBeGreaterThan(year1Principal)
   })
 
+  it('returns 0 for years beyond the loan term', () => {
+    // A 30-year loan is fully paid off after year 30.
+    // Years 31+ should return 0 interest and 0 principal — not negative values.
+    // Bug regression: previously, the loop drove balance negative, producing
+    // negative interest and inflated principal for post-term years.
+    expect(calculateYearInterestPaid(240_000, 0.06, 30, 31)).toBe(0)
+    expect(calculateYearInterestPaid(240_000, 0.06, 30, 35)).toBe(0)
+    expect(calculateYearPrincipalPaid(240_000, 0.06, 30, 31)).toBe(0)
+    expect(calculateYearPrincipalPaid(240_000, 0.06, 30, 35)).toBe(0)
+  })
+
   it('interest + principal for each year sum correctly across full loan', () => {
     // Sum of all principal paid over 30 years should equal the original principal
     const principal = 200_000
