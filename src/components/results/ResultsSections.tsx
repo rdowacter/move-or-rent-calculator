@@ -8,7 +8,7 @@
 //   3. Year-1 Execution — cash flow, capital, and reserves on default background
 // ---------------------------------------------------------------------------
 
-import { AlertTriangle, TrendingUp, PiggyBank, DollarSign, Wallet, Shield, Calendar } from 'lucide-react'
+import { AlertTriangle, TrendingUp, PiggyBank, DollarSign, Wallet, Shield, Calendar, Layers, Table2 } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
 import type { ScenarioInputs } from '@/engine/types'
 import { FormField } from '@/components/FormField'
@@ -20,6 +20,8 @@ import { MonthlyCashFlow } from './MonthlyCashFlow'
 import { UpfrontCapital } from './UpfrontCapital'
 import { StressTests } from './StressTests'
 import { WarningsList } from './WarningsList'
+import { NetWorthComposition } from './NetWorthComposition'
+import { YearByYearTable } from './YearByYearTable'
 
 /**
  * Renders all results sections in order with consistent spacing and
@@ -105,6 +107,14 @@ export function ResultsSections() {
 
         <ResultSection icon={PiggyBank} title="Retirement Account Trajectory" description="IRA balance comparison — the cost of early withdrawal" accentColor="border-emerald-400" iconColor="text-emerald-500">
           <IRATrajectoryChart />
+        </ResultSection>
+
+        <ResultSection icon={Layers} title="Net Worth Composition" description="Where your wealth is — cash, retirement, and home equity over time" accentColor="border-violet-400" iconColor="text-violet-500">
+          <NetWorthComposition />
+        </ResultSection>
+
+        <ResultSection icon={Table2} title="Year-by-Year Detail" description="Complete financial breakdown for each scenario" accentColor="border-violet-400" iconColor="text-violet-500">
+          <YearByYearTable />
         </ResultSection>
       </div>
 
