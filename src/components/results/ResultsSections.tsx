@@ -8,6 +8,7 @@
 // ---------------------------------------------------------------------------
 
 import { NetWorthChart } from './NetWorthChart'
+import { NetWorthBreakdown } from './NetWorthBreakdown'
 import { IRATrajectoryChart } from './IRATrajectoryChart'
 import { MonthlyCashFlow } from './MonthlyCashFlow'
 import { UpfrontCapital } from './UpfrontCapital'
@@ -47,6 +48,10 @@ export function ResultsSections() {
 
       <section>
         <NetWorthChart />
+      </section>
+
+      <section>
+        <NetWorthBreakdown />
       </section>
 
       <section>

@@ -75,7 +75,8 @@ describe('ResultsSections integration', () => {
     ).toBeInTheDocument()
 
     // MonthlyCashFlow renders scenario cards with "Baseline" label
-    expect(screen.getByText('Baseline')).toBeInTheDocument()
+    // (also appears in NetWorthBreakdown table header, so use getAllByText)
+    expect(screen.getAllByText('Baseline').length).toBeGreaterThanOrEqual(1)
   })
 
   it('renders gracefully when model output is null', () => {
