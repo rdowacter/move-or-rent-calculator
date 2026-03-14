@@ -91,21 +91,23 @@ export function formatCompactCurrency(value: number): string {
 
   const absValue = Math.abs(value);
 
+  const sign = value < 0 ? '-' : '';
+
   if (absValue >= 1_000_000) {
-    const millions = value / 1_000_000;
+    const millions = absValue / 1_000_000;
     // Remove trailing zeros: 1.0 → "1", 1.5 → "1.5"
     const formatted = millions % 1 === 0
       ? millions.toFixed(0)
       : millions.toFixed(1).replace(/\.?0+$/, '');
-    return `$${formatted}M`;
+    return `${sign}$${formatted}M`;
   }
 
   if (absValue >= 1_000) {
-    const thousands = value / 1_000;
+    const thousands = absValue / 1_000;
     const formatted = thousands % 1 === 0
       ? thousands.toFixed(0)
       : thousands.toFixed(1).replace(/\.?0+$/, '');
-    return `$${formatted}K`;
+    return `${sign}$${formatted}K`;
   }
 
   return formatCurrency(value);

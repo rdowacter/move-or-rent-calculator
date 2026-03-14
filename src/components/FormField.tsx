@@ -68,13 +68,24 @@ function FormField<T extends FieldValues>({
               {...field}
               value={field.value ?? ''}
               onChange={(e) => {
-                // For numeric fields, convert to number; otherwise pass string
-                const rawValue = e.target.value
+                // Always pass the raw string during typing so intermediate
+                // states like "12." or "0.0" are preserved. Conversion to
+                // Number happens on blur.
+                field.onChange(e.target.value)
+              }}
+              onBlur={(e) => {
+                // Let react-hook-form know the field was touched
+                field.onBlur()
+
+                // For numeric fields, convert the final string to a Number
+                // so the form value is the correct type for the engine.
                 if (type === 'number' || inputMode === 'decimal') {
-                  const parsed = rawValue === '' ? '' : Number(rawValue)
-                  field.onChange(isNaN(parsed as number) ? rawValue : parsed)
-                } else {
-                  field.onChange(rawValue)
+                  const rawValue = e.target.value
+                  if (rawValue === '') return
+                  const parsed = Number(rawValue)
+                  if (!isNaN(parsed)) {
+                    field.onChange(parsed)
+                  }
                 }
               }}
             />

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { useForm, FormProvider, useWatch } from 'react-hook-form'
 import { describe, it, expect } from 'vitest'
@@ -13,7 +14,7 @@ import { PercentInput } from '../PercentInput'
 interface WrapperProps {
   defaultValues?: Record<string, unknown>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  children: (props: { control: any }) => React.ReactNode
+  children: (props: { control: any }) => ReactNode
 }
 
 function FormWrapper({ defaultValues = {}, children }: WrapperProps) {
