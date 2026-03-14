@@ -87,9 +87,6 @@ export function NetWorthBreakdown() {
 
   return (
     <div className="w-full">
-      <h3 className="mb-4 text-lg font-semibold">
-        Net Worth Breakdown (Year {baselineFinal.year})
-      </h3>
       <div className="overflow-x-auto">
         <table className="w-full text-sm" data-testid="net-worth-breakdown">
           <thead>

@@ -1,12 +1,15 @@
 // ---------------------------------------------------------------------------
 // ResultsSections.tsx — Wrapper component that renders all results sections
-// in a logical order with consistent spacing.
+// in a logical order with consistent spacing and visual grouping.
 //
-// This component is the single entry point for the results panel. Each child
-// component renders its own heading internally, so this wrapper only provides
-// layout spacing and section grouping.
+// Three visual groups:
+//   1. Risk Signals — warnings with a subtle red-tinted background
+//   2. Long-Range Projections — net worth and IRA charts on muted background
+//   3. Year-1 Execution — cash flow, capital, and reserves on default background
 // ---------------------------------------------------------------------------
 
+import { AlertTriangle, TrendingUp, PiggyBank, DollarSign, Wallet, Shield } from 'lucide-react'
+import { ResultSection } from './ResultSection'
 import { NetWorthChart } from './NetWorthChart'
 import { NetWorthBreakdown } from './NetWorthBreakdown'
 import { IRATrajectoryChart } from './IRATrajectoryChart'
@@ -16,7 +19,8 @@ import { ReserveRunway } from './ReserveRunway'
 import { WarningsList } from './WarningsList'
 
 /**
- * Renders all results sections in order with consistent spacing.
+ * Renders all results sections in order with consistent spacing and
+ * visual grouping via background colors and accent bars.
  *
  * Must be rendered inside a ScenarioModelProvider so child components
  * can access the model output via useModelOutput().
@@ -26,13 +30,17 @@ export function ResultsSections() {
     <div className="space-y-10" data-testid="results-sections">
       <div className="mb-6">
         <h2 className="text-2xl font-bold tracking-tight">Financial Comparison</h2>
-        <p className="text-sm text-muted-foreground">Based on your inputs, here's how each scenario plays out</p>
+        <p className="text-sm text-muted-foreground">Based on your inputs, here&apos;s how each scenario plays out</p>
       </div>
 
-      <section>
-        <WarningsList />
-      </section>
+      {/* Group 1: Risk Signals */}
+      <div className="rounded-lg bg-red-50/40 p-5 dark:bg-red-950/20">
+        <ResultSection icon={AlertTriangle} title="Warnings & Risks" accentColor="border-red-400" iconColor="text-red-500">
+          <WarningsList />
+        </ResultSection>
+      </div>
 
+      {/* Scenario Legend */}
       <div className="space-y-2 rounded-lg border bg-muted/50 p-4">
         <h3 className="text-sm font-semibold">Comparing Three Scenarios</h3>
         <ul className="space-y-1 text-sm text-muted-foreground">
@@ -54,39 +62,34 @@ export function ResultsSections() {
         </ul>
       </div>
 
-      <div className="border-t border-border" />
+      {/* Group 2: Long-Range Projections */}
+      <div className="space-y-8 rounded-lg bg-muted/30 p-5">
+        <ResultSection icon={TrendingUp} title="Net Worth Over Time" description="Projected total net worth across all assets" accentColor="border-violet-400" iconColor="text-violet-500">
+          <NetWorthChart />
+          <div className="mt-6 border-t pt-6">
+            <NetWorthBreakdown />
+          </div>
+        </ResultSection>
 
-      <section>
-        <NetWorthChart />
-      </section>
+        <ResultSection icon={PiggyBank} title="Retirement Account Trajectory" description="IRA balance comparison — the cost of early withdrawal" accentColor="border-emerald-400" iconColor="text-emerald-500">
+          <IRATrajectoryChart />
+        </ResultSection>
+      </div>
 
-      <section>
-        <NetWorthBreakdown />
-      </section>
+      {/* Group 3: Year-1 Execution */}
+      <div className="space-y-8">
+        <ResultSection icon={DollarSign} title="Monthly Cash Flow" description="Year 1 income vs. expenses — can you afford this month to month?" accentColor="border-blue-400" iconColor="text-blue-500">
+          <MonthlyCashFlow />
+        </ResultSection>
 
-      <div className="border-t border-border" />
+        <ResultSection icon={Wallet} title="Upfront Capital Requirements" description="Cash needed on day one and where it comes from" accentColor="border-blue-400" iconColor="text-blue-500">
+          <UpfrontCapital />
+        </ResultSection>
 
-      <section>
-        <IRATrajectoryChart />
-      </section>
-
-      <div className="border-t border-border" />
-
-      <section>
-        <MonthlyCashFlow />
-      </section>
-
-      <div className="border-t border-border" />
-
-      <section>
-        <UpfrontCapital />
-      </section>
-
-      <div className="border-t border-border" />
-
-      <section>
-        <ReserveRunway />
-      </section>
+        <ResultSection icon={Shield} title="Reserve Runway" description="How long your savings last if income stops" accentColor="border-blue-400" iconColor="text-blue-500">
+          <ReserveRunway />
+        </ResultSection>
+      </div>
     </div>
   )
 }

@@ -57,17 +57,17 @@ describe('ResultsSections integration', () => {
     mockReturnValue = { modelOutput: mockModelOutput, isComputing: false }
     render(<ResultsSections />)
 
-    // NetWorthChart renders its own heading
-    expect(screen.getByText('Net Worth Projection')).toBeInTheDocument()
+    // ResultSection wrapper renders "Net Worth Over Time" heading
+    expect(screen.getByText('Net Worth Over Time')).toBeInTheDocument()
 
-    // IRATrajectoryChart renders its own heading
-    expect(screen.getByText('IRA Balance Trajectory')).toBeInTheDocument()
+    // ResultSection wrapper renders "Retirement Account Trajectory" heading
+    expect(screen.getByText('Retirement Account Trajectory')).toBeInTheDocument()
 
-    // WarningsList renders "Warnings & Risks" heading (when warnings exist)
+    // ResultSection wrapper renders "Warnings & Risks" heading
     expect(screen.getByText('Warnings & Risks')).toBeInTheDocument()
 
-    // ReserveRunway renders inside a Card with "Reserve Runway" title
-    expect(screen.getByText('Reserve Runway')).toBeInTheDocument()
+    // ReserveRunway has both a ResultSection heading and a CardTitle
+    expect(screen.getAllByText('Reserve Runway').length).toBeGreaterThanOrEqual(1)
 
     // UpfrontCapital renders its section with aria-label
     expect(
@@ -86,9 +86,11 @@ describe('ResultsSections integration', () => {
     // The wrapper should still render
     expect(screen.getByTestId('results-sections')).toBeInTheDocument()
 
-    // Components that return null when modelOutput is null should not
-    // render their content headings
-    expect(screen.queryByText('Net Worth Projection')).not.toBeInTheDocument()
-    expect(screen.queryByText('Reserve Runway')).not.toBeInTheDocument()
+    // ResultSection headings are always rendered (they wrap child components),
+    // but child content should not render when modelOutput is null.
+    // The wrapper headings like "Net Worth Over Time" will still be in the DOM.
+    // Verify that child-specific content (e.g., chart containers) is absent.
+    expect(screen.queryByTestId('responsive-container')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('reserve-runway-baseline')).not.toBeInTheDocument()
   })
 })

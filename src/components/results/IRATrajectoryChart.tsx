@@ -112,10 +112,6 @@ export function IRATrajectoryChart() {
 
   return (
     <div className="w-full">
-      <h3 className="mb-4 text-lg font-semibold text-foreground">
-        IRA Balance Trajectory
-      </h3>
-
       <div className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart

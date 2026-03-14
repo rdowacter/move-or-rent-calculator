@@ -92,7 +92,6 @@ export function WarningsList() {
 
   return (
     <div className="space-y-3" role="region" aria-label="Warnings">
-      <h3 className="text-lg font-semibold">Warnings & Risks</h3>
       {sorted.map((warning, index) => (
         <WarningAlert key={`${warning.scenarioName}-${warning.category}-${index}`} warning={warning} />
       ))}
