@@ -27,6 +27,24 @@ export function ResultsSections() {
         <WarningsList />
       </section>
 
+      <div className="space-y-2 rounded-lg border bg-muted/50 p-4">
+        <h3 className="text-sm font-semibold">Comparing Three Scenarios</h3>
+        <ul className="space-y-1 text-sm text-muted-foreground">
+          <li>
+            <span className="font-medium text-foreground">Baseline:</span> Stay
+            in Kyle, keep the IRA, keep commuting
+          </li>
+          <li>
+            <span className="font-medium text-foreground">Scenario A:</span>{' '}
+            Sell Kyle, buy Austin, keep IRA intact + contributing
+          </li>
+          <li>
+            <span className="font-medium text-foreground">Scenario B:</span>{' '}
+            Keep Kyle as rental, withdraw IRA for down payment, buy Austin
+          </li>
+        </ul>
+      </div>
+
       <section>
         <NetWorthChart />
       </section>
