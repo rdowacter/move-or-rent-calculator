@@ -68,6 +68,15 @@ function CurrentHomeSection() {
         </CollapsibleTrigger>
         <CollapsibleContent>
           <div className="space-y-4 pt-4">
+            <FormField
+              name="currentHome.originalLoanTermYears"
+              label="Original Loan Term"
+              control={control}
+              type="number"
+              inputMode="numeric"
+              description="Original mortgage term in years (e.g., 30)"
+            />
+
             <PercentInput
               name="currentHome.annualPropertyTaxRate"
               label="Annual Property Tax Rate"
