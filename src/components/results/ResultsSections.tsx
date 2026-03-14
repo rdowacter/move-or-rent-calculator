@@ -8,7 +8,10 @@
 //   3. Year-1 Execution — cash flow, capital, and reserves on default background
 // ---------------------------------------------------------------------------
 
-import { AlertTriangle, TrendingUp, PiggyBank, DollarSign, Wallet, Shield } from 'lucide-react'
+import { AlertTriangle, TrendingUp, PiggyBank, DollarSign, Wallet, Shield, Calendar } from 'lucide-react'
+import { useFormContext } from 'react-hook-form'
+import type { ScenarioInputs } from '@/engine/types'
+import { FormField } from '@/components/FormField'
 import { ResultSection } from './ResultSection'
 import { NetWorthChart } from './NetWorthChart'
 import { NetWorthBreakdown } from './NetWorthBreakdown'
@@ -26,11 +29,40 @@ import { WarningsList } from './WarningsList'
  * can access the model output via useModelOutput().
  */
 export function ResultsSections() {
+  const { control } = useFormContext<ScenarioInputs>()
+
   return (
     <div className="space-y-10" data-testid="results-sections">
       <div className="mb-6">
         <h2 className="text-2xl font-bold tracking-tight">Financial Comparison</h2>
         <p className="text-sm text-muted-foreground">Based on your inputs, here&apos;s how each scenario plays out</p>
+      </div>
+
+      {/* Projection Controls — right at the top of results where they belong */}
+      <div className="flex items-start gap-3 rounded-lg border bg-card p-4 shadow-sm">
+        <Calendar className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
+        <div className="flex flex-1 flex-wrap gap-4">
+          <div className="min-w-[140px] flex-1">
+            <FormField
+              name="projection.timeHorizonYears"
+              label="Time Horizon"
+              control={control}
+              type="number"
+              inputMode="numeric"
+              description="Years to project"
+            />
+          </div>
+          <div className="min-w-[140px] flex-1">
+            <FormField
+              name="projection.plannedRentalExitYear"
+              label="Rental Exit Year"
+              control={control}
+              type="number"
+              inputMode="numeric"
+              description="Year to sell rental"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Group 1: Risk Signals */}

@@ -10,6 +10,7 @@
 import type { ReactNode } from 'react'
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
+import { useForm, FormProvider } from 'react-hook-form'
 import { ResultsSections } from '@/components/results/ResultsSections'
 import { runModel } from '@/engine/scenarios'
 import { defaultValues } from '@/schemas/scenarioInputs'
@@ -46,16 +47,21 @@ vi.mock('recharts', async () => {
   }
 })
 
+function FormWrapper({ children }: { children: ReactNode }) {
+  const methods = useForm({ defaultValues })
+  return <FormProvider {...methods}>{children}</FormProvider>
+}
+
 describe('ResultsSections integration', () => {
   it('renders the results-sections wrapper', () => {
     mockReturnValue = { modelOutput: mockModelOutput, isComputing: false }
-    render(<ResultsSections />)
+    render(<FormWrapper><ResultsSections /></FormWrapper>)
     expect(screen.getByTestId('results-sections')).toBeInTheDocument()
   })
 
   it('renders all six results sections when model output is available', () => {
     mockReturnValue = { modelOutput: mockModelOutput, isComputing: false }
-    render(<ResultsSections />)
+    render(<FormWrapper><ResultsSections /></FormWrapper>)
 
     // ResultSection wrapper renders "Net Worth Over Time" heading
     expect(screen.getByText('Net Worth Over Time')).toBeInTheDocument()
@@ -81,7 +87,7 @@ describe('ResultsSections integration', () => {
 
   it('renders gracefully when model output is null', () => {
     mockReturnValue = { modelOutput: null, isComputing: true }
-    render(<ResultsSections />)
+    render(<FormWrapper><ResultsSections /></FormWrapper>)
 
     // The wrapper should still render
     expect(screen.getByTestId('results-sections')).toBeInTheDocument()
