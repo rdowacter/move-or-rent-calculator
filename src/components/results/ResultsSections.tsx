@@ -8,6 +8,7 @@
 // ---------------------------------------------------------------------------
 
 import { VerdictSection } from './VerdictSection'
+import { SensitivitySection } from './SensitivitySection'
 import { NetWorthChart } from './NetWorthChart'
 import { IRATrajectoryChart } from './IRATrajectoryChart'
 import { MonthlyCashFlow } from './MonthlyCashFlow'
@@ -26,6 +27,10 @@ export function ResultsSections() {
     <div className="space-y-8" data-testid="results-sections">
       <section>
         <VerdictSection />
+      </section>
+
+      <section>
+        <SensitivitySection />
       </section>
 
       <section>
