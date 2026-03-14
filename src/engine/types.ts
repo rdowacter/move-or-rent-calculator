@@ -524,3 +524,26 @@ export interface ModelOutput {
   scenarioA: ScenarioOutput
   scenarioB: ScenarioOutput
 }
+
+// ---- Verdict Types --------------------------------------------------------
+
+/**
+ * The verdict engine's output — a risk-gated, plain-language recommendation
+ * that tells the user which scenario (if any) is the best choice and why.
+ *
+ * This is the most important thing the user sees. It answers "what should I do?"
+ * Every claim in the reasoning is backed by a specific dollar amount or
+ * percentage from the model output — no vague language.
+ */
+export interface VerdictResult {
+  /** Which scenario is recommended, or 'none' if all have dealbreakers. */
+  recommendation: 'baseline' | 'scenarioA' | 'scenarioB' | 'none'
+  /** One-line summary, e.g. "Scenario A is the stronger choice". Under 60 characters. */
+  headline: string
+  /** 2-4 sentences explaining why, each containing specific dollar amounts. */
+  reasoning: string[]
+  /** Scenarios eliminated by dealbreakers and the specific reasons why. */
+  dealbreakers: { scenario: string; reasons: string[] }[]
+  /** Side-by-side comparison of key metrics across all three scenarios. */
+  keyMetrics: { label: string; baseline: string; scenarioA: string; scenarioB: string }[]
+}
