@@ -84,8 +84,8 @@ export function NetWorthChart() {
     (snapshot, index) => ({
       year: snapshot.year,
       baseline: snapshot.netWorth,
-      scenarioA: scenarioA.yearlySnapshots[index].netWorth,
-      scenarioB: scenarioB.yearlySnapshots[index].netWorth,
+      scenarioA: scenarioA.yearlySnapshots[index]?.netWorth ?? 0,
+      scenarioB: scenarioB.yearlySnapshots[index]?.netWorth ?? 0,
     })
   )
 

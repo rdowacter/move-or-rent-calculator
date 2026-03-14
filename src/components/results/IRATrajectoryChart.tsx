@@ -81,14 +81,23 @@ export function IRATrajectoryChart() {
 
   const { scenarioA, scenarioB } = modelOutput
 
+  // Guard against empty yearlySnapshots arrays
+  if (scenarioA.yearlySnapshots.length === 0 || scenarioB.yearlySnapshots.length === 0) {
+    return null
+  }
+
   // Build the chart data by zipping Scenario A and B yearly snapshots
   const chartData: ChartDataPoint[] = scenarioA.yearlySnapshots.map(
     (snapshot, index) => ({
       year: snapshot.year,
       scenarioA: snapshot.iraBalance,
-      scenarioB: scenarioB.yearlySnapshots[index].iraBalance,
+      scenarioB: scenarioB.yearlySnapshots[index]?.iraBalance ?? 0,
     })
   )
+
+  if (chartData.length === 0) {
+    return null
+  }
 
   // Calculate the gap at the final year for the callout
   const finalIndex = chartData.length - 1

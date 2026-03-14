@@ -81,7 +81,10 @@ function FormField<T extends FieldValues>({
                 // so the form value is the correct type for the engine.
                 if (type === 'number' || inputMode === 'decimal') {
                   const rawValue = e.target.value.trim()
-                  if (rawValue === '') return
+                  if (rawValue === '') {
+                    field.onChange(undefined)
+                    return
+                  }
                   const parsed = Number(rawValue)
                   if (!isNaN(parsed)) {
                     field.onChange(parsed)

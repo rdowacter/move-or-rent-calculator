@@ -42,6 +42,7 @@ function CashFlowMetric({ label, value }: { label: string; value: number }) {
  */
 function SimpleScenarioCard({ scenario }: { scenario: ScenarioOutput }) {
   const snapshot = scenario.yearlySnapshots[0]
+  if (!snapshot) return null
 
   return (
     <Card>
@@ -69,6 +70,7 @@ function SimpleScenarioCard({ scenario }: { scenario: ScenarioOutput }) {
  */
 function RentalScenarioCard({ scenario }: { scenario: ScenarioOutput }) {
   const snapshot = scenario.yearlySnapshots[0]
+  if (!snapshot) return null
 
   return (
     <Card>

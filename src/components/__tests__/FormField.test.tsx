@@ -1,3 +1,4 @@
+import React from 'react'
 import type { ReactNode } from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { useForm, FormProvider, useWatch } from 'react-hook-form'
@@ -90,8 +91,6 @@ describe('FormField', () => {
       )
     }
 
-    // Need React for the useEffect in ErrorFormField
-    const React = await import('react')
     render(<ErrorFormField />)
 
     expect(await screen.findByText('This field is required')).toBeInTheDocument()

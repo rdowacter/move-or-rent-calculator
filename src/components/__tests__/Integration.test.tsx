@@ -7,6 +7,7 @@
 // useModelOutput() and all six sections render.
 // ---------------------------------------------------------------------------
 
+import type { ReactNode } from 'react'
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { ResultsSections } from '@/components/results/ResultsSections'
@@ -40,7 +41,7 @@ vi.mock('recharts', async () => {
     ResponsiveContainer: ({
       children,
     }: {
-      children: React.ReactNode
+      children: ReactNode
     }) => <div data-testid="responsive-container">{children}</div>,
   }
 })

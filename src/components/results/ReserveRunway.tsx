@@ -63,7 +63,7 @@ interface ScenarioRunwayProps {
  * Displays the months value with color-coded severity and accessible labels.
  */
 function ScenarioRunwayCard({ label, months, testId }: ScenarioRunwayProps) {
-  const isUnlimited = !isFinite(months)
+  const isUnlimited = months === Infinity
   const severity = isUnlimited ? 'normal' : classifyRunway(months)
   const displayValue = isUnlimited ? 'Unlimited' : formatNumber(Math.round(months))
 
