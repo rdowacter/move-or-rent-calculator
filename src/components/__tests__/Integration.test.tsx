@@ -33,6 +33,11 @@ vi.mock('@/hooks/useModelOutput', () => ({
   useModelOutput: () => mockReturnValue,
 }))
 
+// Mock useWatch for VerdictSection — it needs form values to call generateVerdict
+vi.mock('react-hook-form', () => ({
+  useWatch: () => defaultValues,
+}))
+
 // Mock recharts ResponsiveContainer to avoid jsdom layout issues
 vi.mock('recharts', async () => {
   const actual = await vi.importActual<typeof import('recharts')>('recharts')
@@ -75,7 +80,8 @@ describe('ResultsSections integration', () => {
     ).toBeInTheDocument()
 
     // MonthlyCashFlow renders scenario cards with "Baseline" label
-    expect(screen.getByText('Baseline')).toBeInTheDocument()
+    // (VerdictSection's key metrics table also has "Baseline" as a column header)
+    expect(screen.getAllByText('Baseline').length).toBeGreaterThanOrEqual(1)
   })
 
   it('renders gracefully when model output is null', () => {

@@ -7,6 +7,7 @@
 // layout spacing and section grouping.
 // ---------------------------------------------------------------------------
 
+import { VerdictSection } from './VerdictSection'
 import { NetWorthChart } from './NetWorthChart'
 import { IRATrajectoryChart } from './IRATrajectoryChart'
 import { MonthlyCashFlow } from './MonthlyCashFlow'
@@ -23,6 +24,10 @@ import { WarningsList } from './WarningsList'
 export function ResultsSections() {
   return (
     <div className="space-y-8" data-testid="results-sections">
+      <section>
+        <VerdictSection />
+      </section>
+
       <section>
         <WarningsList />
       </section>
