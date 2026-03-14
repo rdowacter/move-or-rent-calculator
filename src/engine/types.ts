@@ -375,6 +375,116 @@ export interface RentalExitTaxEvent {
   netSaleProceeds: number
 }
 
+// ---- Phase 2 Intermediate Result Types ------------------------------------
+
+/**
+ * Monthly cash flow breakdown for a rental property.
+ * Used by rental.ts to show exactly where the money goes.
+ */
+export interface RentalCashFlowResult {
+  /** Gross monthly rent before vacancy. */
+  grossRent: number
+  /** Effective gross rent after vacancy allowance. */
+  effectiveGrossRent: number
+  /** Itemized monthly operating expenses. */
+  itemizedExpenses: {
+    propertyTax: number
+    insurance: number
+    maintenance: number
+    hoa: number
+    managementFee: number
+    vacancyAllowance: number
+  }
+  /** Total monthly operating expenses (excludes vacancy — vacancy is already reflected in effectiveGrossRent vs grossRent). */
+  totalExpenses: number
+  /** Net operating income = effectiveGrossRent - totalExpenses (excluding mortgage). */
+  netOperatingIncome: number
+  /** Monthly mortgage principal & interest payment. */
+  mortgagePayment: number
+  /** Net monthly cash flow = NOI - mortgage P&I. */
+  cashFlow: number
+}
+
+/**
+ * Schedule E tax impact for a rental property in a given year.
+ * Captures the tax benefit (or lack thereof) of rental losses
+ * after applying passive activity loss rules.
+ */
+export interface ScheduleETaxResult {
+  /** Gross annual rental income (rent x 12 x (1 - vacancy)). */
+  grossRentalIncome: number
+  /** Total deductions: operating expenses + mortgage interest + depreciation. */
+  totalDeductions: number
+  /** Net rental income (can be negative = rental loss). */
+  netRentalIncome: number
+  /** Annual depreciation expense (structure only, straight-line over 27.5 years). */
+  depreciation: number
+  /**
+   * Deductible rental loss after passive activity loss rules.
+   * Capped at the lesser of actual loss and passive allowance.
+   * Zero if net rental income is positive.
+   */
+  deductibleLoss: number
+  /** Tax benefit = deductibleLoss x marginalTaxRate. */
+  taxBenefit: number
+}
+
+/**
+ * Tax consequences of selling a rental property.
+ * Includes depreciation recapture (25%) and capital gains.
+ */
+export interface RentalSaleTaxResult {
+  salePrice: number
+  sellingCosts: number
+  /** Original basis minus cumulative depreciation. */
+  adjustedBasis: number
+  /** Total gain = salePrice - sellingCosts - adjustedBasis. */
+  totalGain: number
+  /** Depreciation recapture tax = input totalDepreciationClaimed x 25%. Always at 25%. */
+  depreciationRecaptureTax: number
+  /** Capital gain on appreciation above original basis (excludes recapture portion). */
+  capitalGain: number
+  /** Tax on capital gain at applicable LTCG rate. */
+  capitalGainTax: number
+  /** Total tax = depreciationRecaptureTax + capitalGainTax. */
+  totalTax: number
+  /** Net sale proceeds = salePrice - sellingCosts - totalTax - input mortgageBalance. */
+  netSaleProceeds: number
+}
+
+/**
+ * Stress test results for Scenario B — three failure scenarios
+ * showing how quickly the user's reserves would deplete.
+ */
+export interface StressTestResult {
+  /** 3 months vacancy + major repair ($8k). */
+  vacancyAndMaintenance: {
+    /** Total shock cost (3 months lost rent + repair). */
+    shockCost: number
+    /** Months of reserves remaining after absorbing the shock. */
+    monthsOfReserves: number
+  }
+  /** 20% income drop for 6 months. */
+  incomeDisruption: {
+    /** Monthly income at 80% of normal. */
+    reducedMonthlyIncome: number
+    /** Monthly shortfall = obligations - reduced income. */
+    monthlyShortfall: number
+    /** Months until reserves are exhausted. */
+    monthsUntilCrisis: number
+  }
+  /** 10% home value drop on rental property. */
+  marketDownturn: {
+    currentEquity: number
+    /** Equity after 10% value drop. */
+    newEquity: number
+    /** Amount underwater (0 if still positive equity). */
+    underwaterBy: number
+    /** Loss if forced to sell at depressed price (selling costs + underwater amount). */
+    forcedSaleLoss: number
+  }
+}
+
 /**
  * Complete output for a single scenario (Baseline, A, or B).
  */
