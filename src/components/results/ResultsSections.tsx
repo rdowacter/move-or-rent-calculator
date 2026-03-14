@@ -43,27 +43,15 @@ export function ResultsSections() {
       {/* Projection Controls — right at the top of results where they belong */}
       <div className="flex items-start gap-3 rounded-lg border bg-card p-4 shadow-sm">
         <Calendar className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
-        <div className="flex flex-1 flex-wrap gap-4">
-          <div className="min-w-[140px] flex-1">
-            <FormField
-              name="projection.timeHorizonYears"
-              label="Time Horizon"
-              control={control}
-              type="number"
-              inputMode="numeric"
-              description="Years to project"
-            />
-          </div>
-          <div className="min-w-[140px] flex-1">
-            <FormField
-              name="projection.plannedRentalExitYear"
-              label="Rental Exit Year"
-              control={control}
-              type="number"
-              inputMode="numeric"
-              description="Year to sell rental"
-            />
-          </div>
+        <div className="min-w-[140px] max-w-[200px]">
+          <FormField
+            name="projection.timeHorizonYears"
+            label="Time Horizon"
+            control={control}
+            type="number"
+            inputMode="numeric"
+            description="Years to project"
+          />
         </div>
       </div>
 

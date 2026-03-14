@@ -280,7 +280,7 @@ describe('Integration: Conservative Couple (Golden Run 2)', () => {
     it('should trigger passive loss phase-out warning at $150k+ AGI', () => {
       // The engine generates a tax/info warning when AGI >= $150k
       const phaseOutWarnings = result.scenarioB.warnings.filter(
-        (w) => w.category === 'tax' && w.message.toLowerCase().includes('phase')
+        (w) => w.category === 'tax' && w.message.toLowerCase().includes('deduct')
       )
       expect(phaseOutWarnings.length).toBeGreaterThan(0)
     })
