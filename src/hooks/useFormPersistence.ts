@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { scenarioInputsSchema, defaultValues } from '@/schemas/scenarioInputs'
 import type { ScenarioInputs } from '@/engine/types'
 
@@ -20,10 +20,19 @@ const SAVE_DEBOUNCE_MS = 500
 export function useFormPersistence() {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Read and validate localStorage on first call (computed once, not reactive)
-  const initialValues = readFromStorage()
+  // Read and validate localStorage only once on initial mount
+  const initialValues = useMemo(() => readFromStorage(), [])
 
-  const save = useCallback((values: Partial<ScenarioInputs>) => {
+  // Clear any pending debounced save on unmount to avoid memory leaks
+  useEffect(() => {
+    return () => {
+      if (timerRef.current !== null) {
+        clearTimeout(timerRef.current)
+      }
+    }
+  }, [])
+
+  const save = useCallback((values: unknown) => {
     // Clear any pending debounced save
     if (timerRef.current !== null) {
       clearTimeout(timerRef.current)

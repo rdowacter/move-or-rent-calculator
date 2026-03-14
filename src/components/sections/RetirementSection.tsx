@@ -51,7 +51,7 @@ function RetirementSection() {
               value={field.value}
               onValueChange={(value) => field.onChange(value)}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger id="retirement.iraType" className="w-full">
                 <SelectValue placeholder="Select IRA type" />
               </SelectTrigger>
               <SelectContent>

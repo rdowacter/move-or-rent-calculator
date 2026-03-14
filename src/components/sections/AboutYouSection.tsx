@@ -60,7 +60,7 @@ function AboutYouSection() {
               value={field.value}
               onValueChange={(value) => field.onChange(value)}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger id="personal.filingStatus" className="w-full">
                 <SelectValue placeholder="Select filing status" />
               </SelectTrigger>
               <SelectContent>

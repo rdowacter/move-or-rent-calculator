@@ -23,7 +23,7 @@ function App() {
   // Persist form values to localStorage on every change (debounced in save)
   useEffect(() => {
     const subscription = methods.watch((values) => {
-      save(values as ScenarioInputs)
+      save(values)
     })
     return () => subscription.unsubscribe()
   }, [methods, save])

@@ -52,7 +52,7 @@ function PercentInput<T extends FieldValues>({
         const displayValue =
           field.value === '' || field.value === undefined || field.value === null
             ? ''
-            : String(Number(field.value) * PERCENT_DISPLAY_MULTIPLIER)
+            : parseFloat((Number(field.value) * PERCENT_DISPLAY_MULTIPLIER).toFixed(10)).toString()
 
         return (
           <div className={cn('space-y-1.5', className)}>
