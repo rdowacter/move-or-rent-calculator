@@ -22,10 +22,13 @@ function App() {
 
   const isDesktop = useMediaQuery(768)
 
-  // Persist form values to localStorage on every change (debounced in save)
+  // Persist form values to localStorage on every change (debounced in save).
+  // Use getValues() instead of watch() callback values because watch() emits
+  // DeepPartial where cleared fields are undefined, which fails zod validation
+  // on reload. getValues() returns the complete current form state.
   useEffect(() => {
-    const subscription = methods.watch((values) => {
-      save(values)
+    const subscription = methods.watch(() => {
+      save(methods.getValues())
     })
     return () => subscription.unsubscribe()
   }, [methods, save])
