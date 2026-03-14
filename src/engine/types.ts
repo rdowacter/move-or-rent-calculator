@@ -395,7 +395,7 @@ export interface RentalCashFlowResult {
     managementFee: number
     vacancyAllowance: number
   }
-  /** Total monthly operating expenses (sum of itemized). */
+  /** Total monthly operating expenses (excludes vacancy — vacancy is already reflected in effectiveGrossRent vs grossRent). */
   totalExpenses: number
   /** Net operating income = effectiveGrossRent - totalExpenses (excluding mortgage). */
   netOperatingIncome: number
