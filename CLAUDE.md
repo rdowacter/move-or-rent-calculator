@@ -66,9 +66,12 @@ The tool compares three scenarios:
 
 - **Framework**: Vite + React + TypeScript
 - **Styling**: Tailwind CSS
-- **Charts**: Recharts
-- **Testing**: Vitest + React Testing Library
+- **Components**: shadcn/ui (Radix UI primitives, Tailwind-native, copy-paste — not a dependency)
+- **Forms**: react-hook-form + zod (typed schema validation, handles 60+ inputs efficiently)
+- **Charts**: Evaluate Recharts vs Nivo during scaffolding; pick based on mobile touch quality, 375px rendering, bundle size
+- **Testing**: Vitest + React Testing Library + Playwright (E2E)
 - **Linting**: ESLint + Prettier
+- **Deployment**: Vercel, auto-deploy from main
 - **No backend.** All calculations are client-side. No API calls, no database, no auth.
 
 ## Architecture
@@ -102,16 +105,27 @@ src/
 
 **The engine directory must be importable and runnable in a plain Node.js/Vitest context with no browser APIs, no React, no DOM.** This is non-negotiable. It ensures every financial calculation is independently testable.
 
-### Data Flow
+### Data Flow — Layered Selective Memoization
 
 ```
-User Inputs (React state)
-  → engine/scenarios.ts (pure function: inputs → outputs)
-    → useMemo (memoized in a hook)
-      → Components render the results
+zod schema (defines valid inputs + TypeScript types)
+  → react-hook-form (manages form state, validation, debouncing)
+    → useWatch() provides current values
+      ├─ useMemo(mortgageCalcs,     [mortgage inputs])
+      ├─ useMemo(taxCalcs,          [income, filing inputs])
+      ├─ useMemo(iraCalcs,          [ira inputs])
+      ├─ useMemo(appreciationCalcs, [home value inputs])
+      ├─ useMemo(commuteCalcs,      [commute inputs])
+      │
+      ├─ useMemo(rentalCalcs,       [mortgageCalcs, taxCalcs, rental inputs])
+      ├─ useMemo(capitalCalcs,      [mortgageCalcs, taxCalcs, iraCalcs, ...])
+      ├─ useMemo(dtiCalcs,          [mortgageCalcs, income inputs])
+      │
+      └─ useMemo(scenarioResults,   [all above calcs, time horizon])
+           └─ Components render from scenarioResults
 ```
 
-State lives in a single `useReducer` or a small set of `useState` hooks at the top level. Inputs flow down. No prop drilling beyond 2 levels — use context or composition if needed.
+Each engine module is memoized independently — changing commute inputs doesn't recompute amortization. Engine functions remain pure; memoization lives in the hooks layer. No prop drilling beyond 2 levels — use context or composition if needed.
 
 ## Development Standards
 
@@ -143,6 +157,7 @@ expect(monthlyPayment(240000, 0.06, 30)).toBeCloseTo(1439.00, 0);
 - `engine/` — 100% function coverage, meaningful edge cases
 - `hooks/` — test that outputs update correctly when inputs change
 - `components/` — smoke tests and key interaction tests (input changes trigger recalculation)
+- `e2e/` — Playwright tests verifying displayed numbers match engine outputs, warnings fire correctly, mobile stepper works
 
 ### DRY (Don't Repeat Yourself)
 
@@ -206,12 +221,13 @@ Use conventional commits: `feat()`, `fix()`, `test()`, `refactor()`, `docs()`.
 - Warning states must be announced to screen readers.
 - Keyboard navigation must work for all interactive elements.
 
-### Responsive Design
+### Responsive Design (Mobile-First)
 
-- The app must be fully usable on mobile.
-- Input panel collapses to a drawer, bottom sheet, or accordion on small screens.
-- Charts resize responsively using Recharts' `ResponsiveContainer`.
-- Touch targets meet minimum size guidelines (44px).
+- **Mobile-first design.** This is a 10-minute configuration tool, not a desktop application. Design for phones first, enhance for desktop.
+- **Mobile (<768px):** Full-screen stepper — one input section per screen with Next/Back navigation. Results on a separate scrollable view after input.
+- **Desktop (≥768px):** Two-column layout — accordion input panel (left) with live-updating results (right).
+- **Progressive disclosure:** ~15-20 primary inputs visible by default. Advanced fields collapsed under "Advanced" toggle per section.
+- Charts resize responsively. Touch targets meet minimum size guidelines (44px).
 
 ## Key Financial Logic Reminders
 
