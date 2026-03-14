@@ -599,9 +599,13 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
 
   // ---- Setup ----
 
-  // IRA withdrawal at time 0
+  // IRA withdrawal at time 0 — withdraw the lesser of requested amount and available balance
+  const iraWithdrawalAmount = Math.min(
+    retirement.iraWithdrawalAmountScenarioB,
+    retirement.iraBalance
+  )
   const iraWithdrawalResult = calculateIRAWithdrawalTax(
-    retirement.iraBalance,
+    iraWithdrawalAmount,
     personal.annualGrossIncome,
     personal.filingStatus,
     personal.age,
@@ -693,7 +697,7 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
   let kyleHomeValue = currentHome.homeValue
   let austinMortgageBalance = austinLoanAmount
   let austinHomeValue = newHome.purchasePrice
-  let iraBalance = 0 // IRA fully withdrawn at time 0
+  let iraBalance = retirement.iraBalance - iraWithdrawalAmount // Remaining IRA after withdrawal
   let cumulativeDepreciation = 0
   let cumulativeCommuteSavings = 0
   let rentalActive = true
@@ -1241,18 +1245,32 @@ function generateScenarioBWarnings(
   }
 
   // IRA withdrawal warning
-  if (inputs.retirement.iraBalance > 0) {
-    warnings.push({
-      category: 'retirement',
-      severity: 'warning',
-      message: `Early IRA withdrawal eliminates all retirement savings at age ${inputs.personal.age}`,
-      dollarImpact: iraWithdrawalTaxCost,
-    })
+  const withdrawalAmount = Math.min(
+    inputs.retirement.iraWithdrawalAmountScenarioB,
+    inputs.retirement.iraBalance
+  )
+  const remainingIRA = inputs.retirement.iraBalance - withdrawalAmount
+  if (withdrawalAmount > 0) {
+    if (remainingIRA === 0) {
+      warnings.push({
+        category: 'retirement',
+        severity: 'warning',
+        message: `Early IRA withdrawal eliminates all retirement savings at age ${inputs.personal.age}`,
+        dollarImpact: iraWithdrawalTaxCost,
+      })
+    } else {
+      warnings.push({
+        category: 'retirement',
+        severity: 'warning',
+        message: `Early IRA withdrawal of $${Math.round(withdrawalAmount).toLocaleString()} reduces retirement savings to $${Math.round(remainingIRA).toLocaleString()} at age ${inputs.personal.age}`,
+        dollarImpact: iraWithdrawalTaxCost,
+      })
+    }
   }
 
-  // Retirement projection at age 65 (starting from $0)
+  // Retirement projection at age 65 (starting from remaining IRA balance after withdrawal)
   const iraAt65 = projectIRAAtAge65(
-    0,
+    remainingIRA,
     inputs.retirement.annualIRAContributionScenarioB,
     inputs.retirement.iraExpectedAnnualReturn,
     inputs.personal.age
