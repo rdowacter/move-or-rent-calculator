@@ -158,15 +158,15 @@ Five accordion sections with progressive disclosure (primary fields always visib
 | Annual property tax rate | percent | advanced | 2.15% |
 | Annual insurance | currency | advanced | $2,400 |
 | Landlord insurance premium increase | currency | advanced | $600 |
-| Maintenance reserve rate | percent | advanced | 1% |
+| Maintenance reserve rate | percent | advanced | 0.75% |
 | Monthly HOA | currency | advanced | $0 |
-| Vacancy rate | percent | advanced | 5% |
-| Management fee rate | percent | advanced | 8% |
+| Vacancy rate | percent | advanced | 8% |
+| Management fee rate | percent | advanced | 0% |
 | Annual appreciation rate | percent | advanced | 3% |
-| Selling costs rate | percent | advanced | 7% |
-| Annual rent growth rate | percent | advanced | 2% |
-| Turnover frequency (years) | number | advanced | 2 |
-| Cost per turnover | currency | advanced | $2,000 |
+| Selling costs rate | percent | advanced | 6% |
+| Annual rent growth rate | percent | advanced | 3% |
+| Turnover frequency (years) | number | advanced | 2.5 |
+| Cost per turnover | currency | advanced | $3,500 |
 
 ### New Home (Austin)
 | Field | Type | Primary | Default |
@@ -177,10 +177,10 @@ Five accordion sections with progressive disclosure (primary fields always visib
 | Down payment % (Scenario B) | percent | yes | 10% |
 | Loan term | select | advanced | 30 years |
 | Annual PMI rate | percent | advanced | 0.7% |
-| Annual property tax rate | percent | advanced | 2.15% |
+| Annual property tax rate | percent | advanced | 2% |
 | Annual insurance | currency | advanced | $2,400 |
-| Closing costs rate | percent | advanced | 3% |
-| Annual appreciation rate | percent | advanced | 3% |
+| Closing costs rate | percent | advanced | 2.5% |
+| Annual appreciation rate | percent | advanced | 3.5% |
 
 ### Commute
 | Field | Type | Primary | Default |
