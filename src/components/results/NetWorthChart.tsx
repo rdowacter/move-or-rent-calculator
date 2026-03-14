@@ -22,6 +22,17 @@ import {
   formatCompactCurrency,
 } from '@/utils/formatters'
 
+/**
+ * Recharts renders colors as SVG stroke/fill attributes, not CSS properties,
+ * so CSS custom properties (var(--chart-N)) don't resolve. We must use
+ * concrete color values here. These match the --chart-N tokens in index.css.
+ */
+const CHART_COLORS = {
+  baseline: '#5b9bd5',   // --chart-1: oklch(0.809 0.105 251.813) ≈ steel blue
+  scenarioA: '#3366cc',  // --chart-2: oklch(0.623 0.214 259.815) ≈ medium blue
+  scenarioB: '#2d4a8c',  // --chart-3: oklch(0.546 0.245 262.881) ≈ dark blue
+}
+
 /** Shape of each data point fed to the chart. */
 interface ChartDataPoint {
   year: number
@@ -116,7 +127,7 @@ export function NetWorthChart() {
             type="monotone"
             dataKey="baseline"
             name="Baseline"
-            stroke="oklch(var(--chart-1))"
+            stroke={CHART_COLORS.baseline}
             strokeWidth={2}
             dot={false}
             activeDot={{ r: 5 }}
@@ -125,7 +136,7 @@ export function NetWorthChart() {
             type="monotone"
             dataKey="scenarioA"
             name="Scenario A"
-            stroke="oklch(var(--chart-2))"
+            stroke={CHART_COLORS.scenarioA}
             strokeWidth={2}
             dot={false}
             activeDot={{ r: 5 }}
@@ -134,7 +145,7 @@ export function NetWorthChart() {
             type="monotone"
             dataKey="scenarioB"
             name="Scenario B"
-            stroke="oklch(var(--chart-3))"
+            stroke={CHART_COLORS.scenarioB}
             strokeWidth={2}
             dot={false}
             activeDot={{ r: 5 }}
