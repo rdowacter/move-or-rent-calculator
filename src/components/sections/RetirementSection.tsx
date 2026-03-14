@@ -65,6 +65,13 @@ function RetirementSection() {
       </div>
 
       <CurrencyInput
+        name="retirement.iraWithdrawalAmountScenarioB"
+        label="IRA Withdrawal Amount — Scenario B"
+        control={control}
+        description="How much to withdraw from IRA for down payment. Set to full balance for complete withdrawal."
+      />
+
+      <CurrencyInput
         name="retirement.annualIRAContributionScenarioA"
         label="Annual Contribution — Scenario A"
         control={control}
