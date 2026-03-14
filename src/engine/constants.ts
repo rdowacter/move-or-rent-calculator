@@ -7,7 +7,7 @@
 // anywhere in the calculation layer.
 // ---------------------------------------------------------------------------
 
-import type { FilingStatus } from './types'
+import type { FilingStatus, TaxBracket } from './types'
 
 // ---- General Constants ----------------------------------------------------
 
@@ -29,15 +29,7 @@ export const WORK_HOURS_PER_YEAR = 2080
 // Tax is computed marginally — only income within each range is taxed at
 // that range's rate.
 
-/** A single marginal tax bracket. */
-export interface TaxBracket {
-  /** Taxable income floor (inclusive). */
-  min: number
-  /** Taxable income ceiling (exclusive, Infinity for top bracket). */
-  max: number
-  /** Marginal tax rate applied to income within [min, max). */
-  rate: number
-}
+import type { TaxBracket } from './types'
 
 /**
  * 2024 federal income tax brackets for all filing statuses.
@@ -115,9 +107,11 @@ export const LTCG_TWENTY_PERCENT_THRESHOLD: Record<FilingStatus, number> = {
   head_of_household: 551_350,
 }
 
-/** The three long-term capital gains rates. */
+/** Long-term capital gains rate: 0%. Source: IRC §1(h)(1)(B); IRS Rev. Proc. 2023-34 §3.12 */
 export const LTCG_RATE_ZERO = 0.0
+/** Long-term capital gains rate: 15%. Source: IRC §1(h)(1)(C); IRS Rev. Proc. 2023-34 §3.12 */
 export const LTCG_RATE_FIFTEEN = 0.15
+/** Long-term capital gains rate: 20%. Source: IRC §1(h)(1)(D); IRS Rev. Proc. 2023-34 §3.12 */
 export const LTCG_RATE_TWENTY = 0.2
 
 // ---- IRA & Retirement Constants -------------------------------------------

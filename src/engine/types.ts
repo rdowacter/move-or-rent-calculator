@@ -30,6 +30,16 @@ export type WarningCategory =
 /** Severity levels for contextual warnings shown to the user. */
 export type WarningSeverity = 'info' | 'warning' | 'critical'
 
+/** A single marginal tax bracket used in federal income tax calculations. */
+export interface TaxBracket {
+  /** Taxable income floor (inclusive). */
+  min: number
+  /** Taxable income ceiling (exclusive, Infinity for top bracket). */
+  max: number
+  /** Marginal tax rate applied to income within [min, max). */
+  rate: number
+}
+
 // ---- Input Interfaces -----------------------------------------------------
 
 /** Personal & tax profile of the user. */
@@ -258,6 +268,17 @@ export interface YearlySnapshot {
   cumulativeCommuteSavings: number
   /** Annual gross income for this year (with salary growth applied). */
   annualGrossIncome: number
+
+  // ---- Rental-specific fields (Scenario B only, undefined for others) ----
+
+  /** Gross rental income for this year (rent × 12 × (1 - vacancy)). */
+  rentalGrossIncome?: number
+  /** Annual straight-line depreciation expense (structure value / 27.5). */
+  depreciationExpense?: number
+  /** Passive activity loss allowed as offset against ordinary income this year. */
+  passiveLossAllowed?: number
+  /** Passive activity loss suspended (carried forward due to AGI phase-out). */
+  passiveLossSuspended?: number
 }
 
 /**
@@ -337,6 +358,24 @@ export interface Warning {
 }
 
 /**
+ * Tax event when the rental property is sold at the planned exit year.
+ * Captures depreciation recapture (25% rate) and capital gains — the two
+ * highest-dollar, most commonly overlooked costs of the rental strategy.
+ */
+export interface RentalExitTaxEvent {
+  /** Total depreciation claimed over the rental period. */
+  totalDepreciationClaimed: number
+  /** Tax owed on recaptured depreciation at 25% (IRC §1250). */
+  depreciationRecaptureTax: number
+  /** Capital gain on appreciation (sale price - adjusted basis). */
+  capitalGain: number
+  /** Tax on the capital gain at the applicable LTCG rate. */
+  capitalGainsTax: number
+  /** Net proceeds after mortgage payoff, selling costs, and all taxes. */
+  netSaleProceeds: number
+}
+
+/**
  * Complete output for a single scenario (Baseline, A, or B).
  */
 export interface ScenarioOutput {
@@ -359,6 +398,11 @@ export interface ScenarioOutput {
    * if income stopped entirely (emergency runway).
    */
   monthlyReserveRunwayMonths: number
+  /**
+   * Tax event from selling the rental property (Scenario B only).
+   * Null for Baseline and Scenario A where no rental exit occurs.
+   */
+  rentalExitTaxEvent: RentalExitTaxEvent | null
 }
 
 /**
