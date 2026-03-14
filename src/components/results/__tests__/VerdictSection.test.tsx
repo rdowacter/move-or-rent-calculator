@@ -116,10 +116,10 @@ describe('VerdictSection', () => {
     const metricsTable = screen.getByTestId('verdict-key-metrics')
     expect(metricsTable).toBeInTheDocument()
 
-    // Table should have column headers
-    expect(screen.getByText('Baseline')).toBeInTheDocument()
-    expect(screen.getByText('Scenario A')).toBeInTheDocument()
-    expect(screen.getByText('Scenario B')).toBeInTheDocument()
+    // Table should have column headers (abbreviated for mobile: Base, A, B)
+    expect(screen.getByText('Base')).toBeInTheDocument()
+    expect(screen.getByText('A')).toBeInTheDocument()
+    expect(screen.getByText('B')).toBeInTheDocument()
 
     // Each key metric label should appear as a row
     for (const metric of verdict.keyMetrics) {

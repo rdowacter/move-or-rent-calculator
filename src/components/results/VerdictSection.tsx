@@ -102,36 +102,36 @@ function KeyMetricsTable({
 }) {
   return (
     <div className="overflow-x-auto -mx-1" data-testid="verdict-key-metrics">
-      <table className="w-full text-sm min-w-[340px]">
+      <table className="w-full text-xs md:text-sm">
         <thead>
           <tr className="border-b">
-            <th className="text-left py-2 pr-2 font-medium text-muted-foreground">
+            <th className="text-left py-2 pr-1 font-medium text-muted-foreground">
               Metric
             </th>
-            <th className="text-right py-2 px-2 font-medium text-muted-foreground">
-              Baseline
+            <th className="text-right py-2 px-1 font-medium text-muted-foreground">
+              Base
             </th>
-            <th className="text-right py-2 px-2 font-medium text-muted-foreground">
-              Scenario A
+            <th className="text-right py-2 px-1 font-medium text-muted-foreground">
+              A
             </th>
-            <th className="text-right py-2 pl-2 font-medium text-muted-foreground">
-              Scenario B
+            <th className="text-right py-2 pl-1 font-medium text-muted-foreground">
+              B
             </th>
           </tr>
         </thead>
         <tbody>
           {keyMetrics.map((metric) => (
             <tr key={metric.label} className="border-b last:border-b-0">
-              <td className="py-2 pr-2 text-muted-foreground">
+              <td className="py-2 pr-1 text-muted-foreground">
                 {metric.label}
               </td>
-              <td className="py-2 px-2 text-right font-medium whitespace-nowrap">
+              <td className="py-2 px-1 text-right font-medium whitespace-nowrap">
                 {metric.baseline}
               </td>
-              <td className="py-2 px-2 text-right font-medium whitespace-nowrap">
+              <td className="py-2 px-1 text-right font-medium whitespace-nowrap">
                 {metric.scenarioA}
               </td>
-              <td className="py-2 pl-2 text-right font-medium whitespace-nowrap">
+              <td className="py-2 pl-1 text-right font-medium whitespace-nowrap">
                 {metric.scenarioB}
               </td>
             </tr>
@@ -203,7 +203,7 @@ export function VerdictSection() {
       </div>
 
       {/* Reasoning paragraphs */}
-      <div className="space-y-2 pl-10" data-testid="verdict-reasoning">
+      <div className="space-y-2 pl-0 md:pl-10" data-testid="verdict-reasoning">
         {verdict.reasoning.map((paragraph, idx) => (
           <p key={idx} className="text-sm text-muted-foreground leading-relaxed">
             {paragraph}
@@ -213,13 +213,13 @@ export function VerdictSection() {
 
       {/* Dealbreakers */}
       {verdict.dealbreakers.length > 0 && (
-        <div className="pl-10">
+        <div className="pl-0 md:pl-10">
           <Dealbreakers dealbreakers={verdict.dealbreakers} />
         </div>
       )}
 
       {/* Key Metrics Table */}
-      <Card className="ml-10">
+      <Card className="ml-0 md:ml-10">
         <CardContent className="pt-4 pb-3 px-3">
           <h3 className="text-sm font-semibold mb-2 text-muted-foreground uppercase tracking-wide">
             Key Metrics Comparison
