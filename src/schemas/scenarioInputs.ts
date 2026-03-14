@@ -85,7 +85,7 @@ const currentHomeInputsSchema = z.object({
   /** Original loan term in years. */
   originalLoanTermYears: z.number().int().min(1).max(40),
   /** Number of years already into the loan. */
-  yearsIntoLoan: z.number().min(0).max(40),
+  yearsIntoLoan: z.number().int().min(0).max(40),
   /** Annual property tax rate as a fraction of assessed value (e.g. 0.0215). */
   annualPropertyTaxRate: rate(),
   /** Annual homeowners insurance premium in dollars. */

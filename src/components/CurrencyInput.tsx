@@ -19,6 +19,8 @@ interface CurrencyInputProps<T extends FieldValues> {
 /**
  * CurrencyInput renders a FormField with a "$" prefix and decimal inputMode.
  * Values are stored as numbers in the form state.
+ *
+ * USD-only by design — this tool is built for US real estate scenarios.
  */
 function CurrencyInput<T extends FieldValues>({
   name,

@@ -58,9 +58,13 @@ function AboutYouSection() {
           render={({ field }) => (
             <Select
               value={field.value}
-              onValueChange={(value) => field.onChange(value)}
+              onValueChange={field.onChange}
             >
-              <SelectTrigger id="personal.filingStatus" className="w-full">
+              <SelectTrigger
+                id="personal.filingStatus"
+                className="w-full"
+                aria-describedby="personal.filingStatus-desc"
+              >
                 <SelectValue placeholder="Select filing status" />
               </SelectTrigger>
               <SelectContent>
@@ -73,7 +77,7 @@ function AboutYouSection() {
             </Select>
           )}
         />
-        <p className="text-xs text-muted-foreground">
+        <p id="personal.filingStatus-desc" className="text-xs text-muted-foreground">
           Determines which IRS tax brackets apply
         </p>
       </div>
