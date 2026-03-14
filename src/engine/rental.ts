@@ -308,6 +308,10 @@ export function rentalSaleTax(inputs: RentalSaleTaxInputs): RentalSaleTaxResult 
     taxableIncome,
     filingStatus,
     mortgageBalance,
+    // yearsOwned is intentionally not destructured here. It exists in the input
+    // interface for future short-term capital gains handling: properties held < 1 year
+    // would be taxed at ordinary income rates instead of LTCG rates. In our use case,
+    // rental properties are always held for multiple years, so LTCG rates always apply.
   } = inputs
 
   const sellingCosts = salePrice * sellingCostRate

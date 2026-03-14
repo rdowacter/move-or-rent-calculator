@@ -440,7 +440,7 @@ export interface RentalSaleTaxResult {
   adjustedBasis: number
   /** Total gain = salePrice - sellingCosts - adjustedBasis. */
   totalGain: number
-  /** Depreciation recapture tax = totalDepreciationClaimed x 25%. Always at 25%. */
+  /** Depreciation recapture tax = input totalDepreciationClaimed x 25%. Always at 25%. */
   depreciationRecaptureTax: number
   /** Capital gain on appreciation above original basis (excludes recapture portion). */
   capitalGain: number
@@ -448,7 +448,7 @@ export interface RentalSaleTaxResult {
   capitalGainTax: number
   /** Total tax = depreciationRecaptureTax + capitalGainTax. */
   totalTax: number
-  /** Net sale proceeds = salePrice - sellingCosts - totalTax - mortgageBalance. */
+  /** Net sale proceeds = salePrice - sellingCosts - totalTax - input mortgageBalance. */
   netSaleProceeds: number
 }
 

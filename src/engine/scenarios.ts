@@ -109,10 +109,12 @@ export function stepMortgageYear(
     if (currentBalance <= 0) break
 
     const interestPayment = currentBalance * monthlyRate
-    // Final payment may be partial — don't overpay
+    // Final payment may be partial — don't overpay.
+    // Guard against negative principal when interest exceeds payment
+    // (e.g., deeply underwater adjustable-rate scenarios).
     const principalPayment = Math.min(
       currentBalance,
-      monthlyPayment - interestPayment
+      Math.max(0, monthlyPayment - interestPayment)
     )
 
     totalInterest += interestPayment
@@ -176,6 +178,10 @@ export function stepAppreciationYear(
 export function projectBaseline(inputs: ScenarioInputs): ScenarioOutput {
   const { personal, retirement, currentHome, commute, costs, projection } =
     inputs
+
+  if (projection.timeHorizonYears < 1) {
+    throw new Error('timeHorizonYears must be at least 1')
+  }
 
   // ---- Setup ----
 
@@ -336,9 +342,12 @@ export function projectBaseline(inputs: ScenarioInputs): ScenarioOutput {
   const warnings = generateBaselineWarnings(inputs)
 
   // ---- Reserve runway ----
+  // Baseline has no capital event, so initial reserves = personal.liquidSavings.
+  // We use the initial value (not accumulated liquidSavings) because reserve
+  // runway measures how long the user can survive from their starting position.
   const year1Snapshot = snapshots[0]
   const reserveRunway = reserveRunwayMonths(
-    liquidSavings,
+    personal.liquidSavings,
     year1Snapshot.monthlyCashFlowBestCase
   )
 
@@ -369,6 +378,10 @@ export function projectBaseline(inputs: ScenarioInputs): ScenarioOutput {
 export function projectScenarioA(inputs: ScenarioInputs): ScenarioOutput {
   const { personal, retirement, currentHome, newHome, commute, costs, projection } =
     inputs
+
+  if (projection.timeHorizonYears < 1) {
+    throw new Error('timeHorizonYears must be at least 1')
+  }
 
   // ---- Setup ----
 
@@ -580,6 +593,10 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
   const { personal, retirement, currentHome, newHome, commute, costs, projection } =
     inputs
 
+  if (projection.timeHorizonYears < 1) {
+    throw new Error('timeHorizonYears must be at least 1')
+  }
+
   // ---- Setup ----
 
   // IRA withdrawal at time 0
@@ -681,22 +698,6 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
   let cumulativeCommuteSavings = 0
   let rentalActive = true
   let rentalExitTaxEvent: RentalExitTaxEvent | null = null
-
-  // Stress test using initial reserves
-  const initialStressTest = stressTest({
-    postClosingReserves: Math.max(0, upfrontCapital.surplus),
-    monthlyNetPosition: 0, // Will be updated after year 1 calc
-    monthlyRent: currentHome.expectedMonthlyRent,
-    monthlyGrossIncome: personal.annualGrossIncome / MONTHS_PER_YEAR,
-    monthlyObligations:
-      austinMonthlyHousing +
-      kyleMonthlyPayment +
-      personal.monthlyLivingExpenses +
-      personal.monthlyDebtPayments,
-    homeValue: currentHome.homeValue,
-    mortgageBalance: currentHome.mortgageBalance,
-    sellingCostRate: currentHome.sellingCostsRate,
-  })
 
   for (let year = 1; year <= projection.timeHorizonYears; year++) {
     const annualIncome =
@@ -978,6 +979,25 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
       passiveLossSuspended,
     })
   }
+
+  // ---- Stress test using year 1 actual monthly cash flow ----
+  // This must run AFTER the year-by-year loop so we have real cash flow data
+  // instead of a placeholder. Uses year 1 best-case monthly cash flow as the
+  // net position, which represents the borrower's actual monthly surplus/deficit.
+  const initialStressTest = stressTest({
+    postClosingReserves: Math.max(0, upfrontCapital.surplus),
+    monthlyNetPosition: snapshots[0].monthlyCashFlowBestCase,
+    monthlyRent: currentHome.expectedMonthlyRent,
+    monthlyGrossIncome: personal.annualGrossIncome / MONTHS_PER_YEAR,
+    monthlyObligations:
+      austinMonthlyHousing +
+      kyleMonthlyPayment +
+      personal.monthlyLivingExpenses +
+      personal.monthlyDebtPayments,
+    homeValue: currentHome.homeValue,
+    mortgageBalance: currentHome.mortgageBalance,
+    sellingCostRate: currentHome.sellingCostsRate,
+  })
 
   // ---- Warnings ----
   const warnings = generateScenarioBWarnings(

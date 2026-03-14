@@ -11,7 +11,7 @@
 // reasonable, and directionally correct results.
 // ---------------------------------------------------------------------------
 
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeAll } from 'vitest'
 import { runModel } from '../scenarios'
 import {
   DEFAULT_PERSONAL_INPUTS,

@@ -18,7 +18,7 @@
 // phase-out at higher income levels.
 // ---------------------------------------------------------------------------
 
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeAll } from 'vitest'
 import { runModel } from '../scenarios'
 import type { ScenarioInputs, ModelOutput } from '../types'
 

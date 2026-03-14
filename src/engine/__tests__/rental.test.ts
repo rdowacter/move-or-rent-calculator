@@ -560,9 +560,9 @@ describe('worstCaseMonthlyRentalCashFlow', () => {
       totalExpenses: 750,
       netOperatingIncome: 1090,
       mortgagePayment: 800,
-      cashFlow: 130,
+      cashFlow: 290, // NOI (1090) - mortgage (800) = 290
     }
 
-    expect(worstCaseMonthlyRentalCashFlow(baseCashFlow, 0)).toBe(130)
+    expect(worstCaseMonthlyRentalCashFlow(baseCashFlow, 0)).toBe(290)
   })
 })

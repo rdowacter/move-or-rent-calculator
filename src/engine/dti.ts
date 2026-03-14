@@ -167,11 +167,16 @@ export function calculateDTI(inputs: CalculateDTIInputs): DTIResult {
 
   const frontEnd = frontEndDTI(primaryHousingCost, grossMonthlyIncome)
 
-  // Rental income credit is only applied in Scenario B.
-  // For baseline and Scenario A, rental fields are ignored even if provided.
-  const rentalIncomeCredit = isRentalScenario && expectedMonthlyRent !== undefined
-    ? expectedMonthlyRent * creditRate
-    : 0
+  // Rental income credit is only applied in Scenario B when BOTH rental mortgage
+  // payment and expected rent are defined — matching the condition used in
+  // backEndDTI to actually apply the offset. Without both values, the credit
+  // is meaningless and would be inconsistent with the DTI calculation.
+  const rentalIncomeCredit =
+    isRentalScenario &&
+    rentalMortgagePayment !== undefined &&
+    expectedMonthlyRent !== undefined
+      ? expectedMonthlyRent * creditRate
+      : 0
 
   const backEnd = backEndDTI({
     primaryHousingCost,
