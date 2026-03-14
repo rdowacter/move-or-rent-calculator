@@ -102,7 +102,6 @@ export function NetWorthChart() {
 
   return (
     <div className="w-full" role="img" aria-label="Net worth projection chart comparing Baseline, Scenario A, and Scenario B over time">
-      <h3 className="mb-4 text-lg font-semibold">Net Worth Projection</h3>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
           data={data}

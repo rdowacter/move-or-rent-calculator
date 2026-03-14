@@ -160,9 +160,6 @@ export function UpfrontCapital() {
 
   return (
     <section aria-label="Upfront Capital Requirements">
-      <h3 className="text-lg font-semibold mb-4">
-        Upfront Capital Requirements
-      </h3>
       <div className="grid gap-4 md:grid-cols-3">
         <ScenarioCapitalCard scenario={modelOutput.baseline} />
         <ScenarioCapitalCard scenario={modelOutput.scenarioA} />

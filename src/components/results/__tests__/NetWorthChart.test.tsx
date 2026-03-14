@@ -65,9 +65,6 @@ describe('NetWorthChart', () => {
     // ResponsiveContainer is rendered (via our mock)
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument()
 
-    // Chart title is rendered
-    expect(screen.getByText('Net Worth Projection')).toBeInTheDocument()
-
     // Accessible role is present
     expect(
       screen.getByRole('img', {
