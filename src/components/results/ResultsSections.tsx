@@ -8,7 +8,7 @@
 //   3. Year-1 Execution — cash flow, capital, and reserves on default background
 // ---------------------------------------------------------------------------
 
-import { AlertTriangle, TrendingUp, PiggyBank, DollarSign, Wallet, Shield, Calendar, Layers, Table2 } from 'lucide-react'
+import { AlertTriangle, TrendingUp, PiggyBank, DollarSign, Wallet, Shield, Calendar, Layers, Table2, BookOpen } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
 import type { ScenarioInputs } from '@/engine/types'
 import { FormField } from '@/components/FormField'
@@ -22,6 +22,7 @@ import { StressTests } from './StressTests'
 import { WarningsList } from './WarningsList'
 import { NetWorthComposition } from './NetWorthComposition'
 import { YearByYearTable } from './YearByYearTable'
+import { AssumptionsDisclosure } from './AssumptionsDisclosure'
 
 /**
  * Renders all results sections in order with consistent spacing and
@@ -120,6 +121,11 @@ export function ResultsSections() {
           <StressTests />
         </ResultSection>
       </div>
+
+      {/* Assumptions & Sources */}
+      <ResultSection icon={BookOpen} title="Assumptions & Sources" accentColor="border-slate-400" iconColor="text-slate-500">
+        <AssumptionsDisclosure />
+      </ResultSection>
     </div>
   )
 }
