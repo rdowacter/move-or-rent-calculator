@@ -10,8 +10,6 @@
 //   5. Assumptions & Sources (default bg)
 // ---------------------------------------------------------------------------
 
-import { VerdictSection } from './VerdictSection'
-import { SensitivitySection } from './SensitivitySection'
 import { ExecutiveSummary } from './ExecutiveSummary'
 import { AlertTriangle, TrendingUp, PiggyBank, DollarSign, Wallet, Shield, Calendar, Layers, Table2, BookOpen } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
@@ -41,15 +39,6 @@ export function ResultsSections() {
 
   return (
     <div className="space-y-10" data-testid="results-sections">
-      {/* Group 0: Verdict & Sensitivity — the most important output */}
-      <section>
-        <VerdictSection />
-      </section>
-
-      <section>
-        <SensitivitySection />
-      </section>
-
       {/* Projection Controls — right at the top of results where they belong */}
       <div className="flex items-start gap-3 rounded-lg border bg-card p-4 shadow-sm">
         <Calendar className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
