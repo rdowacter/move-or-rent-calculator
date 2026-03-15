@@ -827,10 +827,10 @@ function buildGuardrailCallout(
     return 'Neither moving scenario is financially feasible right now. Focus on building savings before revisiting.'
   }
 
-  // Guardrail 2: Winner has zero retirement at projection end
+  // Guardrail 2: Winner has zero IRA balance at projection end
   const winner = rows.find(r => r.isWinner)
   if (winner && winner.finalIRABalance === 0) {
-    return `The recommended scenario leaves you with $0 in retirement savings at age ${endAge}. Consider whether the trade-off is worth the long-term cost.`
+    return `The recommended scenario leaves your IRA account at $0 by age ${endAge} based on current contribution plans. This doesn't account for future contributions you may start, employer retirement plans, or other investment accounts — but it means you'd be rebuilding retirement savings from scratch.`
   }
 
   // Guardrail 3: All scenarios produce less net worth than current position

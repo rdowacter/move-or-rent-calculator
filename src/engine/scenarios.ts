@@ -1275,7 +1275,7 @@ function generateScenarioBWarnings(
       warnings.push({
         category: 'retirement',
         severity: 'warning',
-        message: `Withdrawing your entire IRA at age ${inputs.personal.age} costs $${Math.round(iraWithdrawalTaxCost).toLocaleString()} in taxes and penalties, and leaves you with $0 in retirement savings.`,
+        message: `Withdrawing your entire IRA at age ${inputs.personal.age} costs $${Math.round(iraWithdrawalTaxCost).toLocaleString()} in taxes and penalties, leaving this IRA account at $0. This doesn't include other retirement accounts or future contributions you may start.`,
         dollarImpact: iraWithdrawalTaxCost,
       })
     } else {
