@@ -72,6 +72,7 @@ function CurrentHomeSection() {
           label="Vacancy Rate"
           control={control}
           description="Expected vacancy as % of year (8% = ~1 month/year)"
+          info="Time between tenants when the property earns no rent. Accounts for move-out, cleaning, repairs, and finding a new tenant."
         />
 
         <PercentInput
@@ -109,6 +110,7 @@ function CurrentHomeSection() {
           label="Lender Rental Income Credit"
           control={control}
           description="How much rental income lenders count toward DTI. 75% standard, 0% if no landlord history."
+          info="When qualifying for the Austin mortgage, lenders discount rental income to account for risk. 75% is standard (Fannie Mae). Some lenders use 0% for first-time landlords."
         />
       </div>
 
@@ -141,6 +143,7 @@ function CurrentHomeSection() {
           label="Maintenance Reserve Rate"
           control={control}
           description="Annual maintenance as % of home value (rule of thumb: 1%)"
+          info="Set aside this percentage of the home's value each year for repairs and upkeep. 0.75% is optimistic, 1% is conservative. Covers things like appliance replacement, painting, plumbing fixes."
         />
 
         <CurrencyInput
@@ -155,6 +158,7 @@ function CurrentHomeSection() {
           label="Land Value Percentage"
           control={control}
           description="Percentage of home value that is land (not depreciable). Check your county tax assessor."
+          info="The IRS only allows depreciation on the structure, not the land. This split determines your annual tax deduction. Your county tax assessment usually shows this breakdown."
         />
       </div>
 

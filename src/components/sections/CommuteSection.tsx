@@ -23,6 +23,7 @@ function CommuteSection() {
           type="number"
           inputMode="decimal"
           description="Round-trip commute distance from Kyle to Austin"
+          info="Used with the IRS mileage rate to estimate total driving cost (gas, wear, maintenance, depreciation)."
         />
 
         <CurrencyInput
@@ -59,6 +60,7 @@ function CommuteSection() {
           type="number"
           inputMode="decimal"
           description="Hours saved per work day by moving closer"
+          info="Time saved is valued at your hourly wage rate and included in the commute savings comparison."
         />
       </div>
 
@@ -78,7 +80,8 @@ function CommuteSection() {
           name="commute.irsMileageRate"
           label="IRS Mileage Rate"
           control={control}
-          description="Standard mileage rate per mile (for cost estimation)"
+          description="$/mile — covers gas, wear, maintenance, depreciation"
+          info="The IRS standard rate ($0.725 in 2024) estimates the full cost of operating a vehicle per mile. If your actual costs are lower (e.g. paid-off car), reduce this."
         />
 
         <FormField
@@ -88,6 +91,7 @@ function CommuteSection() {
           type="number"
           inputMode="decimal"
           description="Time spent on landlord duties in Scenario B"
+          info="Estimated hours for tenant communication, maintenance coordination, and property management. Not a dollar cost — shown for awareness."
         />
       </div>
     </div>

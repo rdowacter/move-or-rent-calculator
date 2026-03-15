@@ -10,6 +10,8 @@ interface CurrencyInputProps<T extends FieldValues> {
   control: Control<T>
   /** Optional helper text displayed below the input */
   description?: string
+  /** Optional info tooltip */
+  info?: string
   /** Optional className for the wrapper div */
   className?: string
   /** Optional placeholder text */
@@ -27,6 +29,7 @@ function CurrencyInput<T extends FieldValues>({
   label,
   control,
   description,
+  info,
   className,
   placeholder,
 }: CurrencyInputProps<T>) {
@@ -36,6 +39,7 @@ function CurrencyInput<T extends FieldValues>({
       label={label}
       control={control}
       description={description}
+      info={info}
       className={className}
       placeholder={placeholder}
       inputMode="decimal"
