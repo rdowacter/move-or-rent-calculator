@@ -272,11 +272,8 @@ describe('stressTest', () => {
   describe('vacancy + maintenance shock', () => {
     it('calculates shock cost and remaining reserves correctly', () => {
       // Shock = 3 months lost rent + major repair
-      // shockCost = 3 × $2,000 + $8,000 = $14,000
-      //
-      // With $5,000 reserves:
-      // remainingReserves = 5,000 - 14,000 = -$9,000
-      // Since remaining ≤ 0, monthsOfReserves = 0
+      // Vacancy shock = 3 × $2,000 = $6,000
+      // With $5,000 reserves: 5,000 - 6,000 = -$1,000 → 0 months
       const result = stressTest({
         postClosingReserves: 5_000,
         monthlyNetPosition: 500,
@@ -288,15 +285,19 @@ describe('stressTest', () => {
         sellingCostRate: 0.06,
       })
 
-      expect(result.vacancyAndMaintenance.shockCost).toBeCloseTo(14_000, 0)
-      expect(result.vacancyAndMaintenance.monthsOfReserves).toBe(0)
+      expect(result.vacancy.shockCost).toBeCloseTo(6_000, 0)
+      expect(result.vacancy.monthsOfReserves).toBe(0)
+
+      // Major repair = $8,000
+      // With $5,000 reserves: 5,000 - 8,000 = -$3,000 → 0 months
+      expect(result.majorRepair.shockCost).toBeCloseTo(8_000, 0)
+      expect(result.majorRepair.monthsOfReserves).toBe(0)
     })
 
     it('calculates months of reserves when shock is absorbed', () => {
-      // shockCost = 3 × $1,500 + $8,000 = $12,500
-      // remainingReserves = 30,000 - 12,500 = $17,500
-      // monthlyNetPosition = -$300 (negative)
-      // monthsOfReserves = 17,500 / 300 ≈ 58.33
+      // Vacancy shock = 3 × $1,500 = $4,500
+      // remainingReserves = 30,000 - 4,500 = $25,500
+      // monthlyNetPosition = -$300 → 25,500 / 300 = 85
       const result = stressTest({
         postClosingReserves: 30_000,
         monthlyNetPosition: -300,
@@ -308,15 +309,17 @@ describe('stressTest', () => {
         sellingCostRate: 0.06,
       })
 
-      expect(result.vacancyAndMaintenance.shockCost).toBeCloseTo(12_500, 0)
-      expect(result.vacancyAndMaintenance.monthsOfReserves).toBeCloseTo(58.33, 0)
+      expect(result.vacancy.shockCost).toBeCloseTo(4_500, 0)
+      expect(result.vacancy.monthsOfReserves).toBeCloseTo(85, 0)
+
+      // Major repair = $8,000
+      // remainingReserves = 30,000 - 8,000 = $22,000
+      // 22,000 / 300 ≈ 73.33
+      expect(result.majorRepair.shockCost).toBeCloseTo(8_000, 0)
+      expect(result.majorRepair.monthsOfReserves).toBeCloseTo(73.33, 0)
     })
 
     it('returns Infinity when net position is positive after shock', () => {
-      // shockCost = 3 × $1,500 + $8,000 = $12,500
-      // remainingReserves = 30,000 - 12,500 = $17,500 (> 0)
-      // monthlyNetPosition = +$500 (positive surplus)
-      // monthsOfReserves = Infinity (never depletes)
       const result = stressTest({
         postClosingReserves: 30_000,
         monthlyNetPosition: 500,
@@ -328,7 +331,8 @@ describe('stressTest', () => {
         sellingCostRate: 0.06,
       })
 
-      expect(result.vacancyAndMaintenance.monthsOfReserves).toBe(Infinity)
+      expect(result.vacancy.monthsOfReserves).toBe(Infinity)
+      expect(result.majorRepair.monthsOfReserves).toBe(Infinity)
     })
   })
 
@@ -455,8 +459,10 @@ describe('stressTest', () => {
         sellingCostRate: 0.06,
       })
 
-      // Vacancy shock: remaining = 0 - 14,000 = -14,000 → 0 months
-      expect(result.vacancyAndMaintenance.monthsOfReserves).toBe(0)
+      // Vacancy shock: remaining = 0 - 6,000 = -6,000 → 0 months
+      expect(result.vacancy.monthsOfReserves).toBe(0)
+      // Major repair: remaining = 0 - 8,000 = -8,000 → 0 months
+      expect(result.majorRepair.monthsOfReserves).toBe(0)
       // Income disruption with 0 reserves: 0 / shortfall (if any)
       // reducedIncome = 8,333 × 0.80 = 6,666.40, obligations = 5,000
       // No shortfall → Infinity (can still cover obligations even at 80% income)
@@ -464,7 +470,7 @@ describe('stressTest', () => {
     })
 
     it('handles zero rent in vacancy shock', () => {
-      // shockCost = 3 × 0 + 8,000 = $8,000
+      // Vacancy shockCost = 3 × 0 = $0
       const result = stressTest({
         postClosingReserves: 20_000,
         monthlyNetPosition: 500,
@@ -476,7 +482,9 @@ describe('stressTest', () => {
         sellingCostRate: 0.06,
       })
 
-      expect(result.vacancyAndMaintenance.shockCost).toBeCloseTo(8_000, 0)
+      expect(result.vacancy.shockCost).toBeCloseTo(0, 0)
+      // Repair is still $8k regardless of rent
+      expect(result.majorRepair.shockCost).toBeCloseTo(8_000, 0)
     })
   })
 })

@@ -36,7 +36,7 @@ interface InputAccordionProps {
 function InputAccordion({ defaultOpenSections = ['about-you'] }: InputAccordionProps) {
   return (
     <Accordion multiple defaultValue={defaultOpenSections} className="space-y-2">
-      <AccordionItem value="about-you" className="rounded-lg border border-border/50 px-4 data-open:bg-card data-open:shadow-sm data-open:border-border">
+      <AccordionItem value="about-you" className="rounded-lg border border-border/50 px-4 data-open:bg-blue-50/30 data-open:shadow-sm data-open:border-blue-200/50 dark:data-open:bg-blue-950/20 dark:data-open:border-blue-800/30">
         <AccordionTrigger>
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400">
@@ -53,7 +53,7 @@ function InputAccordion({ defaultOpenSections = ['about-you'] }: InputAccordionP
         </AccordionContent>
       </AccordionItem>
 
-      <AccordionItem value="retirement" className="rounded-lg border border-border/50 px-4 data-open:bg-card data-open:shadow-sm data-open:border-border">
+      <AccordionItem value="retirement" className="rounded-lg border border-border/50 px-4 data-open:bg-emerald-50/30 data-open:shadow-sm data-open:border-emerald-200/50 dark:data-open:bg-emerald-950/20 dark:data-open:border-emerald-800/30">
         <AccordionTrigger>
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400">
@@ -70,7 +70,7 @@ function InputAccordion({ defaultOpenSections = ['about-you'] }: InputAccordionP
         </AccordionContent>
       </AccordionItem>
 
-      <AccordionItem value="current-home" className="rounded-lg border border-border/50 px-4 data-open:bg-card data-open:shadow-sm data-open:border-border">
+      <AccordionItem value="current-home" className="rounded-lg border border-border/50 px-4 data-open:bg-amber-50/30 data-open:shadow-sm data-open:border-amber-200/50 dark:data-open:bg-amber-950/20 dark:data-open:border-amber-800/30">
         <AccordionTrigger>
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400">
@@ -87,7 +87,7 @@ function InputAccordion({ defaultOpenSections = ['about-you'] }: InputAccordionP
         </AccordionContent>
       </AccordionItem>
 
-      <AccordionItem value="new-home" className="rounded-lg border border-border/50 px-4 data-open:bg-card data-open:shadow-sm data-open:border-border">
+      <AccordionItem value="new-home" className="rounded-lg border border-border/50 px-4 data-open:bg-violet-50/30 data-open:shadow-sm data-open:border-violet-200/50 dark:data-open:bg-violet-950/20 dark:data-open:border-violet-800/30">
         <AccordionTrigger>
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-950 dark:text-violet-400">
@@ -104,7 +104,7 @@ function InputAccordion({ defaultOpenSections = ['about-you'] }: InputAccordionP
         </AccordionContent>
       </AccordionItem>
 
-      <AccordionItem value="commute" className="rounded-lg border border-border/50 px-4 data-open:bg-card data-open:shadow-sm data-open:border-border">
+      <AccordionItem value="commute" className="rounded-lg border border-border/50 px-4 data-open:bg-rose-50/30 data-open:shadow-sm data-open:border-rose-200/50 dark:data-open:bg-rose-950/20 dark:data-open:border-rose-800/30">
         <AccordionTrigger>
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-950 dark:text-rose-400">
@@ -121,7 +121,7 @@ function InputAccordion({ defaultOpenSections = ['about-you'] }: InputAccordionP
         </AccordionContent>
       </AccordionItem>
 
-      <AccordionItem value="costs-projection" className="rounded-lg border border-border/50 px-4 data-open:bg-card data-open:shadow-sm data-open:border-border">
+      <AccordionItem value="costs-projection" className="rounded-lg border border-border/50 px-4 data-open:bg-slate-50/30 data-open:shadow-sm data-open:border-slate-200/50 dark:data-open:bg-slate-950/20 dark:data-open:border-slate-700/30">
         <AccordionTrigger>
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">

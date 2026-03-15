@@ -208,9 +208,10 @@ export function StressTests() {
 
   if (!stressResult) return null
 
-  const { vacancyAndMaintenance, incomeDisruption, marketDownturn } = stressResult
+  const { vacancy, majorRepair, incomeDisruption, marketDownturn } = stressResult
 
-  const vacancySeverity = classifyVacancy(vacancyAndMaintenance.monthsOfReserves)
+  const vacancySeverity = classifyVacancy(vacancy.monthsOfReserves)
+  const repairSeverity = classifyVacancy(majorRepair.monthsOfReserves)
   const incomeSeverity = classifyIncome(incomeDisruption.monthsUntilCrisis)
   const marketSeverity = classifyMarket(marketDownturn.underwaterBy, marketDownturn.forcedSaleLoss)
 
@@ -221,33 +222,62 @@ export function StressTests() {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-3" data-testid="stress-tests">
-      {/* Vacancy + Major Repair */}
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2" data-testid="stress-tests">
+      {/* Vacancy */}
       <StressCard
-        title="Vacancy + Major Repair"
-        description="What if your rental sits empty for 3 months AND you need an $8,000 repair?"
+        title="3-Month Vacancy"
+        description="What if your rental sits empty for 3 months between tenants?"
         severity={vacancySeverity}
         testId="stress-vacancy"
       >
         <MetricRow
-          label="Total shock cost"
-          value={formatCurrency(vacancyAndMaintenance.shockCost)}
+          label="Lost rent"
+          value={formatCurrency(vacancy.shockCost)}
           emphasis
         />
         <MetricRow
           label="Reserves remaining"
           value={
-            vacancyAndMaintenance.monthsOfReserves === Infinity
+            vacancy.monthsOfReserves === Infinity
               ? 'Unlimited'
-              : `${formatMonths(vacancyAndMaintenance.monthsOfReserves)} months`
+              : `${formatMonths(vacancy.monthsOfReserves)} months`
           }
         />
         <p className="mt-2 text-xs text-muted-foreground">
           {vacancySeverity === 'survivable'
-            ? 'You can absorb this shock and still have adequate reserves.'
+            ? 'You can absorb this vacancy and still have adequate reserves.'
             : vacancySeverity === 'tight'
-              ? 'You could absorb this, but your reserves would be dangerously thin afterward.'
-              : 'This shock alone would wipe out your reserves. One surprise away from crisis.'}
+              ? 'You could absorb this, but your reserves would be thin afterward.'
+              : 'This vacancy alone would wipe out your reserves.'}
+        </p>
+      </StressCard>
+
+      {/* Major Repair */}
+      <StressCard
+        title="Major Repair"
+        description="What if you need an $8,000 repair — HVAC, roof, or plumbing?"
+        severity={repairSeverity}
+        testId="stress-repair"
+      >
+        <MetricRow
+          label="Repair cost"
+          value={formatCurrency(majorRepair.shockCost)}
+          emphasis
+        />
+        <MetricRow
+          label="Reserves remaining"
+          value={
+            majorRepair.monthsOfReserves === Infinity
+              ? 'Unlimited'
+              : `${formatMonths(majorRepair.monthsOfReserves)} months`
+          }
+        />
+        <p className="mt-2 text-xs text-muted-foreground">
+          {repairSeverity === 'survivable'
+            ? 'You can cover this repair and still have adequate reserves.'
+            : repairSeverity === 'tight'
+              ? 'You could cover this, but your reserves would be thin afterward.'
+              : 'This repair would wipe out your reserves.'}
         </p>
       </StressCard>
 

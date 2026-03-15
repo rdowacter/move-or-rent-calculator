@@ -1299,12 +1299,12 @@ function generateScenarioBWarnings(
   }
 
   // Stress test warnings — only flag if truly critical, details are in the Stress Tests section
-  if (stressTestResult.vacancyAndMaintenance.monthsOfReserves < 3) {
+  if (stressTestResult.vacancy.monthsOfReserves < 3) {
     warnings.push({
       category: 'liquidity',
       severity: 'critical',
-      message: `A $${Math.round(stressTestResult.vacancyAndMaintenance.shockCost).toLocaleString()} vacancy + repair event would wipe out your remaining savings. You'd need to borrow or use credit cards.`,
-      dollarImpact: stressTestResult.vacancyAndMaintenance.shockCost,
+      message: `A 3-month vacancy would cost $${Math.round(stressTestResult.vacancy.shockCost).toLocaleString()} in lost rent and wipe out your remaining savings.`,
+      dollarImpact: stressTestResult.vacancy.shockCost,
     })
   }
 

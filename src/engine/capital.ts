@@ -242,9 +242,9 @@ export function reserveRunwayMonths(
  * Run three stress test scenarios to show how resilient the user's financial
  * position is to common shocks:
  *
- * 1. **Vacancy + Maintenance:** 3 months of lost rent plus a major $8,000
- *    repair (HVAC, roof, plumbing). This is the most common shock for new
- *    landlords and the one most likely to force a distressed sale.
+ * 1a. **Vacancy:** 3 months of lost rent between tenants.
+ *
+ * 1b. **Major Repair:** A single $8,000 repair (HVAC, roof, plumbing).
  *
  * 2. **Income Disruption:** 20% income reduction (layoff, reduced hours,
  *    forced job change). Shows how many months until reserves are exhausted
@@ -254,23 +254,34 @@ export function reserveRunwayMonths(
  *    property goes underwater and what a forced sale would cost.
  */
 export function stressTest(inputs: StressTestInputs): StressTestResult {
-  // ---- Scenario 1: Vacancy + Maintenance Shock ----
-  // Shock = 3 months of lost rent (vacancy) + major repair cost
-  const shockCost =
-    VACANCY_SHOCK_MONTHS * inputs.monthlyRent + MAJOR_REPAIR_COST
-  const remainingReservesAfterShock = inputs.postClosingReserves - shockCost
+  // ---- Scenario 1a: Vacancy Shock ----
+  // 3 months of lost rent (vacancy between tenants)
+  const vacancyShockCost = VACANCY_SHOCK_MONTHS * inputs.monthlyRent
+  const remainingAfterVacancy = inputs.postClosingReserves - vacancyShockCost
 
   let vacancyMonthsOfReserves: number
-  if (remainingReservesAfterShock <= 0) {
-    // Reserves wiped out by the shock itself
+  if (remainingAfterVacancy <= 0) {
     vacancyMonthsOfReserves = 0
   } else if (inputs.monthlyNetPosition >= 0) {
-    // Positive cash flow means remaining reserves never deplete
     vacancyMonthsOfReserves = Infinity
   } else {
-    // Negative cash flow drains remaining reserves over time
     vacancyMonthsOfReserves =
-      remainingReservesAfterShock / Math.abs(inputs.monthlyNetPosition)
+      remainingAfterVacancy / Math.abs(inputs.monthlyNetPosition)
+  }
+
+  // ---- Scenario 1b: Major Repair ----
+  // Single large repair (HVAC, roof, plumbing)
+  const repairShockCost = MAJOR_REPAIR_COST
+  const remainingAfterRepair = inputs.postClosingReserves - repairShockCost
+
+  let repairMonthsOfReserves: number
+  if (remainingAfterRepair <= 0) {
+    repairMonthsOfReserves = 0
+  } else if (inputs.monthlyNetPosition >= 0) {
+    repairMonthsOfReserves = Infinity
+  } else {
+    repairMonthsOfReserves =
+      remainingAfterRepair / Math.abs(inputs.monthlyNetPosition)
   }
 
   // ---- Scenario 2: Income Disruption ----
@@ -303,9 +314,13 @@ export function stressTest(inputs: StressTestInputs): StressTestResult {
     underwaterBy > 0 ? newValue * inputs.sellingCostRate + underwaterBy : 0
 
   return {
-    vacancyAndMaintenance: {
-      shockCost,
+    vacancy: {
+      shockCost: vacancyShockCost,
       monthsOfReserves: vacancyMonthsOfReserves,
+    },
+    majorRepair: {
+      shockCost: repairShockCost,
+      monthsOfReserves: repairMonthsOfReserves,
     },
     incomeDisruption: {
       reducedMonthlyIncome,

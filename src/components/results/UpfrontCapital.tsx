@@ -120,7 +120,7 @@ function ScenarioCapitalCard({ scenario }: { scenario: ScenarioOutput }) {
             </div>
           </div>
 
-          {/* Surplus or shortfall */}
+          {/* Remaining savings or shortfall */}
           <div className="pt-2">
             {hasShortfall ? (
               <Alert variant="destructive">
@@ -132,7 +132,7 @@ function ScenarioCapitalCard({ scenario }: { scenario: ScenarioOutput }) {
               </Alert>
             ) : (
               <div className="flex justify-between py-2 rounded-md bg-muted px-3">
-                <span className="font-medium">Surplus</span>
+                <span className="font-medium">Remaining Savings</span>
                 <span className="font-semibold text-green-700 dark:text-green-400">
                   {formatCurrency(capital.surplus)}
                 </span>

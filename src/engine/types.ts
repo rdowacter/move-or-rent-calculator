@@ -518,9 +518,16 @@ export interface RentalSaleTaxResult {
  * showing how quickly the user's reserves would deplete.
  */
 export interface StressTestResult {
-  /** 3 months vacancy + major repair ($8k). */
-  vacancyAndMaintenance: {
-    /** Total shock cost (3 months lost rent + repair). */
+  /** 3 months vacancy (lost rent). */
+  vacancy: {
+    /** Total shock cost (3 months lost rent). */
+    shockCost: number
+    /** Months of reserves remaining after absorbing the shock. */
+    monthsOfReserves: number
+  }
+  /** Major repair ($8k — HVAC, roof, plumbing). */
+  majorRepair: {
+    /** Total repair cost. */
     shockCost: number
     /** Months of reserves remaining after absorbing the shock. */
     monthsOfReserves: number
