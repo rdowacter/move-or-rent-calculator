@@ -1314,32 +1314,6 @@ function generateScenarioBWarnings(
     })
   }
 
-  // Stress test warnings — only flag if truly critical, details are in the Stress Tests section
-  if (stressTestResult.vacancy.monthsOfReserves < 3) {
-    warnings.push({
-      category: 'liquidity',
-      severity: 'critical',
-      message: `A 3-month vacancy would cost $${Math.round(stressTestResult.vacancy.shockCost).toLocaleString()} in lost rent and wipe out your remaining savings.`,
-      dollarImpact: stressTestResult.vacancy.shockCost,
-    })
-  }
-
-  if (stressTestResult.incomeDisruption.monthsUntilCrisis < 3) {
-    warnings.push({
-      category: 'liquidity',
-      severity: 'critical',
-      message: `A 20% income drop would leave you unable to cover both mortgages within ${Math.ceil(stressTestResult.incomeDisruption.monthsUntilCrisis)} months.`,
-    })
-  }
-
-  if (stressTestResult.marketDownturn.underwaterBy > 0) {
-    warnings.push({
-      category: 'market',
-      severity: 'warning',
-      message: `If home values drop 10%, the Kyle property would be underwater by $${Math.round(stressTestResult.marketDownturn.underwaterBy).toLocaleString()} — you'd owe more than it's worth.`,
-      dollarImpact: stressTestResult.marketDownturn.underwaterBy,
-    })
-  }
 
   return warnings
 }
