@@ -98,8 +98,8 @@ const SENSITIVITY_VARIABLES: VariableConfig[] = [
     applyOverride: (inputs, value) => ({
       ...inputs,
       currentHome: { ...inputs.currentHome, annualAppreciationRate: value },
-      // Both homes' appreciation rates move together — they're in the same market
-      newHome: { ...inputs.newHome, annualAppreciationRate: value },
+      // Only override the current home's appreciation rate — the user may have
+      // set different rates for Kyle vs Austin to reflect different markets
     }),
     marginType: 'absolute',
   },

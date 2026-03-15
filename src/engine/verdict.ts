@@ -131,7 +131,7 @@ function buildKeyMetrics(
   inputs: ScenarioInputs
 ): VerdictResult['keyMetrics'] {
   const horizon = inputs.projection.timeHorizonYears
-  const retirementAge = 65
+  const endAge = inputs.personal.age + horizon
 
   // Helper to format reserve runway (handles Infinity)
   function formatRunway(months: number): string {
@@ -148,7 +148,7 @@ function buildKeyMetrics(
       scenarioB: formatCurrency(model.scenarioB.finalNetWorth),
     },
     {
-      label: `IRA at age ${retirementAge}`,
+      label: `IRA at age ${endAge}`,
       baseline: formatCurrency(model.baseline.totalIRAValue),
       scenarioA: formatCurrency(model.scenarioA.totalIRAValue),
       scenarioB: formatCurrency(model.scenarioB.totalIRAValue),

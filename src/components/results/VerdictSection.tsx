@@ -164,8 +164,12 @@ export function VerdictSection() {
     if (!modelOutput) return null
     try {
       return generateVerdict(modelOutput, formValues as ScenarioInputs)
-    } catch {
-      // formValues may be incomplete during initial hydration
+    } catch (error) {
+      // formValues may be incomplete during initial hydration from localStorage.
+      // Log in development so real bugs aren't silently hidden.
+      if (import.meta.env.DEV) {
+        console.warn('[VerdictSection] generateVerdict failed — likely incomplete form values during hydration:', error)
+      }
       return null
     }
   }, [modelOutput, formValues])
