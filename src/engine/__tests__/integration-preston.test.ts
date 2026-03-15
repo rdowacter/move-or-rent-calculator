@@ -51,13 +51,10 @@ describe('Integration: Preston Defaults (Golden Run 1)', () => {
       expect(result.scenarioB.yearlySnapshots).toHaveLength(20)
     })
 
-    it('scenarioB has a non-null rentalExitTaxEvent (exit at year 20)', () => {
-      expect(result.scenarioB.rentalExitTaxEvent).not.toBeNull()
-    })
-
-    it('baseline and scenarioA rentalExitTaxEvent are null', () => {
+    it('all rentalExitTaxEvents are null (default exit year 21 > horizon 20)', () => {
       expect(result.baseline.rentalExitTaxEvent).toBeNull()
       expect(result.scenarioA.rentalExitTaxEvent).toBeNull()
+      expect(result.scenarioB.rentalExitTaxEvent).toBeNull()
     })
 
     it('all snapshots have sequential year numbers 1-20', () => {
@@ -123,19 +120,8 @@ describe('Integration: Preston Defaults (Golden Run 1)', () => {
       expect(scenarioAIRA).toBeGreaterThan(scenarioBIRA)
     })
 
-    it('Scenario B rental exit event has positive recapture tax and net proceeds', () => {
-      const exitEvent = result.scenarioB.rentalExitTaxEvent!
-
-      expect(exitEvent.depreciationRecaptureTax).toBeGreaterThan(0)
-      expect(exitEvent.netSaleProceeds).toBeGreaterThan(0)
-    })
-
-    it('Scenario B rental exit totalDepreciationClaimed is 20 years of depreciation', () => {
-      const exitEvent = result.scenarioB.rentalExitTaxEvent!
-
-      // Annual depreciation = $270k * 0.85 / 27.5 ≈ $8,345.45/year
-      // 20 years ≈ $166,909
-      expect(exitEvent.totalDepreciationClaimed).toBeCloseTo(8_345.45 * 20, -2)
+    it('Scenario B has no rental exit event with defaults (exit year 21 > horizon 20)', () => {
+      expect(result.scenarioB.rentalExitTaxEvent).toBeNull()
     })
   })
 
@@ -219,23 +205,43 @@ describe('Integration: Preston Defaults (Golden Run 1)', () => {
     })
   })
 
-  // ---- 6. Rental exit (Year 20) -------------------------------------------
+  // ---- 6. Rental exit (explicit exit at year 20) ---------------------------
 
-  describe('rental exit (Year 20)', () => {
+  describe('rental exit (explicit plannedRentalExitYear: 20)', () => {
+    let exitResult: ModelOutput
+
+    beforeAll(() => {
+      const inputsWithExit: ScenarioInputs = {
+        ...prestonInputs,
+        projection: { ...prestonInputs.projection, plannedRentalExitYear: 20 },
+      }
+      exitResult = runModel(inputsWithExit)
+    })
+
+    it('scenarioB has a non-null rentalExitTaxEvent', () => {
+      expect(exitResult.scenarioB.rentalExitTaxEvent).not.toBeNull()
+    })
+
     it('depreciationRecaptureTax > 0', () => {
-      expect(result.scenarioB.rentalExitTaxEvent!.depreciationRecaptureTax).toBeGreaterThan(0)
+      expect(exitResult.scenarioB.rentalExitTaxEvent!.depreciationRecaptureTax).toBeGreaterThan(0)
     })
 
     it('netSaleProceeds > 0', () => {
-      expect(result.scenarioB.rentalExitTaxEvent!.netSaleProceeds).toBeGreaterThan(0)
+      expect(exitResult.scenarioB.rentalExitTaxEvent!.netSaleProceeds).toBeGreaterThan(0)
     })
 
     it('capitalGain > 0 (home appreciated over 20 years)', () => {
-      expect(result.scenarioB.rentalExitTaxEvent!.capitalGain).toBeGreaterThan(0)
+      expect(exitResult.scenarioB.rentalExitTaxEvent!.capitalGain).toBeGreaterThan(0)
     })
 
     it('capitalGainsTax >= 0', () => {
-      expect(result.scenarioB.rentalExitTaxEvent!.capitalGainsTax).toBeGreaterThanOrEqual(0)
+      expect(exitResult.scenarioB.rentalExitTaxEvent!.capitalGainsTax).toBeGreaterThanOrEqual(0)
+    })
+
+    it('totalDepreciationClaimed is 20 years of depreciation', () => {
+      // Annual depreciation = $270k * 0.85 / 27.5 ≈ $8,345.45/year
+      // 20 years ≈ $166,909
+      expect(exitResult.scenarioB.rentalExitTaxEvent!.totalDepreciationClaimed).toBeCloseTo(8_345.45 * 20, -2)
     })
   })
 })

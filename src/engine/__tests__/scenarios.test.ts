@@ -350,21 +350,31 @@ describe('projectScenarioB', () => {
     )
   })
 
-  it('has rental exit tax event at year 20', () => {
-    expect(result.rentalExitTaxEvent).not.toBeNull()
-    expect(result.rentalExitTaxEvent!.totalDepreciationClaimed).toBeGreaterThan(
-      0
-    )
-    expect(result.rentalExitTaxEvent!.depreciationRecaptureTax).toBeGreaterThan(
-      0
-    )
-    expect(result.rentalExitTaxEvent!.netSaleProceeds).toBeGreaterThan(0)
+  it('has no rental exit tax event with defaults (exit year 21 > horizon 20)', () => {
+    expect(result.rentalExitTaxEvent).toBeNull()
+  })
+
+  it('has rental exit tax event when plannedRentalExitYear is within horizon', () => {
+    const inputsWithExit: ScenarioInputs = {
+      ...prestonInputs,
+      projection: { ...prestonInputs.projection, plannedRentalExitYear: 20 },
+    }
+    const exitResult = projectScenarioB(inputsWithExit)
+    expect(exitResult.rentalExitTaxEvent).not.toBeNull()
+    expect(exitResult.rentalExitTaxEvent!.totalDepreciationClaimed).toBeGreaterThan(0)
+    expect(exitResult.rentalExitTaxEvent!.depreciationRecaptureTax).toBeGreaterThan(0)
+    expect(exitResult.rentalExitTaxEvent!.netSaleProceeds).toBeGreaterThan(0)
   })
 
   it('cumulative depreciation at exit matches manual calculation', () => {
+    const inputsWithExit: ScenarioInputs = {
+      ...prestonInputs,
+      projection: { ...prestonInputs.projection, plannedRentalExitYear: 20 },
+    }
+    const exitResult = projectScenarioB(inputsWithExit)
     // 20 years × $8,345.45/year = $166,909.09
     expect(
-      result.rentalExitTaxEvent!.totalDepreciationClaimed
+      exitResult.rentalExitTaxEvent!.totalDepreciationClaimed
     ).toBeCloseTo(8_345.45 * 20, 0)
   })
 
@@ -601,10 +611,10 @@ describe('runModel', () => {
     expect(model.scenarioB.yearlySnapshots).toHaveLength(20)
   })
 
-  it('Scenario B has rentalExitTaxEvent, others do not', () => {
+  it('no scenario has rentalExitTaxEvent with defaults (exit year 21 > horizon 20)', () => {
     expect(model.baseline.rentalExitTaxEvent).toBeNull()
     expect(model.scenarioA.rentalExitTaxEvent).toBeNull()
-    expect(model.scenarioB.rentalExitTaxEvent).not.toBeNull()
+    expect(model.scenarioB.rentalExitTaxEvent).toBeNull()
   })
 
   it('Scenario B has more warnings than baseline', () => {
