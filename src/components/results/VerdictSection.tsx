@@ -162,7 +162,12 @@ export function VerdictSection() {
 
   const verdict = useMemo(() => {
     if (!modelOutput) return null
-    return generateVerdict(modelOutput, formValues as ScenarioInputs)
+    try {
+      return generateVerdict(modelOutput, formValues as ScenarioInputs)
+    } catch {
+      // formValues may be incomplete during initial hydration
+      return null
+    }
   }, [modelOutput, formValues])
 
   if (!verdict) {
