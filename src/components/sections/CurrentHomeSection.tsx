@@ -21,7 +21,7 @@ function CurrentHomeSection() {
           name="currentHome.homeValue"
           label="Home Value"
           control={control}
-          description="Current estimated market value"
+          description="Current market value — used as the sale price in Scenario A and the starting value for rental appreciation in Scenario B"
         />
 
         <CurrencyInput
