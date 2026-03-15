@@ -84,9 +84,6 @@ describe('ResultsSections integration', () => {
     // ResultSection wrapper renders "Warnings & Risks" heading
     expect(screen.getByText('Warnings & Risks')).toBeInTheDocument()
 
-    // StressTests section heading
-    expect(screen.getByText('What-If Stress Tests')).toBeInTheDocument()
-
     // UpfrontCapital renders its section with aria-label
     expect(
       screen.getByLabelText('Upfront Capital Requirements')

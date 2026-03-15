@@ -11,7 +11,7 @@
 // ---------------------------------------------------------------------------
 
 import { ExecutiveSummary } from './ExecutiveSummary'
-import { AlertTriangle, TrendingUp, PiggyBank, DollarSign, Wallet, Shield, Calendar, Layers, Table2, BookOpen } from 'lucide-react'
+import { AlertTriangle, TrendingUp, PiggyBank, DollarSign, Wallet, Calendar, Layers, Table2, BookOpen } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
 import type { ScenarioInputs } from '@/engine/types'
 import { FormField } from '@/components/FormField'
@@ -21,7 +21,6 @@ import { NetWorthBreakdown } from './NetWorthBreakdown'
 import { IRATrajectoryChart } from './IRATrajectoryChart'
 import { MonthlyCashFlow } from './MonthlyCashFlow'
 import { UpfrontCapital } from './UpfrontCapital'
-import { StressTests } from './StressTests'
 import { WarningsList } from './WarningsList'
 import { NetWorthComposition } from './NetWorthComposition'
 import { YearByYearTable } from './YearByYearTable'
@@ -73,14 +72,10 @@ export function ResultsSections() {
         </ResultSection>
       </div>
 
-      {/* Group 3: Risk Signals — warnings and stress tests */}
-      <div className="space-y-8 rounded-lg bg-red-50/40 p-5 dark:bg-red-950/20">
+      {/* Group 3: Risk Signals */}
+      <div className="rounded-lg bg-red-50/40 p-5 dark:bg-red-950/20">
         <ResultSection icon={AlertTriangle} title="Warnings & Risks" accentColor="border-red-400" iconColor="text-red-500">
           <WarningsList />
-        </ResultSection>
-
-        <ResultSection icon={Shield} title="What-If Stress Tests" description="How Scenario B holds up when things go wrong" accentColor="border-red-400" iconColor="text-red-500">
-          <StressTests />
         </ResultSection>
       </div>
 

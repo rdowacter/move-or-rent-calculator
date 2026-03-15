@@ -1288,6 +1288,22 @@ function generateScenarioBWarnings(
     }
   }
 
+  // Dual-mortgage risks — things to think about when carrying two properties
+  const kyleMonthlyMortgagePayment = year1.cashFlowBreakdown.rentalMortgagePI
+  if (kyleMonthlyMortgagePayment > 0) {
+    warnings.push({
+      category: 'landlord',
+      severity: 'info',
+      message: `During a vacancy, you'd pay both mortgages from salary alone — an extra $${Math.round(kyleMonthlyMortgagePayment).toLocaleString()}/mo on top of the Austin mortgage until you find a tenant.`,
+    })
+
+    warnings.push({
+      category: 'landlord',
+      severity: 'info',
+      message: `As a landlord, you're responsible for all repairs on the Kyle property — a new HVAC ($5-8K), roof ($8-15K), or plumbing emergency ($2-5K) comes out of your pocket.`,
+    })
+  }
+
   // Passive loss phase-out: check if AGI >= $150k
   const year1Income = snapshots[0].annualGrossIncome
   if (year1Income >= 150_000) {
