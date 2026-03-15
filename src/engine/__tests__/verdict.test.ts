@@ -73,7 +73,6 @@ function makeScenarioOutput(overrides: {
     monthlyCashFlowWorstCase: monthlyCashFlowBestCase - 200,
     cumulativeCommuteSavings: 5_000,
     annualGrossIncome: 100_000,
-    liquidSavings: 0,
     cashFlowBreakdown: {
       takeHomePay: 7000, mortgagePI: 1400, propertyTax: 500, insurance: 200,
       pmi: 0, hoa: 0, livingExpenses: 3000, debtPayments: 0, commuteCost: 150,
