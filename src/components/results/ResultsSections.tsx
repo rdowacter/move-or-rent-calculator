@@ -39,18 +39,23 @@ export function ResultsSections() {
 
   return (
     <div className="space-y-10" data-testid="results-sections">
-      {/* Projection Controls — right at the top of results where they belong */}
-      <div className="flex items-start gap-3 rounded-lg border bg-card p-4 shadow-sm">
-        <Calendar className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
-        <div className="min-w-[140px] max-w-[200px]">
-          <FormField
-            name="projection.timeHorizonYears"
-            label="Time Horizon"
-            control={control}
-            type="number"
-            inputMode="numeric"
-            description="Years to project"
-          />
+      {/* Projection Controls — first thing in results, drives all calculations below */}
+      <div className="rounded-lg border-2 border-primary/20 bg-card p-4 shadow-sm">
+        <div className="flex items-center gap-3">
+          <Calendar className="h-5 w-5 shrink-0 text-primary" />
+          <div>
+            <h2 className="text-lg font-semibold tracking-tight">Financial Comparison</h2>
+            <p className="text-sm text-muted-foreground">All projections below use this time horizon</p>
+          </div>
+          <div className="ml-auto min-w-[120px] max-w-[160px]">
+            <FormField
+              name="projection.timeHorizonYears"
+              label="Years"
+              control={control}
+              type="number"
+              inputMode="numeric"
+            />
+          </div>
         </div>
       </div>
 

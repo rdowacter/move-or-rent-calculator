@@ -216,11 +216,12 @@ export interface ProjectionInputs {
   /** Number of years to project forward (5–30). */
   timeHorizonYears: number
   /**
-   * Year in which the rental property is sold.
-   * Defaults to the same as timeHorizonYears.
-   * Triggers depreciation recapture and capital gains calculations.
+   * Year in which the rental property is sold, or null to hold indefinitely.
+   * When null, the rental is never sold within the projection — no depreciation
+   * recapture or capital gains event occurs. The UI removed the exit year control,
+   * so this defaults to null.
    */
-  plannedRentalExitYear: number
+  plannedRentalExitYear: number | null
 }
 
 /**

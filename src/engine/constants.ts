@@ -373,5 +373,8 @@ export const DEFAULT_COST_INPUTS = {
 /** Default values for ProjectionInputs. */
 export const DEFAULT_PROJECTION_INPUTS = {
   timeHorizonYears: 20,
-  plannedRentalExitYear: 20,
+  // null = never sell the rental within the projection.
+  // The rental exit year UI control was removed — the model assumes
+  // the user holds the rental indefinitely.
+  plannedRentalExitYear: null,
 } satisfies Record<string, unknown>

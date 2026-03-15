@@ -200,11 +200,10 @@ const projectionInputsSchema = z.object({
   /** Number of years to project forward (1–30). */
   timeHorizonYears: z.number().int().min(1).max(30),
   /**
-   * Year in which the rental property is sold.
-   * Defaults to the same as timeHorizonYears.
-   * Triggers depreciation recapture and capital gains calculations.
+   * Year in which the rental property is sold, or null to hold indefinitely.
+   * When null, no rental exit event occurs within the projection.
    */
-  plannedRentalExitYear: z.number().int().min(1).max(30),
+  plannedRentalExitYear: z.number().int().min(1).max(30).nullable(),
 })
 
 // ---- Top-level schema -----------------------------------------------------

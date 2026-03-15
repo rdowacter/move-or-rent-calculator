@@ -779,7 +779,9 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
     let rentalMonthlyMaintenance = 0
     let rentalMonthlyManagementFee = 0
 
-    if (rentalActive && year <= projection.plannedRentalExitYear) {
+    // When plannedRentalExitYear is null, the rental is held indefinitely (never sold).
+    const rentalActiveThisYear = rentalActive && (projection.plannedRentalExitYear === null || year <= projection.plannedRentalExitYear)
+    if (rentalActiveThisYear) {
       // Escalate Kyle rental property costs
       const escalatedKylePropertyTax =
         kyleAnnualPropertyTax *
@@ -884,8 +886,8 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
       additionalLandlordCosts +=
         costs.additionalTaxPrepCost + costs.umbrellaInsuranceAnnualCost
 
-      // ---- Rental exit event ----
-      if (year === projection.plannedRentalExitYear) {
+      // ---- Rental exit event (only if an explicit exit year is set) ----
+      if (projection.plannedRentalExitYear !== null && year === projection.plannedRentalExitYear) {
         const saleTaxResult = rentalSaleTax({
           salePrice: kyleHomeValue,
           originalBasis: currentHome.homeValue,
@@ -912,7 +914,7 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
         kyleMortgageBalance = 0
         rentalActive = false
       }
-    } else if (!rentalActive || year > projection.plannedRentalExitYear) {
+    } else if (!rentalActive) {
       // Post-exit: no rental activity
       // Kyle equity is 0 after sale
     }
@@ -989,17 +991,13 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
     const monthlyCashFlowBest =
       monthlyNetIncome -
       monthlyExpenses +
-      (rentalActive && year <= projection.plannedRentalExitYear
-        ? rentalMonthlyCashFlow
-        : 0) -
+      (rentalActiveThisYear ? rentalMonthlyCashFlow : 0) -
       additionalLandlordCosts / MONTHS_PER_YEAR
 
     const monthlyCashFlowWorst =
       monthlyNetIncome -
       monthlyExpenses +
-      (rentalActive && year <= projection.plannedRentalExitYear
-        ? worstCaseMonthlyCashFlow
-        : 0) -
+      (rentalActiveThisYear ? worstCaseMonthlyCashFlow : 0) -
       additionalLandlordCosts / MONTHS_PER_YEAR
 
     const annualCashFlow = monthlyCashFlowBest * MONTHS_PER_YEAR
@@ -1009,10 +1007,9 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
     liquidSavings += annualCashFlow
 
     // Net worth
-    const kyleEquity =
-      rentalActive && year <= projection.plannedRentalExitYear
-        ? kyleHomeValue - kyleMortgageBalance
-        : 0
+    const kyleEquity = rentalActiveThisYear
+      ? kyleHomeValue - kyleMortgageBalance
+      : 0
     const austinEquity = austinHomeValue - austinMortgageBalance
     const netWorth = austinEquity + kyleEquity + iraBalance + liquidSavings
 
@@ -1044,8 +1041,7 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
         debtPayments: personal.monthlyDebtPayments,
         commuteCost: annualNewCommuteCost / MONTHS_PER_YEAR,
         rentalIncome: rentalEffectiveGrossRent,
-        rentalMortgagePI: rentalActive && year <= projection.plannedRentalExitYear
-          ? kyleMonthlyPayment : 0,
+        rentalMortgagePI: rentalActiveThisYear ? kyleMonthlyPayment : 0,
         rentalPropertyTax: rentalMonthlyPropertyTax,
         rentalInsurance: rentalMonthlyInsurance,
         rentalMaintenance: rentalMonthlyMaintenance,
