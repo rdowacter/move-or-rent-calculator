@@ -97,7 +97,7 @@ function ScorecardTable({
         <thead>
           <tr className="border-b">
             <th className="text-left py-2 pr-2 font-medium text-muted-foreground">Metric</th>
-            {rows.map((row, i) => (
+            {rows.map((_, i) => (
               <th key={i} className="text-right py-2 px-2 font-medium text-muted-foreground">
                 <span className="flex items-center justify-end gap-1.5">
                   <span

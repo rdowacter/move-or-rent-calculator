@@ -1204,7 +1204,7 @@ function generateScenarioBWarnings(
   snapshots: YearlySnapshot[],
   dtiResult: DTIResult,
   upfrontCapital: UpfrontCapital,
-  stressTestResult: ReturnType<typeof stressTest>,
+  _stressTestResult: ReturnType<typeof stressTest>,
   iraWithdrawalTaxCost: number
 ): Warning[] {
   const warnings: Warning[] = []

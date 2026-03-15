@@ -13,7 +13,6 @@ import {
   assessFeasibility,
   assessRisk,
   generateScorecardVerdict,
-  READY_CASH_FLOW_THRESHOLD,
   READY_RESERVE_MONTHS,
   WINNER_THRESHOLD,
 } from '../verdict'
@@ -74,6 +73,14 @@ function makeScenarioOutput(overrides: {
     monthlyCashFlowWorstCase: monthlyCashFlowBestCase - 200,
     cumulativeCommuteSavings: 5_000,
     annualGrossIncome: 100_000,
+    liquidSavings: 0,
+    cashFlowBreakdown: {
+      takeHomePay: 7000, mortgagePI: 1400, propertyTax: 500, insurance: 200,
+      pmi: 0, hoa: 0, livingExpenses: 3000, debtPayments: 0, commuteCost: 150,
+      rentalIncome: 0, rentalMortgagePI: 0, rentalPropertyTax: 0,
+      rentalInsurance: 0, rentalMaintenance: 0, rentalManagementFee: 0,
+      rentalLandlordCosts: 0,
+    },
   }
 
   const defaultWarnings: Warning[] = warnings ?? Array.from(
