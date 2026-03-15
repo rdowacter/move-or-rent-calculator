@@ -25,17 +25,8 @@ import type {
   RiskLevel,
 } from '@/engine/types'
 import { formatCurrency } from '@/utils/formatters'
+import { SCENARIO_COLORS } from '@/utils/scenarioColors'
 import { cn } from '@/lib/utils'
-
-// ---------------------------------------------------------------------------
-// Scenario colors — consistent across the entire app
-// ---------------------------------------------------------------------------
-
-const SCENARIO_COLORS = {
-  baseline: '#6366f1', // indigo
-  scenarioA: '#10b981', // emerald
-  scenarioB: '#f59e0b', // amber
-} as const
 
 const SCENARIO_LABELS = {
   baseline: { short: 'Baseline', full: 'Stay in Kyle, keep the IRA, keep commuting' },
@@ -294,11 +285,9 @@ export function ExecutiveSummary() {
     if (!modelOutput) return null
     try {
       return generateScorecardVerdict(modelOutput, formValues as ScenarioInputs)
-    } catch (error) {
+    } catch {
       // formValues may be incomplete during initial hydration from localStorage.
-      if (import.meta.env.DEV) {
-        console.warn('[ExecutiveSummary] generateScorecardVerdict failed — likely incomplete form values during hydration:', error)
-      }
+      // Gracefully return null — the component renders nothing until inputs stabilize.
       return null
     }
   }, [modelOutput, formValues])

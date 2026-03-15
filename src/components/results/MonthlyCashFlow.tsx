@@ -28,16 +28,10 @@ import {
 import { ChevronDown } from 'lucide-react'
 import { LineChart, Line } from 'recharts'
 import { formatCurrency } from '@/utils/formatters'
+import { SCENARIO_COLORS, type ScenarioColorKey } from '@/utils/scenarioColors'
 import type { ScenarioOutput, CashFlowBreakdown } from '@/engine/types'
 
-// ---- Scenario colors (consistent across the app) ----
-const SCENARIO_COLORS = {
-  baseline: '#6366f1', // Indigo
-  scenarioA: '#10b981', // Emerald
-  scenarioB: '#f59e0b', // Amber
-} as const
-
-type ScenarioKey = keyof typeof SCENARIO_COLORS
+type ScenarioKey = ScenarioColorKey
 
 /**
  * Renders a single metric row with a label and a formatted currency value.
