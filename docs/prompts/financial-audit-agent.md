@@ -1,6 +1,6 @@
 # Financial Accuracy Audit Agent
 
-> **Usage:** Run this prompt in Claude Code with `cat docs/prompts/financial-audit-agent.md | claude --print` or paste into a new session pointed at this repo.
+> **Usage:** Open a Claude Code session in this repo and ask it to read and execute this file.
 
 ## Agent Persona: CPA & Financial Engineer Auditor
 
