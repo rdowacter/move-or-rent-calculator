@@ -603,3 +603,67 @@ export interface SensitivityResult {
   /** One-sentence summary of overall robustness (e.g., "Your recommendation holds under most tested conditions"). */
   summary: string
 }
+
+// ---- Scorecard / Feasibility Types ----------------------------------------
+
+/** Feasibility status for a scenario. */
+export type FeasibilityStatus = 'ready' | 'tight' | 'not_feasible'
+
+/** Risk level derived from warnings and stress tests. */
+export type RiskLevel = 'low' | 'medium' | 'high'
+
+/**
+ * Feasibility assessment for a single scenario.
+ * Combines a traffic-light status with the underlying reserve data
+ * so the UI can show both the badge and the reasoning.
+ */
+export interface FeasibilityBadge {
+  /** Traffic-light status: ready (green), tight (amber), not_feasible (red). */
+  status: FeasibilityStatus
+  /** Short human-readable label (e.g. "Ready", "Tight — 2.1 months reserves"). */
+  label: string
+  /** Months of post-closing reserves relative to total monthly obligations. */
+  reserveMonths: number
+}
+
+/**
+ * Per-scenario row in the comparison scorecard.
+ * Contains all the key metrics needed for a side-by-side comparison.
+ */
+export interface ScorecardRow {
+  /** Display name of the scenario (e.g. "Baseline (stay put)"). */
+  scenarioName: string
+  /** Traffic-light feasibility assessment. */
+  feasibility: FeasibilityBadge
+  /** Year 1 worst-case monthly cash flow (all expenses, vacancy, maintenance). */
+  monthlyCashFlow: number
+  /** Year 1 best-case monthly cash flow (full rental income, no surprises). */
+  monthlyCashFlowBest: number
+  /** Net worth at the end of the projection period. */
+  finalNetWorth: number
+  /** Whether this scenario is the recommended winner. */
+  isWinner: boolean
+  /** Risk level derived from warning count and severity. */
+  riskLevel: RiskLevel
+  /** IRA / retirement balance at the end of the projection period. */
+  finalIRABalance: number
+}
+
+/**
+ * Complete scorecard verdict output.
+ * Designed for rendering a summary card with a verdict sentence,
+ * a 3-row comparison table, and an optional guardrail callout.
+ */
+export interface VerdictOutput {
+  /** 1-2 sentence plain-language verdict explaining the recommendation. */
+  verdictText: string
+  /** Exactly 3 scorecard rows: [Baseline, Scenario A, Scenario B]. */
+  scorecard: [ScorecardRow, ScorecardRow, ScorecardRow]
+  /**
+   * Optional guardrail callout for decisive situations.
+   * Shown when the data is clearly actionable (e.g. "Both scenarios are
+   * infeasible" or "Zero retirement savings at age 57").
+   * Null when no guardrail condition is triggered.
+   */
+  guardrailCallout: string | null
+}

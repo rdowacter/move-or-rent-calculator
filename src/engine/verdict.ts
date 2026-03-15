@@ -18,10 +18,14 @@ import type {
   ScenarioInputs,
   ModelOutput,
   VerdictResult,
+  VerdictOutput,
+  ScorecardRow,
+  FeasibilityBadge,
+  RiskLevel,
   Warning,
 } from './types'
 
-import { DTI_HARD_MAX } from './constants'
+import { DTI_HARD_MAX, MONTHS_PER_YEAR } from './constants'
 import { formatCurrency, formatPercent } from '../utils/formatters'
 
 // ---------------------------------------------------------------------------
@@ -475,4 +479,367 @@ function pickBestScenario(
   }
 
   return best
+}
+
+// ---------------------------------------------------------------------------
+// Scorecard Verdict Engine
+//
+// An alternative verdict API that produces a structured scorecard with
+// feasibility badges, risk levels, and a compact verdict sentence.
+// Designed for rendering summary cards in the UI.
+// ---------------------------------------------------------------------------
+
+// ---- Scorecard Constants --------------------------------------------------
+
+/**
+ * Minimum monthly cash flow (best-case) for a scenario to be considered
+ * "ready" (green). Below $500/mo, the user has very little room for
+ * unexpected expenses even in the best case.
+ */
+export const READY_CASH_FLOW_THRESHOLD = 500
+
+/**
+ * Minimum months of post-closing reserves for a scenario to be "ready".
+ * 3 months is the bare minimum emergency fund per financial planning standards.
+ */
+export const READY_RESERVE_MONTHS = 3
+
+/**
+ * Net worth gap required to declare a clear winner.
+ * If the gap between the top two scenarios is less than 3%, the difference
+ * is not meaningful enough to make a confident recommendation — small
+ * assumption changes could flip the result.
+ */
+export const WINNER_THRESHOLD = 0.03
+
+// ---------------------------------------------------------------------------
+// assessFeasibility
+// ---------------------------------------------------------------------------
+
+/**
+ * Evaluates a scenario's feasibility and returns a traffic-light badge.
+ *
+ * - Baseline (totalCashNeeded === 0): always "ready" with infinite reserves,
+ *   because staying put requires no upfront capital event.
+ * - Red "Not Feasible": surplus < 0 (can't close) OR worst-case monthly
+ *   cash flow < $0 (losing money from day one).
+ * - Green "Ready": surplus >= 0, reserves >= 3 months, AND best-case
+ *   monthly cash flow >= $500/mo.
+ * - Amber "Tight": can close (surplus >= 0) but either reserves < 3 months
+ *   OR best-case cash flow is between $0 and $499/mo.
+ *
+ * @param scenario - The scenario output to assess
+ * @param inputs - The user's scenario inputs (needed for expense calculation)
+ */
+export function assessFeasibility(
+  scenario: ScenarioOutput,
+  inputs: ScenarioInputs
+): FeasibilityBadge {
+  // Baseline: no capital event, user stays put
+  if (scenario.upfrontCapital.totalCashNeeded === 0) {
+    return {
+      status: 'ready',
+      label: 'N/A',
+      reserveMonths: Infinity,
+    }
+  }
+
+  const year1 = scenario.yearlySnapshots[0]
+  const surplus = scenario.upfrontCapital.surplus
+
+  // Calculate total monthly obligations from year 1 data.
+  // We derive this from income minus cash flow: if the user earns X/mo
+  // and has Y/mo cash flow, then obligations = X/mo - Y/mo.
+  // But for reserve calculation, we need the raw expense figure.
+  // Compute from inputs + scenario data.
+  const totalMonthlyObligations = computeTotalMonthlyObligations(scenario, inputs)
+
+  // Post-closing reserves = whatever cash remains after closing
+  const postClosingReserves = Math.max(0, surplus)
+
+  // Reserve months = how long reserves last against monthly obligations
+  const reserveMonths = totalMonthlyObligations > 0
+    ? postClosingReserves / totalMonthlyObligations
+    : postClosingReserves > 0 ? Infinity : 0
+
+  // Red: can't afford to close, OR losing money every month in worst case
+  if (surplus < 0 || year1.monthlyCashFlowWorstCase < 0) {
+    const reason = surplus < 0
+      ? `${formatCurrency(Math.abs(surplus))} shortfall`
+      : 'Negative cash flow'
+    return {
+      status: 'not_feasible',
+      label: `Not Feasible — ${reason}`,
+      reserveMonths,
+    }
+  }
+
+  // Green: can close, has adequate reserves, and comfortable cash flow
+  if (reserveMonths >= READY_RESERVE_MONTHS && year1.monthlyCashFlowBestCase >= READY_CASH_FLOW_THRESHOLD) {
+    return {
+      status: 'ready',
+      label: 'Ready',
+      reserveMonths,
+    }
+  }
+
+  // Amber: can close but thin reserves or tight cash flow
+  const tightReason = reserveMonths < READY_RESERVE_MONTHS
+    ? `${reserveMonths.toFixed(1)} months reserves`
+    : `${formatCurrency(year1.monthlyCashFlowBestCase)}/mo cash flow`
+  return {
+    status: 'tight',
+    label: `Tight — ${tightReason}`,
+    reserveMonths,
+  }
+}
+
+/**
+ * Compute total monthly obligations from scenario output and inputs.
+ *
+ * This includes primary mortgage P&I, primary property tax, primary insurance,
+ * primary PMI, primary HOA, living expenses, debt payments, and (for Scenario B)
+ * rental property expenses: rental mortgage, rental property tax, rental
+ * insurance, rental maintenance, and rental HOA.
+ *
+ * We compute this from inputs rather than a cashFlowBreakdown field because
+ * not all snapshot shapes include itemized expense breakdowns.
+ */
+function computeTotalMonthlyObligations(
+  scenario: ScenarioOutput,
+  inputs: ScenarioInputs
+): number {
+  // Start with living expenses and debt payments
+  let obligations = inputs.personal.monthlyLivingExpenses + inputs.personal.monthlyDebtPayments
+
+  // Primary home costs (new home for A/B, current home for baseline)
+  // We can derive monthly mortgage from DTI data or compute from inputs.
+  // Use the new home inputs since this is for A/B scenarios (totalCashNeeded > 0).
+  const isScenarioB = scenario.upfrontCapital.iraWithdrawalNetProceeds !== null
+
+  // New home monthly costs
+  const downPaymentPercent = isScenarioB
+    ? inputs.newHome.downPaymentPercentScenarioB
+    : inputs.newHome.downPaymentPercentScenarioA
+  const loanAmount = inputs.newHome.purchasePrice * (1 - downPaymentPercent)
+
+  // Monthly P&I — use a simplified calculation
+  const monthlyRate = inputs.newHome.interestRate / MONTHS_PER_YEAR
+  const numPayments = inputs.newHome.loanTermYears * MONTHS_PER_YEAR
+  let monthlyPI: number
+  if (monthlyRate === 0) {
+    monthlyPI = loanAmount / numPayments
+  } else {
+    monthlyPI = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments))
+      / (Math.pow(1 + monthlyRate, numPayments) - 1)
+  }
+
+  obligations += monthlyPI
+  obligations += (inputs.newHome.annualPropertyTaxRate * inputs.newHome.purchasePrice) / MONTHS_PER_YEAR
+  obligations += inputs.newHome.annualInsurance / MONTHS_PER_YEAR
+
+  // PMI if applicable (LTV > 80%)
+  if (downPaymentPercent < 0.2) {
+    obligations += (inputs.newHome.annualPMIRate * loanAmount) / MONTHS_PER_YEAR
+  }
+
+  // Rental property costs (Scenario B only)
+  if (isScenarioB) {
+    // Rental mortgage P&I
+    const rentalMonthlyRate = inputs.currentHome.interestRate / MONTHS_PER_YEAR
+    const rentalNumPayments = inputs.currentHome.originalLoanTermYears * MONTHS_PER_YEAR
+    let rentalMonthlyPI: number
+    if (rentalMonthlyRate === 0) {
+      rentalMonthlyPI = inputs.currentHome.mortgageBalance / rentalNumPayments
+    } else {
+      // Use remaining balance and remaining term
+      const remainingPayments = rentalNumPayments - (inputs.currentHome.yearsIntoLoan * MONTHS_PER_YEAR)
+      if (remainingPayments <= 0) {
+        rentalMonthlyPI = 0
+      } else {
+        rentalMonthlyPI = inputs.currentHome.mortgageBalance
+          * (rentalMonthlyRate * Math.pow(1 + rentalMonthlyRate, remainingPayments))
+          / (Math.pow(1 + rentalMonthlyRate, remainingPayments) - 1)
+      }
+    }
+
+    obligations += rentalMonthlyPI
+    obligations += (inputs.currentHome.annualPropertyTaxRate * inputs.currentHome.homeValue) / MONTHS_PER_YEAR
+    // Landlord insurance = base insurance + premium increase
+    const landlordInsurance = inputs.currentHome.annualInsurance * (1 + inputs.currentHome.landlordInsurancePremiumIncrease)
+    obligations += landlordInsurance / MONTHS_PER_YEAR
+    obligations += (inputs.currentHome.maintenanceReserveRate * inputs.currentHome.homeValue) / MONTHS_PER_YEAR
+    obligations += inputs.currentHome.monthlyHOA
+  }
+
+  return obligations
+}
+
+// ---------------------------------------------------------------------------
+// assessRisk
+// ---------------------------------------------------------------------------
+
+/**
+ * Derives a risk level from a scenario's warnings.
+ *
+ * - High: 2 or more critical-severity warnings
+ * - Medium: 1 critical OR 2+ warning-severity warnings
+ * - Low: everything else (only info-level or few warnings)
+ *
+ * @param scenario - The scenario output whose warnings to evaluate
+ */
+export function assessRisk(scenario: ScenarioOutput): RiskLevel {
+  const criticalCount = scenario.warnings.filter(w => w.severity === 'critical').length
+  const warningCount = scenario.warnings.filter(w => w.severity === 'warning').length
+
+  if (criticalCount >= 2) return 'high'
+  if (criticalCount >= 1 || warningCount >= 2) return 'medium'
+  return 'low'
+}
+
+// ---------------------------------------------------------------------------
+// generateScorecardVerdict
+// ---------------------------------------------------------------------------
+
+/**
+ * Generates a structured scorecard verdict by evaluating all three scenarios.
+ * Produces a 3-row scorecard with feasibility badges, risk levels, and a
+ * compact verdict sentence suitable for a summary card UI.
+ *
+ * The winner is the scenario with the highest finalNetWorth, but only
+ * starred if the gap exceeds WINNER_THRESHOLD (3%). When the gap is smaller,
+ * the difference is not meaningful enough to declare a confident winner.
+ *
+ * @param model - Complete model output from runModel()
+ * @param inputs - The user's scenario inputs
+ */
+export function generateScorecardVerdict(
+  model: ModelOutput,
+  inputs: ScenarioInputs
+): VerdictOutput {
+  const scenarios: { key: ScenarioKey; output: ScenarioOutput }[] = [
+    { key: 'baseline', output: model.baseline },
+    { key: 'scenarioA', output: model.scenarioA },
+    { key: 'scenarioB', output: model.scenarioB },
+  ]
+
+  // Build scorecard rows
+  const rows = scenarios.map(s => {
+    const feasibility = assessFeasibility(s.output, inputs)
+    const year1 = s.output.yearlySnapshots[0]
+
+    return {
+      scenarioName: SCENARIO_DISPLAY_NAMES[s.key],
+      feasibility,
+      monthlyCashFlow: year1.monthlyCashFlowWorstCase,
+      monthlyCashFlowBest: year1.monthlyCashFlowBestCase,
+      finalNetWorth: s.output.finalNetWorth,
+      isWinner: false, // Set below
+      riskLevel: assessRisk(s.output),
+      finalIRABalance: s.output.totalIRAValue,
+    } satisfies ScorecardRow
+  }) as [ScorecardRow, ScorecardRow, ScorecardRow]
+
+  // Determine winner: highest finalNetWorth, starred only if gap > 3%
+  const sortedByNetWorth = [...rows].sort((a, b) => b.finalNetWorth - a.finalNetWorth)
+  const best = sortedByNetWorth[0]
+  const secondBest = sortedByNetWorth[1]
+
+  const gap = secondBest.finalNetWorth > 0
+    ? (best.finalNetWorth - secondBest.finalNetWorth) / secondBest.finalNetWorth
+    : best.finalNetWorth > 0 ? 1 : 0
+
+  if (gap > WINNER_THRESHOLD) {
+    // Mark the winner in the original rows array
+    const winnerIdx = rows.findIndex(r => r.scenarioName === best.scenarioName)
+    if (winnerIdx >= 0) {
+      rows[winnerIdx].isWinner = true
+    }
+  }
+
+  // Build verdict text
+  const verdictText = buildVerdictText(rows, inputs)
+
+  // Build guardrail callout
+  const guardrailCallout = buildGuardrailCallout(rows, model, inputs)
+
+  return {
+    verdictText,
+    scorecard: rows,
+    guardrailCallout,
+  }
+}
+
+/**
+ * Builds a 1-2 sentence verdict text from the scorecard rows.
+ * Uses deterministic string templates — no LLM-style generation.
+ */
+function buildVerdictText(
+  rows: [ScorecardRow, ScorecardRow, ScorecardRow],
+  inputs: ScenarioInputs
+): string {
+  const horizon = inputs.projection.timeHorizonYears
+  const winner = rows.find(r => r.isWinner)
+  const feasibleRows = rows.filter(r => r.feasibility.status !== 'not_feasible')
+  const allInfeasible = feasibleRows.length === 0
+
+  if (allInfeasible) {
+    const bestNetWorth = Math.max(...rows.map(r => r.finalNetWorth))
+    return `None of the three scenarios are financially feasible with your current inputs. The strongest scenario produces ${formatCurrency(bestNetWorth)} in net worth over ${horizon} years, but upfront capital or monthly cash flow falls short.`
+  }
+
+  if (!winner) {
+    // No clear winner (gap < 3%)
+    const top = [...rows].sort((a, b) => b.finalNetWorth - a.finalNetWorth)[0]
+    const second = [...rows].sort((a, b) => b.finalNetWorth - a.finalNetWorth)[1]
+    return `${top.scenarioName} and ${second.scenarioName} produce similar net worth over ${horizon} years (${formatCurrency(top.finalNetWorth)} vs ${formatCurrency(second.finalNetWorth)}). The difference is too small to declare a clear winner — consider cash flow and risk tolerance.`
+  }
+
+  // Clear winner
+  const runnerUp = [...rows]
+    .filter(r => !r.isWinner)
+    .sort((a, b) => b.finalNetWorth - a.finalNetWorth)[0]
+  const advantage = winner.finalNetWorth - runnerUp.finalNetWorth
+
+  return `${winner.scenarioName} builds ${formatCurrency(advantage)} more in net worth over ${horizon} years (${formatCurrency(winner.finalNetWorth)} total). Monthly cash flow is ${formatCurrency(winner.monthlyCashFlowBest)}/mo in the best case.`
+}
+
+/**
+ * Builds a guardrail callout when the data is decisive enough to
+ * warrant a prominent warning. Returns null if no guardrail applies.
+ *
+ * Guardrail conditions (checked in priority order):
+ * 1. Both Scenario A and B are infeasible
+ * 2. Winner has zero retirement savings at end of projection
+ * 3. All scenarios produce less net worth than the starting position
+ */
+function buildGuardrailCallout(
+  rows: [ScorecardRow, ScorecardRow, ScorecardRow],
+  _model: ModelOutput,
+  inputs: ScenarioInputs
+): string | null {
+  const [_baseline, scenarioA, scenarioB] = rows
+  const horizon = inputs.projection.timeHorizonYears
+  const endAge = inputs.personal.age + horizon
+
+  // Guardrail 1: Both moving scenarios infeasible
+  if (scenarioA.feasibility.status === 'not_feasible' && scenarioB.feasibility.status === 'not_feasible') {
+    return 'Neither moving scenario is financially feasible right now. Focus on building savings before revisiting.'
+  }
+
+  // Guardrail 2: Winner has zero retirement at projection end
+  const winner = rows.find(r => r.isWinner)
+  if (winner && winner.finalIRABalance === 0) {
+    return `The recommended scenario leaves you with $0 in retirement savings at age ${endAge}. Consider whether the trade-off is worth the long-term cost.`
+  }
+
+  // Guardrail 3: All scenarios produce less net worth than current position
+  const currentNetWorth = inputs.personal.liquidSavings + inputs.retirement.iraBalance
+    + (inputs.currentHome.homeValue - inputs.currentHome.mortgageBalance)
+  const allDecline = rows.every(r => r.finalNetWorth < currentNetWorth)
+  if (allDecline && currentNetWorth > 0) {
+    return `All three scenarios project lower net worth than your current ${formatCurrency(currentNetWorth)}. Review your assumptions — appreciation rates and time horizon significantly affect the outcome.`
+  }
+
+  return null
 }

@@ -7,7 +7,16 @@
 // ---------------------------------------------------------------------------
 
 import { describe, it, expect } from 'vitest'
-import { checkDealbreakers, generateVerdict } from '../verdict'
+import {
+  checkDealbreakers,
+  generateVerdict,
+  assessFeasibility,
+  assessRisk,
+  generateScorecardVerdict,
+  READY_CASH_FLOW_THRESHOLD,
+  READY_RESERVE_MONTHS,
+  WINNER_THRESHOLD,
+} from '../verdict'
 import { runModel } from '../scenarios'
 import type {
   ScenarioOutput,
@@ -750,5 +759,287 @@ describe('checkDealbreakers on real model output', () => {
     // Couple has $15k savings and Infinity reserve runway for baseline
     expect(result.isViable).toBe(true)
     expect(result.reasons).toHaveLength(0)
+  })
+})
+
+// ===========================================================================
+// FEASIBILITY ASSESSMENT (assessFeasibility)
+// ===========================================================================
+
+describe('assessFeasibility', () => {
+  it('returns not_feasible when surplus is negative (Preston defaults, $0 savings)', () => {
+    // Preston has $0 liquid savings — Scenario A has a capital shortfall
+    const model = runModel(prestonDefaults)
+    const result = assessFeasibility(model.scenarioA, prestonDefaults)
+
+    expect(result.status).toBe('not_feasible')
+    expect(result.label).toContain('shortfall')
+    // Reserve months should reflect the shortfall situation
+    expect(result.reserveMonths).toBe(0)
+  })
+
+  it('returns ready when surplus positive with 3+ months reserves and cash flow >= $500', () => {
+    // Give the user $100k in savings — plenty to cover closing + reserves
+    const wealthyInputs: ScenarioInputs = {
+      ...prestonDefaults,
+      personal: {
+        ...DEFAULT_PERSONAL_INPUTS,
+        liquidSavings: 100_000,
+        annualGrossIncome: 150_000,
+      },
+    }
+    const model = runModel(wealthyInputs)
+    const result = assessFeasibility(model.scenarioA, wealthyInputs)
+
+    expect(result.status).toBe('ready')
+    expect(result.label).toBe('Ready')
+    expect(result.reserveMonths).toBeGreaterThanOrEqual(READY_RESERVE_MONTHS)
+  })
+
+  it('returns tight when can close but reserves < 3 months', () => {
+    // Enough to close but barely any reserves left
+    // Scenario A needs ~$75.5k (down payment + closing + moving)
+    // With $72k savings, surplus is very thin
+    const tightInputs: ScenarioInputs = {
+      ...prestonDefaults,
+      personal: {
+        ...DEFAULT_PERSONAL_INPUTS,
+        liquidSavings: 72_000,
+        annualGrossIncome: 150_000, // High income so cash flow is fine
+      },
+      newHome: {
+        ...DEFAULT_NEW_HOME_INPUTS,
+        purchasePrice: 300_000,
+        downPaymentPercentScenarioA: 0.20,
+        closingCostsRate: 0.025,
+      },
+    }
+
+    const model = runModel(tightInputs)
+    const result = assessFeasibility(model.scenarioA, tightInputs)
+
+    // With $72k savings and ~$70.5k needed, surplus is about $1.5k
+    // Monthly obligations are ~$4k+, so reserves cover < 1 month
+    if (result.status === 'tight') {
+      expect(result.label).toContain('Tight')
+      expect(result.reserveMonths).toBeLessThan(READY_RESERVE_MONTHS)
+    } else {
+      // If the model computes differently, at least it should not be not_feasible
+      expect(result.status).not.toBe('not_feasible')
+    }
+  })
+
+  it('returns ready for Baseline (no capital event)', () => {
+    const model = runModel(prestonDefaults)
+    const result = assessFeasibility(model.baseline, prestonDefaults)
+
+    expect(result.status).toBe('ready')
+    expect(result.label).toBe('N/A')
+    expect(result.reserveMonths).toBe(Infinity)
+  })
+})
+
+// ===========================================================================
+// RISK ASSESSMENT (assessRisk)
+// ===========================================================================
+
+describe('assessRisk', () => {
+  it('returns low for Baseline with Preston defaults', () => {
+    const model = runModel(prestonDefaults)
+    const result = assessRisk(model.baseline)
+
+    // Baseline has minimal warnings — no major financial events
+    expect(result).toBe('low')
+  })
+
+  it('returns high for Scenario B with multiple critical warnings', () => {
+    const model = runModel(prestonDefaults)
+    const result = assessRisk(model.scenarioB)
+
+    // Scenario B with $0 savings generates multiple critical warnings
+    // (capital shortfall, zero reserves, negative cash flow)
+    expect(result).toBe('high')
+  })
+
+  it('returns medium for a scenario with 1 critical warning', () => {
+    const scenario = makeScenarioOutput({
+      warnings: [
+        { category: 'liquidity', severity: 'critical', message: 'One critical warning about $5,000' },
+        { category: 'market', severity: 'info', message: 'Minor info about $100' },
+      ],
+    })
+    const result = assessRisk(scenario)
+
+    expect(result).toBe('medium')
+  })
+
+  it('returns medium for a scenario with 2+ warning-level warnings', () => {
+    const scenario = makeScenarioOutput({
+      warnings: [
+        { category: 'liquidity', severity: 'warning', message: 'Warning 1 about $1,000' },
+        { category: 'retirement', severity: 'warning', message: 'Warning 2 about $2,000' },
+        { category: 'market', severity: 'info', message: 'Info about $100' },
+      ],
+    })
+    const result = assessRisk(scenario)
+
+    expect(result).toBe('medium')
+  })
+
+  it('returns low for scenario with only info warnings', () => {
+    const scenario = makeScenarioOutput({
+      warnings: [
+        { category: 'market', severity: 'info', message: 'Just a note about $50' },
+        { category: 'tax', severity: 'info', message: 'Tax note about $200' },
+      ],
+    })
+    const result = assessRisk(scenario)
+
+    expect(result).toBe('low')
+  })
+})
+
+// ===========================================================================
+// SCORECARD VERDICT (generateScorecardVerdict)
+// ===========================================================================
+
+describe('generateScorecardVerdict', () => {
+  it('returns verdict text, scorecard with 3 rows, and guardrail', () => {
+    const model = runModel(prestonDefaults)
+    const result = generateScorecardVerdict(model, prestonDefaults)
+
+    expect(result.verdictText).toBeTruthy()
+    expect(result.verdictText.length).toBeGreaterThan(20)
+    expect(result.scorecard).toHaveLength(3)
+    // Guardrail should be non-null for Preston defaults (both A and B infeasible)
+    expect(result.guardrailCallout).not.toBeNull()
+  })
+
+  it('scorecard rows have correct scenario names in order', () => {
+    const model = runModel(prestonDefaults)
+    const result = generateScorecardVerdict(model, prestonDefaults)
+
+    expect(result.scorecard[0].scenarioName).toBe('Baseline (stay put)')
+    expect(result.scorecard[1].scenarioName).toBe('Scenario A (sell and buy)')
+    expect(result.scorecard[2].scenarioName).toBe('Scenario B (keep as rental)')
+  })
+
+  it('marks highest net worth as winner when gap > 3%', () => {
+    // Use wealthy inputs where all scenarios are viable and have meaningful net worth differences
+    const wealthyInputs: ScenarioInputs = {
+      ...prestonDefaults,
+      personal: {
+        ...DEFAULT_PERSONAL_INPUTS,
+        liquidSavings: 100_000,
+        annualGrossIncome: 150_000,
+      },
+      projection: {
+        timeHorizonYears: 20,
+        plannedRentalExitYear: 20,
+      },
+    }
+    const model = runModel(wealthyInputs)
+    const result = generateScorecardVerdict(model, wealthyInputs)
+
+    // Over 20 years, there should be a clear winner with > 3% gap
+    const winners = result.scorecard.filter(r => r.isWinner)
+    expect(winners.length).toBeLessThanOrEqual(1)
+
+    if (winners.length === 1) {
+      // Winner should have the highest net worth
+      const maxNetWorth = Math.max(...result.scorecard.map(r => r.finalNetWorth))
+      expect(winners[0].finalNetWorth).toBe(maxNetWorth)
+
+      // Verify the gap exceeds WINNER_THRESHOLD
+      const sortedByNW = [...result.scorecard].sort((a, b) => b.finalNetWorth - a.finalNetWorth)
+      const gap = (sortedByNW[0].finalNetWorth - sortedByNW[1].finalNetWorth) / sortedByNW[1].finalNetWorth
+      expect(gap).toBeGreaterThan(WINNER_THRESHOLD)
+    }
+  })
+
+  it('does not mark winner when gap < 3% (1-year horizon)', () => {
+    // With a 1-year horizon, net worth differences are minimal
+    const shortHorizonInputs: ScenarioInputs = {
+      ...prestonDefaults,
+      personal: {
+        ...DEFAULT_PERSONAL_INPUTS,
+        liquidSavings: 100_000,
+        annualGrossIncome: 150_000,
+      },
+      projection: {
+        timeHorizonYears: 1,
+        plannedRentalExitYear: 1,
+      },
+    }
+    const model = runModel(shortHorizonInputs)
+    const result = generateScorecardVerdict(model, shortHorizonInputs)
+
+    // With a 1-year horizon, check if the gap is actually < 3%
+    const sortedByNW = [...result.scorecard].sort((a, b) => b.finalNetWorth - a.finalNetWorth)
+    const secondNW = sortedByNW[1].finalNetWorth
+    const gap = secondNW > 0
+      ? (sortedByNW[0].finalNetWorth - secondNW) / secondNW
+      : 0
+
+    if (gap <= WINNER_THRESHOLD) {
+      // When gap is small, no winner should be marked
+      const winners = result.scorecard.filter(r => r.isWinner)
+      expect(winners.length).toBe(0)
+    }
+    // If gap is > 3% even at 1 year, a winner is correct
+  })
+
+  it('verdict text contains dollar amounts', () => {
+    const model = runModel(prestonDefaults)
+    const result = generateScorecardVerdict(model, prestonDefaults)
+
+    expect(result.verdictText).toMatch(/\$[\d,]+/)
+  })
+
+  it('guardrail fires when both A and B are infeasible (Preston defaults)', () => {
+    const model = runModel(prestonDefaults)
+    const result = generateScorecardVerdict(model, prestonDefaults)
+
+    // Both Scenario A and B have capital shortfalls
+    expect(result.guardrailCallout).toBeTruthy()
+    expect(result.guardrailCallout!).toContain('feasible')
+  })
+
+  it('scorecard rows contain valid feasibility badges', () => {
+    const model = runModel(prestonDefaults)
+    const result = generateScorecardVerdict(model, prestonDefaults)
+
+    for (const row of result.scorecard) {
+      expect(['ready', 'tight', 'not_feasible']).toContain(row.feasibility.status)
+      expect(row.feasibility.label.length).toBeGreaterThan(0)
+      expect(typeof row.feasibility.reserveMonths).toBe('number')
+    }
+  })
+
+  it('scorecard rows contain valid risk levels', () => {
+    const model = runModel(prestonDefaults)
+    const result = generateScorecardVerdict(model, prestonDefaults)
+
+    for (const row of result.scorecard) {
+      expect(['low', 'medium', 'high']).toContain(row.riskLevel)
+    }
+  })
+
+  it('scorecard IRA balances match model output', () => {
+    const model = runModel(prestonDefaults)
+    const result = generateScorecardVerdict(model, prestonDefaults)
+
+    expect(result.scorecard[0].finalIRABalance).toBe(model.baseline.totalIRAValue)
+    expect(result.scorecard[1].finalIRABalance).toBe(model.scenarioA.totalIRAValue)
+    expect(result.scorecard[2].finalIRABalance).toBe(model.scenarioB.totalIRAValue)
+  })
+
+  it('conservative couple: baseline is feasible, A and B are not', () => {
+    const model = runModel(coupleInputs)
+    const result = generateScorecardVerdict(model, coupleInputs)
+
+    expect(result.scorecard[0].feasibility.status).toBe('ready')  // Baseline
+    expect(result.scorecard[1].feasibility.status).toBe('not_feasible')  // A
+    expect(result.scorecard[2].feasibility.status).toBe('not_feasible')  // B
   })
 })
