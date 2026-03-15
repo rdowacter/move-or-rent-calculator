@@ -25,10 +25,15 @@ import {
   formatCompactCurrency,
 } from '@/utils/formatters'
 
-/** Chart color for Scenario A — IRA kept intact + contributing. Uses theme chart token. */
-const SCENARIO_A_COLOR = 'oklch(var(--chart-1))'
-/** Chart color for Scenario B — IRA withdrawn, rebuilding from zero. Uses theme chart token. */
-const SCENARIO_B_COLOR = 'oklch(var(--chart-2))'
+/**
+ * Recharts renders colors as SVG stroke/fill attributes, not CSS properties,
+ * so CSS custom properties (var(--chart-N)) don't resolve. We must use
+ * concrete color values here. These match the --chart-N tokens in index.css.
+ */
+/** Chart color for Scenario A — IRA kept intact + contributing. Emerald green = positive. */
+const SCENARIO_A_COLOR = '#10b981'
+/** Chart color for Scenario B — IRA withdrawn, rebuilding from zero. Amber = caution. */
+const SCENARIO_B_COLOR = '#f59e0b'
 
 interface ChartDataPoint {
   year: number
@@ -107,10 +112,6 @@ export function IRATrajectoryChart() {
 
   return (
     <div className="w-full">
-      <h3 className="mb-4 text-lg font-semibold text-foreground">
-        IRA Balance Trajectory
-      </h3>
-
       <div className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart

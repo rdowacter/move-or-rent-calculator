@@ -92,12 +92,12 @@ describe('WarningsList', () => {
       category: 'lending',
     })
 
+    // Put all three in the same scenario so severity sort is testable
     mockModelOutputValue = {
       modelOutput: makeModelOutputWithWarnings({
-        // Deliberately put them in wrong order across scenarios
-        baseline: [infoWarning],
-        scenarioA: [warningWarning],
-        scenarioB: [criticalWarning],
+        baseline: [],
+        scenarioA: [],
+        scenarioB: [infoWarning, warningWarning, criticalWarning],
       }),
       isComputing: false,
     }
@@ -107,7 +107,7 @@ describe('WarningsList', () => {
     const alerts = screen.getAllByRole('alert')
     expect(alerts.length).toBeGreaterThanOrEqual(3)
 
-    // Find the indices of our test warnings within the rendered alerts
+    // Within the Scenario B group, warnings should be sorted by severity
     const allAlertTexts = alerts.map((a) => a.textContent ?? '')
     const criticalIdx = allAlertTexts.findIndex((t) => t.includes('Critical level message'))
     const warningIdx = allAlertTexts.findIndex((t) => t.includes('Warning level message'))

@@ -18,7 +18,6 @@ import type {
 
 import {
   RESIDENTIAL_DEPRECIATION_YEARS,
-  LAND_VALUE_PERCENTAGE,
   DEPRECIATION_RECAPTURE_RATE,
   PASSIVE_LOSS_MAX_OFFSET,
   PASSIVE_LOSS_PHASE_OUT_START,
@@ -45,14 +44,18 @@ import {
  * Source: IRC §168(c)(1); IRS Publication 946
  *
  * @param homeValue - Total property value (land + structure)
+ * @param landValuePercentage - Fraction of home value attributable to land (e.g. 0.15 for 15%).
+ *   Defaults to LAND_VALUE_PERCENTAGE constant (0.15) if not provided.
+ *   Can be determined by county tax assessor's allocation or an appraisal.
  * @returns Annual depreciation expense in dollars
  */
-export function annualDepreciation(homeValue: number): number {
+export function annualDepreciation(homeValue: number, landValuePercentage = 0.15): number {
   if (homeValue <= 0) return 0
 
-  // Depreciable basis excludes land. Industry standard estimate: 15% land / 85% structure.
-  // Actual split can be determined by county tax assessor's allocation or an appraisal.
-  const depreciableBasis = homeValue * (1 - LAND_VALUE_PERCENTAGE)
+  // Depreciable basis excludes land — land is not a depreciable asset per IRC §167.
+  // The landValuePercentage is configurable because actual land/structure splits vary
+  // by property and can be determined by county tax assessor's allocation or an appraisal.
+  const depreciableBasis = homeValue * (1 - landValuePercentage)
 
   // Straight-line depreciation over 27.5 years for residential rental property (IRC §168(c)(1))
   return depreciableBasis / RESIDENTIAL_DEPRECIATION_YEARS

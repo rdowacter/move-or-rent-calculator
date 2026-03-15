@@ -65,6 +65,8 @@ const retirementInputsSchema = z.object({
   annualIRAContributionScenarioA: currency(),
   /** Annual IRA contribution in Scenario B (IRA withdrawn). */
   annualIRAContributionScenarioB: currency(),
+  /** Amount to withdraw from IRA in Scenario B. Defaults to full balance. */
+  iraWithdrawalAmountScenarioB: currency(),
   /** Whether the user has an employer 401(k) with matching. */
   hasEmployerMatch: z.boolean(),
   /** Employer 401(k) match percentage (e.g. 0.03 for 3%). */
@@ -121,6 +123,10 @@ const currentHomeInputsSchema = z.object({
   sellingCostsRate: rate(),
   /** Expected annual home appreciation rate (e.g. 0.03 for 3%). */
   annualAppreciationRate: rate(),
+  /** Percentage of home value attributable to land (not depreciable). Default 15%. */
+  landValuePercentage: rate(),
+  /** Percentage of rental income lenders credit toward DTI. 75% standard, 0% for new landlords. */
+  rentalIncomeDTICreditRate: rate(),
 })
 
 const newHomeInputsSchema = z.object({

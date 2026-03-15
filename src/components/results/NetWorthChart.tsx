@@ -22,6 +22,17 @@ import {
   formatCompactCurrency,
 } from '@/utils/formatters'
 
+/**
+ * Recharts renders colors as SVG stroke/fill attributes, not CSS properties,
+ * so CSS custom properties (var(--chart-N)) don't resolve. We must use
+ * concrete color values here. These match the --chart-N tokens in index.css.
+ */
+const CHART_COLORS = {
+  baseline: '#6366f1',   // indigo — the "status quo" line
+  scenarioA: '#10b981',  // emerald green — the "sell and simplify" option
+  scenarioB: '#f59e0b',  // amber — the "risky rental" option, caution connotation
+}
+
 /** Shape of each data point fed to the chart. */
 interface ChartDataPoint {
   year: number
@@ -91,7 +102,6 @@ export function NetWorthChart() {
 
   return (
     <div className="w-full" role="img" aria-label="Net worth projection chart comparing Baseline, Scenario A, and Scenario B over time">
-      <h3 className="mb-4 text-lg font-semibold">Net Worth Projection</h3>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
           data={data}
@@ -116,7 +126,7 @@ export function NetWorthChart() {
             type="monotone"
             dataKey="baseline"
             name="Baseline"
-            stroke="oklch(var(--chart-1))"
+            stroke={CHART_COLORS.baseline}
             strokeWidth={2}
             dot={false}
             activeDot={{ r: 5 }}
@@ -125,7 +135,7 @@ export function NetWorthChart() {
             type="monotone"
             dataKey="scenarioA"
             name="Scenario A"
-            stroke="oklch(var(--chart-2))"
+            stroke={CHART_COLORS.scenarioA}
             strokeWidth={2}
             dot={false}
             activeDot={{ r: 5 }}
@@ -134,7 +144,7 @@ export function NetWorthChart() {
             type="monotone"
             dataKey="scenarioB"
             name="Scenario B"
-            stroke="oklch(var(--chart-3))"
+            stroke={CHART_COLORS.scenarioB}
             strokeWidth={2}
             dot={false}
             activeDot={{ r: 5 }}

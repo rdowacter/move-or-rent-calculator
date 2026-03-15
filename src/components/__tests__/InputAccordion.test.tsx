@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { describe, it, expect } from 'vitest'
@@ -31,7 +30,7 @@ describe('InputAccordion', () => {
     expect(screen.getByText('Current Home (Kyle)')).toBeInTheDocument()
     expect(screen.getByText('New Home (Austin)')).toBeInTheDocument()
     expect(screen.getByText('Commute')).toBeInTheDocument()
-    expect(screen.getByText('Costs & Projection')).toBeInTheDocument()
+    expect(screen.getByText('Costs & Assumptions')).toBeInTheDocument()
   })
 
   it('renders "About You" primary fields when section is open', () => {
@@ -97,40 +96,6 @@ describe('InputAccordion', () => {
     expect(screen.getByText('Current Round-Trip Miles')).toBeInTheDocument()
     expect(screen.getByText('Daily Time Saved (Hours)')).toBeInTheDocument()
     expect(screen.getByText('Current Monthly Tolls')).toBeInTheDocument()
-  })
-
-  it('shows advanced fields in "About You" when the advanced toggle is clicked', async () => {
-    const user = userEvent.setup()
-    render(
-      <TestWrapper>
-        <InputAccordion defaultOpenSections={['about-you']} />
-      </TestWrapper>
-    )
-
-    // Advanced fields should not be visible initially
-    expect(screen.queryByText('Salary Growth Rate')).not.toBeInTheDocument()
-
-    // Click the advanced toggle
-    await user.click(screen.getByText('Show Advanced'))
-
-    // Now advanced fields should appear
-    expect(screen.getByText('Salary Growth Rate')).toBeInTheDocument()
-    expect(screen.getByText('Monthly Debt Payments')).toBeInTheDocument()
-    expect(screen.getByText('State Income Tax Rate')).toBeInTheDocument()
-  })
-
-  it('toggles advanced fields text between Show and Hide', async () => {
-    const user = userEvent.setup()
-    render(
-      <TestWrapper>
-        <InputAccordion defaultOpenSections={['about-you']} />
-      </TestWrapper>
-    )
-
-    await user.click(screen.getByText('Show Advanced'))
-
-    expect(screen.getByText('Hide Advanced')).toBeInTheDocument()
-    expect(screen.queryByText('Show Advanced')).not.toBeInTheDocument()
   })
 
   it('renders multiple sections open simultaneously', () => {

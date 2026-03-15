@@ -56,11 +56,11 @@ describe('UpfrontCapital', () => {
     expect(container.innerHTML).toBe('')
   })
 
-  it('renders the section heading', () => {
+  it('renders the section aria-label', () => {
     mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput, isComputing: false })
     render(<UpfrontCapital />)
     expect(
-      screen.getByText('Upfront Capital Requirements')
+      screen.getByLabelText('Upfront Capital Requirements')
     ).toBeInTheDocument()
   })
 

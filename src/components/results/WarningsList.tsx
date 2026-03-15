@@ -65,37 +65,37 @@ export function WarningsList() {
     return null
   }
 
-  // Collect warnings from all scenarios, tagging each with its source
-  const taggedWarnings: TaggedWarning[] = [
-    ...modelOutput.baseline.warnings.map((w) => ({
-      ...w,
-      scenarioName: modelOutput.baseline.name,
-    })),
-    ...modelOutput.scenarioA.warnings.map((w) => ({
-      ...w,
-      scenarioName: modelOutput.scenarioA.name,
-    })),
-    ...modelOutput.scenarioB.warnings.map((w) => ({
-      ...w,
-      scenarioName: modelOutput.scenarioB.name,
-    })),
-  ]
+  // Group warnings by scenario
+  const scenarioGroups = [
+    { name: modelOutput.baseline.name, warnings: modelOutput.baseline.warnings },
+    { name: modelOutput.scenarioA.name, warnings: modelOutput.scenarioA.warnings },
+    { name: modelOutput.scenarioB.name, warnings: modelOutput.scenarioB.warnings },
+  ].filter((group) => group.warnings.length > 0)
 
-  if (taggedWarnings.length === 0) {
+  if (scenarioGroups.length === 0) {
     return null
   }
 
-  // Sort by severity: critical → warning → info
-  const sorted = [...taggedWarnings].sort(
-    (a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity]
-  )
-
   return (
-    <div className="space-y-3" role="region" aria-label="Warnings">
-      <h3 className="text-lg font-semibold">Warnings & Risks</h3>
-      {sorted.map((warning, index) => (
-        <WarningAlert key={`${warning.scenarioName}-${warning.category}-${index}`} warning={warning} />
-      ))}
+    <div className="space-y-5" role="region" aria-label="Warnings">
+      {scenarioGroups.map((group) => {
+        const sorted = [...group.warnings].sort(
+          (a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity]
+        )
+        return (
+          <div key={group.name}>
+            <h4 className="mb-2 text-sm font-semibold text-foreground">{group.name}</h4>
+            <div className="space-y-2">
+              {sorted.map((warning, index) => (
+                <WarningAlert
+                  key={`${group.name}-${warning.category}-${index}`}
+                  warning={{ ...warning, scenarioName: group.name }}
+                />
+              ))}
+            </div>
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -117,21 +117,19 @@ function WarningAlert({ warning }: { warning: TaggedWarning }) {
 
   return (
     <Alert variant={variant} className={severityClassName}>
-      <SeverityIcon className="size-4" />
-      <AlertTitle className="flex items-center gap-2">
-        <span>{warning.message}</span>
-        {warning.dollarImpact !== undefined && (
-          <span className="font-semibold whitespace-nowrap">
-            Impact: {formatCurrency(warning.dollarImpact)}
-          </span>
-        )}
-      </AlertTitle>
-      <AlertDescription>
-        {warning.scenarioName}
-        {warning.dollarImpact !== undefined && (
-          <DollarSign className="inline-block ml-1 size-3" aria-hidden="true" />
-        )}
-      </AlertDescription>
+      <SeverityIcon className={cn(
+        "size-4",
+        warning.severity === 'critical' && 'text-red-600 dark:text-red-400',
+        warning.severity === 'warning' && 'text-amber-600 dark:text-amber-400',
+        warning.severity === 'info' && 'text-muted-foreground'
+      )} />
+      <AlertTitle>{warning.message}</AlertTitle>
+      {warning.dollarImpact !== undefined && (
+        <AlertDescription className="flex items-center gap-1">
+          <DollarSign className="size-3" aria-hidden="true" />
+          Impact: {formatCurrency(warning.dollarImpact)}
+        </AlertDescription>
+      )}
     </Alert>
   )
 }

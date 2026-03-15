@@ -59,6 +59,7 @@ import {
   calculateUpfrontCapital,
   reserveRunwayMonths,
   stressTest,
+  MAJOR_REPAIR_COST,
 } from './capital'
 
 import { calculateDTI } from './dti'
@@ -599,9 +600,13 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
 
   // ---- Setup ----
 
-  // IRA withdrawal at time 0
+  // IRA withdrawal at time 0 — withdraw the lesser of requested amount and available balance
+  const iraWithdrawalAmount = Math.min(
+    retirement.iraWithdrawalAmountScenarioB,
+    retirement.iraBalance
+  )
   const iraWithdrawalResult = calculateIRAWithdrawalTax(
-    retirement.iraBalance,
+    iraWithdrawalAmount,
     personal.annualGrossIncome,
     personal.filingStatus,
     personal.age,
@@ -626,7 +631,8 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
     currentHome.annualInsurance * (1 + currentHome.landlordInsurancePremiumIncrease)
 
   // Depreciation is on ORIGINAL home value at conversion, not appreciated value
-  const annualDepreciationAmount = annualDepreciation(currentHome.homeValue)
+  // Uses the user-configured land value percentage to determine the depreciable basis
+  const annualDepreciationAmount = annualDepreciation(currentHome.homeValue, currentHome.landValuePercentage)
 
   // Austin mortgage (smaller down payment in Scenario B)
   const austinDownPayment =
@@ -684,6 +690,7 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
     otherDebtPayments: personal.monthlyDebtPayments,
     rentalMortgagePayment: kyleRentalPITI,
     expectedMonthlyRent: currentHome.expectedMonthlyRent,
+    rentalIncomeCreditRate: currentHome.rentalIncomeDTICreditRate,
   })
 
   // ---- Year-by-year loop ----
@@ -693,7 +700,7 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
   let kyleHomeValue = currentHome.homeValue
   let austinMortgageBalance = austinLoanAmount
   let austinHomeValue = newHome.purchasePrice
-  let iraBalance = 0 // IRA fully withdrawn at time 0
+  let iraBalance = retirement.iraBalance - iraWithdrawalAmount // Remaining IRA after withdrawal
   let cumulativeDepreciation = 0
   let cumulativeCommuteSavings = 0
   let rentalActive = true
@@ -777,10 +784,10 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
       rentalMonthlyCashFlow = rentalCF.cashFlow
 
       // Worst case: add maintenance shock amortized monthly
-      // Use a major HVAC/repair estimate of ~$8k amortized over 12 months
+      // Uses MAJOR_REPAIR_COST (e.g. HVAC replacement) amortized over 12 months
       worstCaseMonthlyCashFlow = worstCaseMonthlyRentalCashFlow(
         rentalCF,
-        8000 / MONTHS_PER_YEAR
+        MAJOR_REPAIR_COST / MONTHS_PER_YEAR
       )
 
       // Depreciation on ORIGINAL home value at conversion
@@ -1051,50 +1058,19 @@ export function runModel(inputs: ScenarioInputs): ModelOutput {
 // Warning Generation
 // ---------------------------------------------------------------------------
 
-/**
- * Projected IRA balance at age 65, given current balance and annual
- * contributions at the expected return rate.
- */
-function projectIRAAtAge65(
-  currentIRABalance: number,
-  annualContribution: number,
-  annualReturn: number,
-  currentAge: number
-): number {
-  const yearsToRetirement = Math.max(0, 65 - currentAge)
-  let balance = currentIRABalance
-  for (let y = 0; y < yearsToRetirement; y++) {
-    balance = balance * (1 + annualReturn) + annualContribution
-  }
-  return balance
-}
-
 function generateBaselineWarnings(
-  inputs: ScenarioInputs
+  _inputs: ScenarioInputs
 ): Warning[] {
   const warnings: Warning[] = []
 
-  // Retirement projection at age 65
-  const iraAt65 = projectIRAAtAge65(
-    inputs.retirement.iraBalance,
-    inputs.retirement.annualIRAContributionScenarioA,
-    inputs.retirement.iraExpectedAnnualReturn,
-    inputs.personal.age
-  )
-  if (iraAt65 < 100_000) {
-    warnings.push({
-      category: 'retirement',
-      severity: 'critical',
-      message: `Projected retirement savings of $${Math.round(iraAt65).toLocaleString()} at age 65`,
-      dollarImpact: iraAt65,
-    })
-  }
+  // Retirement adequacy removed — the IRA trajectory chart shows the projection,
+  // let the user judge what's adequate for their situation.
 
   return warnings
 }
 
 function generateScenarioAWarnings(
-  inputs: ScenarioInputs,
+  _inputs: ScenarioInputs,
   snapshots: YearlySnapshot[],
   dtiResult: DTIResult,
   upfrontCapital: UpfrontCapital
@@ -1107,13 +1083,13 @@ function generateScenarioAWarnings(
     warnings.push({
       category: 'lending',
       severity: 'critical',
-      message: `DTI of ${(dtiResult.backEndDTI * 100).toFixed(1)}% exceeds QM hard maximum of 43% — most lenders will not approve`,
+      message: `Your DTI ratio is ${(dtiResult.backEndDTI * 100).toFixed(1)}% — above the 43% maximum for a qualified mortgage. Most lenders will not approve this loan.`,
     })
   } else if (dtiResult.backEndDTI > DTI_BACK_END_TARGET) {
     warnings.push({
       category: 'lending',
       severity: 'warning',
-      message: `DTI of ${(dtiResult.backEndDTI * 100).toFixed(1)}% exceeds conventional target of 36%`,
+      message: `Your DTI ratio is ${(dtiResult.backEndDTI * 100).toFixed(1)}%, above the 36% conventional target. You may face higher interest rates or need a larger down payment.`,
     })
   }
 
@@ -1122,7 +1098,7 @@ function generateScenarioAWarnings(
     warnings.push({
       category: 'liquidity',
       severity: 'critical',
-      message: `Negative monthly cash flow of $${Math.round(Math.abs(year1.monthlyCashFlowBestCase)).toLocaleString()}/mo from day one — reserves will deplete`,
+      message: `You'd spend $${Math.round(Math.abs(year1.monthlyCashFlowBestCase)).toLocaleString()} more per month than you earn. You'd need to draw from savings every month to stay afloat.`,
       dollarImpact: Math.abs(year1.monthlyCashFlowBestCase) * MONTHS_PER_YEAR,
     })
   }
@@ -1132,7 +1108,7 @@ function generateScenarioAWarnings(
     warnings.push({
       category: 'liquidity',
       severity: 'critical',
-      message: `Cash shortfall of $${Math.round(Math.abs(upfrontCapital.surplus)).toLocaleString()} — cannot fund this scenario without additional savings`,
+      message: `You're $${Math.round(Math.abs(upfrontCapital.surplus)).toLocaleString()} short of the cash needed to execute this plan. You'd need additional savings, a gift, or a loan to close.`,
       dollarImpact: Math.abs(upfrontCapital.surplus),
     })
   }
@@ -1146,29 +1122,13 @@ function generateScenarioAWarnings(
     warnings.push({
       category: 'liquidity',
       severity: 'critical',
-      message: `Only ${reserveRunway.toFixed(1)} months of reserves — one emergency could force a sale`,
+      message: `After closing, you'd have less than ${Math.ceil(reserveRunway)} months of savings. An unexpected expense like a car repair or medical bill would require borrowing.`,
     })
   } else if (reserveRunway < 6) {
     warnings.push({
       category: 'liquidity',
       severity: 'warning',
-      message: `Only ${reserveRunway.toFixed(1)} months of reserves — below 6-month recommendation`,
-    })
-  }
-
-  // Retirement at 65
-  const iraAt65 = projectIRAAtAge65(
-    inputs.retirement.iraBalance,
-    inputs.retirement.annualIRAContributionScenarioA,
-    inputs.retirement.iraExpectedAnnualReturn,
-    inputs.personal.age
-  )
-  if (iraAt65 < 100_000) {
-    warnings.push({
-      category: 'retirement',
-      severity: 'critical',
-      message: `Projected retirement savings of $${Math.round(iraAt65).toLocaleString()} at age 65`,
-      dollarImpact: iraAt65,
+      message: `After closing, you'd have about ${Math.round(reserveRunway)} months of savings — below the 6-month cushion financial advisors recommend.`,
     })
   }
 
@@ -1191,13 +1151,13 @@ function generateScenarioBWarnings(
     warnings.push({
       category: 'lending',
       severity: 'critical',
-      message: `DTI of ${(dtiResult.backEndDTI * 100).toFixed(1)}% exceeds QM hard maximum of 43% — most lenders will not approve`,
+      message: `With two mortgages, your DTI ratio is ${(dtiResult.backEndDTI * 100).toFixed(1)}% — above the 43% maximum. Most lenders will not approve the Austin mortgage.`,
     })
   } else if (dtiResult.backEndDTI > DTI_BACK_END_TARGET) {
     warnings.push({
       category: 'lending',
       severity: 'warning',
-      message: `DTI of ${(dtiResult.backEndDTI * 100).toFixed(1)}% exceeds conventional target of 36%`,
+      message: `With two mortgages, your DTI ratio is ${(dtiResult.backEndDTI * 100).toFixed(1)}%, above the 36% target. You may face higher rates or stricter requirements.`,
     })
   }
 
@@ -1206,7 +1166,7 @@ function generateScenarioBWarnings(
     warnings.push({
       category: 'liquidity',
       severity: 'critical',
-      message: `Negative monthly cash flow of $${Math.round(Math.abs(year1.monthlyCashFlowBestCase)).toLocaleString()}/mo from day one — reserves will deplete`,
+      message: `Two mortgages plus expenses exceed your income by $${Math.round(Math.abs(year1.monthlyCashFlowBestCase)).toLocaleString()}/mo. Even with rental income, you'd lose money every month.`,
       dollarImpact: Math.abs(year1.monthlyCashFlowBestCase) * MONTHS_PER_YEAR,
     })
   }
@@ -1216,7 +1176,7 @@ function generateScenarioBWarnings(
     warnings.push({
       category: 'liquidity',
       severity: 'critical',
-      message: `Cash shortfall of $${Math.round(Math.abs(upfrontCapital.surplus)).toLocaleString()} — cannot fund this scenario without additional savings`,
+      message: `You're $${Math.round(Math.abs(upfrontCapital.surplus)).toLocaleString()} short of the cash needed. The IRA withdrawal after taxes and penalties doesn't cover the down payment and closing costs.`,
       dollarImpact: Math.abs(upfrontCapital.surplus),
     })
   }
@@ -1230,40 +1190,38 @@ function generateScenarioBWarnings(
     warnings.push({
       category: 'liquidity',
       severity: 'critical',
-      message: `Only ${reserveRunway.toFixed(1)} months of reserves — one emergency could force a sale`,
+      message: `After closing, you'd have less than ${Math.ceil(reserveRunway)} months of savings. With two properties, any repair, vacancy, or emergency would require borrowing or credit cards.`,
     })
   } else if (reserveRunway < 6) {
     warnings.push({
       category: 'liquidity',
       severity: 'warning',
-      message: `Only ${reserveRunway.toFixed(1)} months of reserves — below 6-month recommendation`,
+      message: `After closing, you'd have about ${Math.round(reserveRunway)} months of savings. With two properties to maintain, financial advisors recommend at least 6 months.`,
     })
   }
 
   // IRA withdrawal warning
-  if (inputs.retirement.iraBalance > 0) {
-    warnings.push({
-      category: 'retirement',
-      severity: 'warning',
-      message: `Early IRA withdrawal eliminates all retirement savings at age ${inputs.personal.age}`,
-      dollarImpact: iraWithdrawalTaxCost,
-    })
-  }
-
-  // Retirement projection at age 65 (starting from $0)
-  const iraAt65 = projectIRAAtAge65(
-    0,
-    inputs.retirement.annualIRAContributionScenarioB,
-    inputs.retirement.iraExpectedAnnualReturn,
-    inputs.personal.age
+  const withdrawalAmount = Math.min(
+    inputs.retirement.iraWithdrawalAmountScenarioB,
+    inputs.retirement.iraBalance
   )
-  if (iraAt65 < 100_000) {
-    warnings.push({
-      category: 'retirement',
-      severity: 'critical',
-      message: `Projected retirement savings of $${Math.round(iraAt65).toLocaleString()} at age 65`,
-      dollarImpact: iraAt65,
-    })
+  const remainingIRA = inputs.retirement.iraBalance - withdrawalAmount
+  if (withdrawalAmount > 0) {
+    if (remainingIRA === 0) {
+      warnings.push({
+        category: 'retirement',
+        severity: 'warning',
+        message: `Withdrawing your entire IRA at age ${inputs.personal.age} costs $${Math.round(iraWithdrawalTaxCost).toLocaleString()} in taxes and penalties, and leaves you with $0 in retirement savings.`,
+        dollarImpact: iraWithdrawalTaxCost,
+      })
+    } else {
+      warnings.push({
+        category: 'retirement',
+        severity: 'warning',
+        message: `Withdrawing $${Math.round(withdrawalAmount).toLocaleString()} from your IRA at age ${inputs.personal.age} costs $${Math.round(iraWithdrawalTaxCost).toLocaleString()} in taxes and penalties, leaving $${Math.round(remainingIRA).toLocaleString()} invested.`,
+        dollarImpact: iraWithdrawalTaxCost,
+      })
+    }
   }
 
   // Passive loss phase-out: check if AGI >= $150k
@@ -1272,25 +1230,25 @@ function generateScenarioBWarnings(
     warnings.push({
       category: 'tax',
       severity: 'info',
-      message: `Rental loss deduction fully phased out at AGI of $${Math.round(year1Income).toLocaleString()}`,
+      message: `At your income level ($${Math.round(year1Income).toLocaleString()}), you can't deduct rental losses against your W-2 income. The tax benefit of the rental is eliminated.`,
     })
   }
 
-  // Stress test warnings
-  if (stressTestResult.vacancyAndMaintenance.monthsOfReserves < 6) {
+  // Stress test warnings — only flag if truly critical, details are in the Stress Tests section
+  if (stressTestResult.vacancyAndMaintenance.monthsOfReserves < 3) {
     warnings.push({
       category: 'liquidity',
       severity: 'critical',
-      message: `Vacancy + major repair would exhaust reserves in ${stressTestResult.vacancyAndMaintenance.monthsOfReserves.toFixed(1)} months`,
+      message: `A $${Math.round(stressTestResult.vacancyAndMaintenance.shockCost).toLocaleString()} vacancy + repair event would wipe out your remaining savings. You'd need to borrow or use credit cards.`,
       dollarImpact: stressTestResult.vacancyAndMaintenance.shockCost,
     })
   }
 
-  if (stressTestResult.incomeDisruption.monthsUntilCrisis < 6) {
+  if (stressTestResult.incomeDisruption.monthsUntilCrisis < 3) {
     warnings.push({
       category: 'liquidity',
       severity: 'critical',
-      message: `20% income drop would exhaust reserves in ${stressTestResult.incomeDisruption.monthsUntilCrisis.toFixed(1)} months`,
+      message: `A 20% income drop would leave you unable to cover both mortgages within ${Math.ceil(stressTestResult.incomeDisruption.monthsUntilCrisis)} months.`,
     })
   }
 
@@ -1298,7 +1256,7 @@ function generateScenarioBWarnings(
     warnings.push({
       category: 'market',
       severity: 'warning',
-      message: `10% market decline puts rental property underwater by $${Math.round(stressTestResult.marketDownturn.underwaterBy).toLocaleString()}`,
+      message: `If home values drop 10%, the Kyle property would be underwater by $${Math.round(stressTestResult.marketDownturn.underwaterBy).toLocaleString()} — you'd owe more than it's worth.`,
       dollarImpact: stressTestResult.marketDownturn.underwaterBy,
     })
   }

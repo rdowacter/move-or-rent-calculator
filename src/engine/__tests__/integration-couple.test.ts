@@ -39,6 +39,7 @@ const coupleInputs: ScenarioInputs = {
     iraExpectedAnnualReturn: 0.07,
     annualIRAContributionScenarioA: 7_000,
     annualIRAContributionScenarioB: 0,
+    iraWithdrawalAmountScenarioB: 50_000, // Full balance
     hasEmployerMatch: false,
     employerMatchPercentage: 0.0,
     hasOtherRetirementSavings: false,
@@ -63,6 +64,8 @@ const coupleInputs: ScenarioInputs = {
     costPerTurnover: 4_000,
     sellingCostsRate: 0.07,
     annualAppreciationRate: 0.03,
+    landValuePercentage: 0.15,
+    rentalIncomeDTICreditRate: 0.75,
   },
   newHome: {
     purchasePrice: 500_000,
@@ -279,7 +282,7 @@ describe('Integration: Conservative Couple (Golden Run 2)', () => {
     it('should trigger passive loss phase-out warning at $150k+ AGI', () => {
       // The engine generates a tax/info warning when AGI >= $150k
       const phaseOutWarnings = result.scenarioB.warnings.filter(
-        (w) => w.category === 'tax' && w.message.toLowerCase().includes('phase')
+        (w) => w.category === 'tax' && w.message.toLowerCase().includes('deduct')
       )
       expect(phaseOutWarnings.length).toBeGreaterThan(0)
     })

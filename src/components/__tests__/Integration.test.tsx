@@ -10,6 +10,7 @@
 import type { ReactNode } from 'react'
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
+import { useForm, FormProvider } from 'react-hook-form'
 import { ResultsSections } from '@/components/results/ResultsSections'
 import { runModel } from '@/engine/scenarios'
 import { defaultValues } from '@/schemas/scenarioInputs'
@@ -33,10 +34,17 @@ vi.mock('@/hooks/useModelOutput', () => ({
   useModelOutput: () => mockReturnValue,
 }))
 
-// Mock useWatch for VerdictSection — it needs form values to call generateVerdict
-vi.mock('react-hook-form', () => ({
-  useWatch: () => defaultValues,
-}))
+// Mock useWatch for VerdictSection — it needs form values to call generateVerdict.
+// We must preserve the real useForm, FormProvider, and useFormContext because
+// ResultsSections uses useFormContext for the time horizon control, and the
+// FormWrapper needs useForm + FormProvider to provide form context.
+vi.mock('react-hook-form', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-hook-form')>()
+  return {
+    ...actual,
+    useWatch: () => defaultValues,
+  }
+})
 
 // Mock recharts ResponsiveContainer to avoid jsdom layout issues
 vi.mock('recharts', async () => {
@@ -51,28 +59,33 @@ vi.mock('recharts', async () => {
   }
 })
 
+function FormWrapper({ children }: { children: ReactNode }) {
+  const methods = useForm({ defaultValues })
+  return <FormProvider {...methods}>{children}</FormProvider>
+}
+
 describe('ResultsSections integration', () => {
   it('renders the results-sections wrapper', () => {
     mockReturnValue = { modelOutput: mockModelOutput, isComputing: false }
-    render(<ResultsSections />)
+    render(<FormWrapper><ResultsSections /></FormWrapper>)
     expect(screen.getByTestId('results-sections')).toBeInTheDocument()
   })
 
   it('renders all six results sections when model output is available', () => {
     mockReturnValue = { modelOutput: mockModelOutput, isComputing: false }
-    render(<ResultsSections />)
+    render(<FormWrapper><ResultsSections /></FormWrapper>)
 
-    // NetWorthChart renders its own heading
-    expect(screen.getByText('Net Worth Projection')).toBeInTheDocument()
+    // ResultSection wrapper renders "Net Worth Over Time" heading
+    expect(screen.getByText('Net Worth Over Time')).toBeInTheDocument()
 
-    // IRATrajectoryChart renders its own heading
-    expect(screen.getByText('IRA Balance Trajectory')).toBeInTheDocument()
+    // ResultSection wrapper renders "Retirement Account Trajectory" heading
+    expect(screen.getByText('Retirement Account Trajectory')).toBeInTheDocument()
 
-    // WarningsList renders "Warnings & Risks" heading (when warnings exist)
+    // ResultSection wrapper renders "Warnings & Risks" heading
     expect(screen.getByText('Warnings & Risks')).toBeInTheDocument()
 
-    // ReserveRunway renders inside a Card with "Reserve Runway" title
-    expect(screen.getByText('Reserve Runway')).toBeInTheDocument()
+    // StressTests section heading
+    expect(screen.getByText('What-If Stress Tests')).toBeInTheDocument()
 
     // UpfrontCapital renders its section with aria-label
     expect(
@@ -80,20 +93,22 @@ describe('ResultsSections integration', () => {
     ).toBeInTheDocument()
 
     // MonthlyCashFlow renders scenario cards with "Baseline" label
-    // (VerdictSection's key metrics table also has "Baseline" as a column header)
+    // (also appears in VerdictSection key metrics and NetWorthBreakdown, so use getAllByText)
     expect(screen.getAllByText('Baseline').length).toBeGreaterThanOrEqual(1)
   })
 
   it('renders gracefully when model output is null', () => {
     mockReturnValue = { modelOutput: null, isComputing: true }
-    render(<ResultsSections />)
+    render(<FormWrapper><ResultsSections /></FormWrapper>)
 
     // The wrapper should still render
     expect(screen.getByTestId('results-sections')).toBeInTheDocument()
 
-    // Components that return null when modelOutput is null should not
-    // render their content headings
-    expect(screen.queryByText('Net Worth Projection')).not.toBeInTheDocument()
-    expect(screen.queryByText('Reserve Runway')).not.toBeInTheDocument()
+    // ResultSection headings are always rendered (they wrap child components),
+    // but child content should not render when modelOutput is null.
+    // The wrapper headings like "Net Worth Over Time" will still be in the DOM.
+    // Verify that child-specific content (e.g., chart containers) is absent.
+    expect(screen.queryByTestId('responsive-container')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('stress-tests')).not.toBeInTheDocument()
   })
 })

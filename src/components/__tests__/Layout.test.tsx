@@ -94,7 +94,7 @@ describe("DesktopLayout", () => {
     expect(screen.getByText("Results Content")).toBeInTheDocument()
   })
 
-  it("uses a grid layout with two columns", () => {
+  it("uses a flex layout with two columns", () => {
     const { container } = render(
       <DesktopLayout
         inputs={<div>Inputs</div>}
@@ -102,11 +102,11 @@ describe("DesktopLayout", () => {
       />
     )
 
-    const gridContainer = container.firstElementChild as HTMLElement
-    expect(gridContainer).toHaveClass("grid")
+    const flexContainer = container.firstElementChild as HTMLElement
+    expect(flexContainer).toHaveClass("flex")
   })
 
-  it("makes both columns independently scrollable", () => {
+  it("makes the results column independently scrollable", () => {
     const { container } = render(
       <DesktopLayout
         inputs={<div>Inputs</div>}
@@ -114,11 +114,38 @@ describe("DesktopLayout", () => {
       />
     )
 
-    const gridContainer = container.firstElementChild as HTMLElement
-    const columns = gridContainer.children
+    const flexContainer = container.firstElementChild as HTMLElement
+    const resultsColumn = flexContainer.children[1]
 
-    expect(columns[0]).toHaveClass("overflow-y-auto")
-    expect(columns[1]).toHaveClass("overflow-y-auto")
+    expect(resultsColumn).toHaveClass("overflow-y-auto")
+  })
+
+  it("toggles input panel visibility with collapse button", async () => {
+    const user = userEvent.setup()
+    const { container, getByRole } = render(
+      <DesktopLayout
+        inputs={<div>Inputs</div>}
+        results={<div>Results</div>}
+      />
+    )
+
+    const collapseButton = getByRole("button", { name: "Hide inputs" })
+    const inputsColumn = container.firstElementChild?.firstElementChild as HTMLElement
+
+    // Initially expanded at 40%
+    expect(inputsColumn.style.width).toBe("40%")
+
+    // Click to collapse
+    await user.click(collapseButton)
+    expect(inputsColumn.style.width).toBe("48px")
+
+    // Button label should update
+    const expandButton = getByRole("button", { name: "Show inputs" })
+    expect(expandButton).toBeTruthy()
+
+    // Click to expand
+    await user.click(expandButton)
+    expect(inputsColumn.style.width).toBe("40%")
   })
 })
 

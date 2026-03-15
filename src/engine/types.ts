@@ -78,6 +78,9 @@ export interface RetirementInputs {
   hasEmployerMatch: boolean
   /** Employer 401(k) match percentage (e.g. 0.03 for 3%). */
   employerMatchPercentage: number
+  /** Amount to withdraw from IRA in Scenario B. Defaults to full balance.
+   * Set to a value less than iraBalance for partial withdrawal. */
+  iraWithdrawalAmountScenarioB: number
   /** Whether the user has other retirement savings beyond the IRA. */
   hasOtherRetirementSavings: boolean
   /** Balance of other retirement accounts. */
@@ -132,6 +135,10 @@ export interface CurrentHomeInputs {
   sellingCostsRate: number
   /** Expected annual home appreciation rate (e.g. 0.03 for 3%). */
   annualAppreciationRate: number
+  /** Percentage of home value attributable to land (not depreciable). Default 15%. */
+  landValuePercentage: number
+  /** Percentage of rental income lenders credit toward DTI. 75% standard, 0% for new landlords. */
+  rentalIncomeDTICreditRate: number
 }
 
 /** New home (Austin) inputs. */
