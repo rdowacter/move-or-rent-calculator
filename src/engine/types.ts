@@ -237,6 +237,55 @@ export interface ScenarioInputs {
   projection: ProjectionInputs
 }
 
+// ---- Cash Flow Breakdown --------------------------------------------------
+
+/**
+ * Itemized monthly cash flow breakdown for a single year's snapshot.
+ * Used by the UI to show exactly where money comes from and goes,
+ * so the user can trace every dollar in the headline cash flow number.
+ */
+export interface CashFlowBreakdown {
+  // ---- Income ----
+  /** Monthly take-home pay (gross income minus federal tax, divided by 12). */
+  takeHomePay: number
+
+  // ---- Primary housing costs ----
+  /** Monthly mortgage P&I on the primary residence. */
+  mortgagePI: number
+  /** Monthly property tax on the primary residence. */
+  propertyTax: number
+  /** Monthly homeowners insurance on the primary residence. */
+  insurance: number
+  /** Monthly PMI on the primary residence (0 if not applicable). */
+  pmi: number
+  /** Monthly HOA dues on the primary residence (0 if not applicable). */
+  hoa: number
+
+  // ---- Other expenses ----
+  /** Monthly living expenses (food, utilities, etc.). */
+  livingExpenses: number
+  /** Monthly non-housing debt payments (car loans, student loans, etc.). */
+  debtPayments: number
+  /** Monthly commute cost (mileage + tolls). */
+  commuteCost: number
+
+  // ---- Rental property (Scenario B only, all 0 for other scenarios) ----
+  /** Monthly rental income (effective gross rent after vacancy). */
+  rentalIncome: number
+  /** Monthly Kyle mortgage P&I. */
+  rentalMortgagePI: number
+  /** Monthly Kyle property tax. */
+  rentalPropertyTax: number
+  /** Monthly Kyle landlord insurance. */
+  rentalInsurance: number
+  /** Monthly maintenance reserve. */
+  rentalMaintenance: number
+  /** Monthly property management fee. */
+  rentalManagementFee: number
+  /** Monthly additional landlord costs (tax prep, umbrella insurance, amortized turnover). */
+  rentalLandlordCosts: number
+}
+
 // ---- Output Interfaces ----------------------------------------------------
 
 /**
@@ -286,6 +335,10 @@ export interface YearlySnapshot {
   passiveLossAllowed?: number
   /** Passive activity loss suspended (carried forward due to AGI phase-out). */
   passiveLossSuspended?: number
+
+  /** Itemized monthly cash flow breakdown for transparency — shows exactly
+   *  where the headline cash flow number comes from. */
+  cashFlowBreakdown: CashFlowBreakdown
 }
 
 /**

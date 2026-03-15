@@ -94,13 +94,22 @@ describe('MonthlyCashFlow', () => {
     expect(container.querySelectorAll('[data-slot="card"]').length).toBe(0)
   })
 
-  it('shows annual gross income for context on each card', () => {
+  it('shows annual savings capacity translation on each card', () => {
     mockUseModelOutput.mockReturnValue({ modelOutput, isComputing: false })
     render(<MonthlyCashFlow />)
 
-    const baselineIncome = modelOutput.baseline.yearlySnapshots[0].annualGrossIncome
-    const matches = screen.getAllByText(formatCurrency(baselineIncome))
-    // All 3 cards show annual income (same value in year 1 across scenarios)
-    expect(matches.length).toBeGreaterThanOrEqual(3)
+    // Each card translates monthly cash flow to annual savings capacity
+    const baselineCashFlow = modelOutput.baseline.yearlySnapshots[0].monthlyCashFlowBestCase
+    const annualText = `= ${formatCurrency(baselineCashFlow * 12)}/yr savings capacity`
+    expect(screen.getByText(annualText)).toBeInTheDocument()
+  })
+
+  it('shows "See breakdown" trigger on each card', () => {
+    mockUseModelOutput.mockReturnValue({ modelOutput, isComputing: false })
+    render(<MonthlyCashFlow />)
+
+    // All 3 cards should have a "See breakdown" collapsible trigger
+    const triggers = screen.getAllByText('See breakdown')
+    expect(triggers.length).toBe(3)
   })
 })

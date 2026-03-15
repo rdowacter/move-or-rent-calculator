@@ -336,6 +336,24 @@ export function projectBaseline(inputs: ScenarioInputs): ScenarioOutput {
       monthlyCashFlowWorstCase: monthlyCashFlow - annualCommuteCost / MONTHS_PER_YEAR,
       cumulativeCommuteSavings: 0, // Baseline is the reference — no savings
       annualGrossIncome: annualIncome,
+      cashFlowBreakdown: {
+        takeHomePay: monthlyNetIncome,
+        mortgagePI: effectiveMonthlyMortgage,
+        propertyTax: escalatedPropertyTax / MONTHS_PER_YEAR,
+        insurance: escalatedInsurance / MONTHS_PER_YEAR,
+        pmi: 0,
+        hoa: currentHome.monthlyHOA,
+        livingExpenses: escalatedLivingExpenses,
+        debtPayments: personal.monthlyDebtPayments,
+        commuteCost: annualCommuteCost / MONTHS_PER_YEAR,
+        rentalIncome: 0,
+        rentalMortgagePI: 0,
+        rentalPropertyTax: 0,
+        rentalInsurance: 0,
+        rentalMaintenance: 0,
+        rentalManagementFee: 0,
+        rentalLandlordCosts: 0,
+      },
     })
   }
 
@@ -553,6 +571,24 @@ export function projectScenarioA(inputs: ScenarioInputs): ScenarioOutput {
       monthlyCashFlowWorstCase: monthlyCashFlow,
       cumulativeCommuteSavings,
       annualGrossIncome: annualIncome,
+      cashFlowBreakdown: {
+        takeHomePay: monthlyNetIncome,
+        mortgagePI: austinMonthlyPayment,
+        propertyTax: escalatedPropertyTax / MONTHS_PER_YEAR,
+        insurance: escalatedInsurance / MONTHS_PER_YEAR,
+        pmi: currentMonthlyPMI,
+        hoa: 0,
+        livingExpenses: escalatedLivingExpenses,
+        debtPayments: personal.monthlyDebtPayments,
+        commuteCost: annualNewCommuteCost / MONTHS_PER_YEAR,
+        rentalIncome: 0,
+        rentalMortgagePI: 0,
+        rentalPropertyTax: 0,
+        rentalInsurance: 0,
+        rentalMaintenance: 0,
+        rentalManagementFee: 0,
+        rentalLandlordCosts: 0,
+      },
     })
   }
 
@@ -736,6 +772,12 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
     let schedulETaxBenefit = 0
     let kyleMortgageInterest = 0
     let additionalLandlordCosts = 0
+    // Breakdown fields for the rental section of CashFlowBreakdown
+    let rentalEffectiveGrossRent = 0
+    let rentalMonthlyPropertyTax = 0
+    let rentalMonthlyInsurance = 0
+    let rentalMonthlyMaintenance = 0
+    let rentalMonthlyManagementFee = 0
 
     if (rentalActive && year <= projection.plannedRentalExitYear) {
       // Escalate Kyle rental property costs
@@ -782,6 +824,13 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
         managementFeeRate: currentHome.propertyManagementFeeRate,
       })
       rentalMonthlyCashFlow = rentalCF.cashFlow
+
+      // Capture breakdown fields for the CashFlowBreakdown
+      rentalEffectiveGrossRent = rentalCF.effectiveGrossRent
+      rentalMonthlyPropertyTax = rentalCF.itemizedExpenses.propertyTax
+      rentalMonthlyInsurance = rentalCF.itemizedExpenses.insurance
+      rentalMonthlyMaintenance = rentalCF.itemizedExpenses.maintenance
+      rentalMonthlyManagementFee = rentalCF.itemizedExpenses.managementFee
 
       // Worst case: add maintenance shock amortized monthly
       // Uses MAJOR_REPAIR_COST (e.g. HVAC replacement) amortized over 12 months
@@ -984,6 +1033,25 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
       depreciationExpense,
       passiveLossAllowed,
       passiveLossSuspended,
+      cashFlowBreakdown: {
+        takeHomePay: monthlyNetIncome,
+        mortgagePI: austinMonthlyPayment,
+        propertyTax: escalatedAustinPropertyTax / MONTHS_PER_YEAR,
+        insurance: escalatedAustinInsurance / MONTHS_PER_YEAR,
+        pmi: currentMonthlyPMI,
+        hoa: 0,
+        livingExpenses: escalatedLivingExpenses,
+        debtPayments: personal.monthlyDebtPayments,
+        commuteCost: annualNewCommuteCost / MONTHS_PER_YEAR,
+        rentalIncome: rentalEffectiveGrossRent,
+        rentalMortgagePI: rentalActive && year <= projection.plannedRentalExitYear
+          ? kyleMonthlyPayment : 0,
+        rentalPropertyTax: rentalMonthlyPropertyTax,
+        rentalInsurance: rentalMonthlyInsurance,
+        rentalMaintenance: rentalMonthlyMaintenance,
+        rentalManagementFee: rentalMonthlyManagementFee,
+        rentalLandlordCosts: additionalLandlordCosts / MONTHS_PER_YEAR,
+      },
     })
   }
 
