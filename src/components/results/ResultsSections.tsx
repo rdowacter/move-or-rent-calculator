@@ -2,15 +2,17 @@
 // ResultsSections.tsx — Wrapper component that renders all results sections
 // in a logical order with consistent spacing and visual grouping.
 //
-// Four visual groups:
-//   0. Verdict & Sensitivity — plain-language recommendation and breakeven analysis
-//   1. Risk Signals — warnings with a subtle red-tinted background
-//   2. Long-Range Projections — net worth and IRA charts on muted background
-//   3. Year-1 Execution — cash flow, capital, and reserves on default background
+// Five visual groups ordered by decision flow:
+//   1. Executive Summary — verdict scorecard with feasibility badges (accent bg)
+//   2. Feasibility — upfront capital and monthly cash flow (default bg)
+//   3. Risk Signals — warnings and stress tests (red-tinted bg)
+//   4. Long-Range Projections — net worth, IRA, composition, year-by-year (muted bg)
+//   5. Assumptions & Sources (default bg)
 // ---------------------------------------------------------------------------
 
 import { VerdictSection } from './VerdictSection'
 import { SensitivitySection } from './SensitivitySection'
+import { ExecutiveSummary } from './ExecutiveSummary'
 import { AlertTriangle, TrendingUp, PiggyBank, DollarSign, Wallet, Shield, Calendar, Layers, Table2, BookOpen } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
 import type { ScenarioInputs } from '@/engine/types'
@@ -39,11 +41,6 @@ export function ResultsSections() {
 
   return (
     <div className="space-y-10" data-testid="results-sections">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold tracking-tight">Financial Comparison</h2>
-        <p className="text-sm text-muted-foreground">Based on your inputs, here&apos;s how each scenario plays out</p>
-      </div>
-
       {/* Group 0: Verdict & Sensitivity — the most important output */}
       <section>
         <VerdictSection />
@@ -68,36 +65,32 @@ export function ResultsSections() {
         </div>
       </div>
 
-      {/* Group 1: Risk Signals */}
-      <div className="rounded-lg bg-red-50/40 p-5 dark:bg-red-950/20">
-        <ResultSection icon={AlertTriangle} title="Warnings & Risks" accentColor="border-red-400" iconColor="text-red-500">
-          <WarningsList />
+      {/* Group 1: Executive Summary — verdict scorecard (accent background) */}
+      <ExecutiveSummary />
+
+      {/* Group 2: Feasibility — can you actually afford this? */}
+      <div className="space-y-8">
+        <ResultSection icon={Wallet} title="Upfront Capital Requirements" description="Cash needed on day one and where it comes from" accentColor="border-blue-400" iconColor="text-blue-500">
+          <UpfrontCapital />
+        </ResultSection>
+
+        <ResultSection icon={DollarSign} title="Monthly Cash Flow" description="Year 1 income vs. expenses — can you afford this month to month?" accentColor="border-blue-400" iconColor="text-blue-500">
+          <MonthlyCashFlow />
         </ResultSection>
       </div>
 
-      {/* Scenario Legend */}
-      <div className="space-y-2 rounded-lg border bg-muted/50 p-4">
-        <h3 className="text-sm font-semibold">Comparing Three Scenarios</h3>
-        <ul className="space-y-1 text-sm text-muted-foreground">
-          <li className="flex items-center gap-2">
-            <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: '#6366f1' }} />
-            <span><span className="font-medium text-foreground">Baseline:</span> Stay
-            in Kyle, keep the IRA, keep commuting</span>
-          </li>
-          <li className="flex items-center gap-2">
-            <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: '#10b981' }} />
-            <span><span className="font-medium text-foreground">Scenario A:</span>{' '}
-            Sell Kyle, buy Austin, keep IRA intact + contributing</span>
-          </li>
-          <li className="flex items-center gap-2">
-            <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: '#f59e0b' }} />
-            <span><span className="font-medium text-foreground">Scenario B:</span>{' '}
-            Keep Kyle as rental, withdraw IRA for down payment, buy Austin</span>
-          </li>
-        </ul>
+      {/* Group 3: Risk Signals — warnings and stress tests */}
+      <div className="space-y-8 rounded-lg bg-red-50/40 p-5 dark:bg-red-950/20">
+        <ResultSection icon={AlertTriangle} title="Warnings & Risks" accentColor="border-red-400" iconColor="text-red-500">
+          <WarningsList />
+        </ResultSection>
+
+        <ResultSection icon={Shield} title="What-If Stress Tests" description="How Scenario B holds up when things go wrong" accentColor="border-red-400" iconColor="text-red-500">
+          <StressTests />
+        </ResultSection>
       </div>
 
-      {/* Group 2: Long-Range Projections */}
+      {/* Group 4: Long-Range Projections */}
       <div className="space-y-8 rounded-lg bg-muted/30 p-5">
         <ResultSection icon={TrendingUp} title="Net Worth Over Time" description="Projected total net worth across all assets" accentColor="border-violet-400" iconColor="text-violet-500">
           <NetWorthChart />
@@ -119,22 +112,7 @@ export function ResultsSections() {
         </ResultSection>
       </div>
 
-      {/* Group 3: Year-1 Execution */}
-      <div className="space-y-8">
-        <ResultSection icon={DollarSign} title="Monthly Cash Flow" description="Year 1 income vs. expenses — can you afford this month to month?" accentColor="border-blue-400" iconColor="text-blue-500">
-          <MonthlyCashFlow />
-        </ResultSection>
-
-        <ResultSection icon={Wallet} title="Upfront Capital Requirements" description="Cash needed on day one and where it comes from" accentColor="border-blue-400" iconColor="text-blue-500">
-          <UpfrontCapital />
-        </ResultSection>
-
-        <ResultSection icon={Shield} title="What-If Stress Tests" description="How Scenario B holds up when things go wrong" accentColor="border-blue-400" iconColor="text-blue-500">
-          <StressTests />
-        </ResultSection>
-      </div>
-
-      {/* Assumptions & Sources */}
+      {/* Group 5: Assumptions & Sources */}
       <ResultSection icon={BookOpen} title="Assumptions & Sources" accentColor="border-slate-400" iconColor="text-slate-500">
         <AssumptionsDisclosure />
       </ResultSection>
