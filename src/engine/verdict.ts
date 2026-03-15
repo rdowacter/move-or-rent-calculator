@@ -202,7 +202,7 @@ const SCENARIO_HEADLINE_NAMES: Record<ScenarioKey, string> = {
  */
 function synthesizeNoneViable(
   model: ModelOutput,
-  dealbreakersMap: Record<ScenarioKey, { isViable: boolean; reasons: string[] }>
+  _dealbreakersMap: Record<ScenarioKey, { isViable: boolean; reasons: string[] }>
 ): string[] {
   const reasoning: string[] = []
 
@@ -246,7 +246,7 @@ function synthesizeNoneViable(
 function synthesizeSingleViable(
   winner: ScenarioKey,
   winnerOutput: ScenarioOutput,
-  model: ModelOutput,
+  _model: ModelOutput,
   eliminated: { scenario: string; reasons: string[] }[],
   inputs: ScenarioInputs
 ): string[] {
@@ -443,7 +443,7 @@ export function generateVerdict(
  */
 function pickBestScenario(
   viable: { key: ScenarioKey; output: ScenarioOutput }[],
-  inputs: ScenarioInputs
+  _inputs: ScenarioInputs
 ): { key: ScenarioKey; output: ScenarioOutput } {
   // Sort by final net worth descending
   const sorted = [...viable].sort(

@@ -13,8 +13,6 @@ import type {
   ScenarioOutput,
   ScenarioInputs,
   ModelOutput,
-  UpfrontCapital,
-  DTIResult,
   YearlySnapshot,
   Warning,
 } from '../types'
