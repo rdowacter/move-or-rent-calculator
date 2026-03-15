@@ -123,6 +123,10 @@ const currentHomeInputsSchema = z.object({
   sellingCostsRate: rate(),
   /** Expected annual home appreciation rate (e.g. 0.03 for 3%). */
   annualAppreciationRate: rate(),
+  /** Percentage of home value attributable to land (not depreciable). Default 15%. */
+  landValuePercentage: rate(),
+  /** Percentage of rental income lenders credit toward DTI. 75% standard, 0% for new landlords. */
+  rentalIncomeDTICreditRate: rate(),
 })
 
 const newHomeInputsSchema = z.object({

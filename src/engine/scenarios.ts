@@ -59,6 +59,7 @@ import {
   calculateUpfrontCapital,
   reserveRunwayMonths,
   stressTest,
+  MAJOR_REPAIR_COST,
 } from './capital'
 
 import { calculateDTI } from './dti'
@@ -630,7 +631,8 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
     currentHome.annualInsurance * (1 + currentHome.landlordInsurancePremiumIncrease)
 
   // Depreciation is on ORIGINAL home value at conversion, not appreciated value
-  const annualDepreciationAmount = annualDepreciation(currentHome.homeValue)
+  // Uses the user-configured land value percentage to determine the depreciable basis
+  const annualDepreciationAmount = annualDepreciation(currentHome.homeValue, currentHome.landValuePercentage)
 
   // Austin mortgage (smaller down payment in Scenario B)
   const austinDownPayment =
@@ -688,6 +690,7 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
     otherDebtPayments: personal.monthlyDebtPayments,
     rentalMortgagePayment: kyleRentalPITI,
     expectedMonthlyRent: currentHome.expectedMonthlyRent,
+    rentalIncomeCreditRate: currentHome.rentalIncomeDTICreditRate,
   })
 
   // ---- Year-by-year loop ----
@@ -781,10 +784,10 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
       rentalMonthlyCashFlow = rentalCF.cashFlow
 
       // Worst case: add maintenance shock amortized monthly
-      // Use a major HVAC/repair estimate of ~$8k amortized over 12 months
+      // Uses MAJOR_REPAIR_COST (e.g. HVAC replacement) amortized over 12 months
       worstCaseMonthlyCashFlow = worstCaseMonthlyRentalCashFlow(
         rentalCF,
-        8000 / MONTHS_PER_YEAR
+        MAJOR_REPAIR_COST / MONTHS_PER_YEAR
       )
 
       // Depreciation on ORIGINAL home value at conversion
@@ -1055,50 +1058,19 @@ export function runModel(inputs: ScenarioInputs): ModelOutput {
 // Warning Generation
 // ---------------------------------------------------------------------------
 
-/**
- * Projected IRA balance at age 65, given current balance and annual
- * contributions at the expected return rate.
- */
-function projectIRAAtAge65(
-  currentIRABalance: number,
-  annualContribution: number,
-  annualReturn: number,
-  currentAge: number
-): number {
-  const yearsToRetirement = Math.max(0, 65 - currentAge)
-  let balance = currentIRABalance
-  for (let y = 0; y < yearsToRetirement; y++) {
-    balance = balance * (1 + annualReturn) + annualContribution
-  }
-  return balance
-}
-
 function generateBaselineWarnings(
-  inputs: ScenarioInputs
+  _inputs: ScenarioInputs
 ): Warning[] {
   const warnings: Warning[] = []
 
-  // Retirement projection at age 65
-  const iraAt65 = projectIRAAtAge65(
-    inputs.retirement.iraBalance,
-    inputs.retirement.annualIRAContributionScenarioA,
-    inputs.retirement.iraExpectedAnnualReturn,
-    inputs.personal.age
-  )
-  if (iraAt65 < 100_000) {
-    warnings.push({
-      category: 'retirement',
-      severity: 'critical',
-      message: `At this savings rate, you'd have about $${Math.round(iraAt65).toLocaleString()} in retirement at age 65 — well below what's needed for a secure retirement.`,
-      dollarImpact: iraAt65,
-    })
-  }
+  // Retirement adequacy removed — the IRA trajectory chart shows the projection,
+  // let the user judge what's adequate for their situation.
 
   return warnings
 }
 
 function generateScenarioAWarnings(
-  inputs: ScenarioInputs,
+  _inputs: ScenarioInputs,
   snapshots: YearlySnapshot[],
   dtiResult: DTIResult,
   upfrontCapital: UpfrontCapital
@@ -1157,22 +1129,6 @@ function generateScenarioAWarnings(
       category: 'liquidity',
       severity: 'warning',
       message: `After closing, you'd have about ${Math.round(reserveRunway)} months of savings — below the 6-month cushion financial advisors recommend.`,
-    })
-  }
-
-  // Retirement at 65
-  const iraAt65 = projectIRAAtAge65(
-    inputs.retirement.iraBalance,
-    inputs.retirement.annualIRAContributionScenarioA,
-    inputs.retirement.iraExpectedAnnualReturn,
-    inputs.personal.age
-  )
-  if (iraAt65 < 100_000) {
-    warnings.push({
-      category: 'retirement',
-      severity: 'critical',
-      message: `At this savings rate, you'd have about $${Math.round(iraAt65).toLocaleString()} in retirement at age 65 — well below what's needed for a secure retirement.`,
-      dollarImpact: iraAt65,
     })
   }
 
@@ -1266,22 +1222,6 @@ function generateScenarioBWarnings(
         dollarImpact: iraWithdrawalTaxCost,
       })
     }
-  }
-
-  // Retirement projection at age 65 (starting from remaining IRA balance after withdrawal)
-  const iraAt65 = projectIRAAtAge65(
-    remainingIRA,
-    inputs.retirement.annualIRAContributionScenarioB,
-    inputs.retirement.iraExpectedAnnualReturn,
-    inputs.personal.age
-  )
-  if (iraAt65 < 100_000) {
-    warnings.push({
-      category: 'retirement',
-      severity: 'critical',
-      message: `Starting over on retirement savings at ${inputs.personal.age}, you'd have about $${Math.round(iraAt65).toLocaleString()} by age 65 — likely not enough for a secure retirement.`,
-      dollarImpact: iraAt65,
-    })
   }
 
   // Passive loss phase-out: check if AGI >= $150k

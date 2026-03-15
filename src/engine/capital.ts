@@ -30,7 +30,7 @@ const VACANCY_SHOCK_MONTHS = 3
  * plumbing issue — the kind of single event that can wipe out a new
  * landlord's reserves.
  */
-const MAJOR_REPAIR_COST = 8_000
+export const MAJOR_REPAIR_COST = 8_000
 
 /**
  * Income reduction factor for the income disruption stress test.

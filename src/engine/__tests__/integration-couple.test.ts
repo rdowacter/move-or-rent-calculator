@@ -64,6 +64,8 @@ const coupleInputs: ScenarioInputs = {
     costPerTurnover: 4_000,
     sellingCostsRate: 0.07,
     annualAppreciationRate: 0.03,
+    landValuePercentage: 0.15,
+    rentalIncomeDTICreditRate: 0.75,
   },
   newHome: {
     purchasePrice: 500_000,

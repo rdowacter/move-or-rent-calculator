@@ -330,6 +330,8 @@ export const DEFAULT_CURRENT_HOME_INPUTS = {
   costPerTurnover: 3_500,
   sellingCostsRate: 0.06,
   annualAppreciationRate: 0.03,
+  landValuePercentage: 0.15,
+  rentalIncomeDTICreditRate: 0.75,
 } satisfies Record<string, unknown>
 
 /** Default values for NewHomeInputs. */

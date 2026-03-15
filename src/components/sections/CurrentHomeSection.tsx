@@ -103,6 +103,13 @@ function CurrentHomeSection() {
           control={control}
           description="Cleaning, minor repairs, and re-listing costs per turnover"
         />
+
+        <PercentInput
+          name="currentHome.rentalIncomeDTICreditRate"
+          label="Lender Rental Income Credit"
+          control={control}
+          description="How much rental income lenders count toward DTI. 75% standard, 0% if no landlord history."
+        />
       </div>
 
       {/* Costs & taxes */}
@@ -141,6 +148,13 @@ function CurrentHomeSection() {
           label="Monthly HOA"
           control={control}
           description="Homeowners association dues per month"
+        />
+
+        <PercentInput
+          name="currentHome.landValuePercentage"
+          label="Land Value Percentage"
+          control={control}
+          description="Percentage of home value that is land (not depreciable). Check your county tax assessor."
         />
       </div>
 
