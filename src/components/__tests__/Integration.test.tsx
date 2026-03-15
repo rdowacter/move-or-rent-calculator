@@ -34,6 +34,18 @@ vi.mock('@/hooks/useModelOutput', () => ({
   useModelOutput: () => mockReturnValue,
 }))
 
+// Mock useWatch for VerdictSection — it needs form values to call generateVerdict.
+// We must preserve the real useForm, FormProvider, and useFormContext because
+// ResultsSections uses useFormContext for the time horizon control, and the
+// FormWrapper needs useForm + FormProvider to provide form context.
+vi.mock('react-hook-form', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-hook-form')>()
+  return {
+    ...actual,
+    useWatch: () => defaultValues,
+  }
+})
+
 // Mock recharts ResponsiveContainer to avoid jsdom layout issues
 vi.mock('recharts', async () => {
   const actual = await vi.importActual<typeof import('recharts')>('recharts')
@@ -81,7 +93,7 @@ describe('ResultsSections integration', () => {
     ).toBeInTheDocument()
 
     // MonthlyCashFlow renders scenario cards with "Baseline" label
-    // (also appears in NetWorthBreakdown table header, so use getAllByText)
+    // (also appears in VerdictSection key metrics and NetWorthBreakdown, so use getAllByText)
     expect(screen.getAllByText('Baseline').length).toBeGreaterThanOrEqual(1)
   })
 

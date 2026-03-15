@@ -117,7 +117,7 @@ function FormField<T extends FieldValues>({
             )}
           </div>
           {description && (
-            <p id={descriptionId} className="text-xs text-muted-foreground">{description}</p>
+            <p id={descriptionId} className="text-sm text-muted-foreground md:text-xs">{description}</p>
           )}
           {fieldState.error?.message && (
             <p className="text-xs text-destructive" role="alert">

@@ -2,12 +2,15 @@
 // ResultsSections.tsx — Wrapper component that renders all results sections
 // in a logical order with consistent spacing and visual grouping.
 //
-// Three visual groups:
+// Four visual groups:
+//   0. Verdict & Sensitivity — plain-language recommendation and breakeven analysis
 //   1. Risk Signals — warnings with a subtle red-tinted background
 //   2. Long-Range Projections — net worth and IRA charts on muted background
 //   3. Year-1 Execution — cash flow, capital, and reserves on default background
 // ---------------------------------------------------------------------------
 
+import { VerdictSection } from './VerdictSection'
+import { SensitivitySection } from './SensitivitySection'
 import { AlertTriangle, TrendingUp, PiggyBank, DollarSign, Wallet, Shield, Calendar, Layers, Table2, BookOpen } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
 import type { ScenarioInputs } from '@/engine/types'
@@ -40,6 +43,15 @@ export function ResultsSections() {
         <h2 className="text-2xl font-bold tracking-tight">Financial Comparison</h2>
         <p className="text-sm text-muted-foreground">Based on your inputs, here&apos;s how each scenario plays out</p>
       </div>
+
+      {/* Group 0: Verdict & Sensitivity — the most important output */}
+      <section>
+        <VerdictSection />
+      </section>
+
+      <section>
+        <SensitivitySection />
+      </section>
 
       {/* Projection Controls — right at the top of results where they belong */}
       <div className="flex items-start gap-3 rounded-lg border bg-card p-4 shadow-sm">
