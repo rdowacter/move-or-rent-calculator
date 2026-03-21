@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
+import { Routes, Route } from 'react-router-dom'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { scenarioInputsSchema } from '@/schemas/scenarioInputs'
 import type { ScenarioInputs } from '@/engine/types'
@@ -12,7 +13,7 @@ import { InputAccordion } from '@/components/InputAccordion'
 import { ResultsSections } from '@/components/results/ResultsSections'
 import { Button } from '@/components/ui/button'
 
-function App() {
+function Calculator() {
   const { initialValues, save, resetToDefaults } = useFormPersistence()
 
   const methods = useForm<ScenarioInputs>({
@@ -67,6 +68,17 @@ function App() {
         )}
       </ScenarioModelProvider>
     </FormProvider>
+  )
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Calculator />} />
+      <Route path="/terms" element={<div className="max-w-3xl mx-auto px-4 py-8">Terms of Service — Coming Soon</div>} />
+      <Route path="/privacy" element={<div className="max-w-3xl mx-auto px-4 py-8">Privacy Policy — Coming Soon</div>} />
+      <Route path="/disclaimer" element={<div className="max-w-3xl mx-auto px-4 py-8">Disclaimer — Coming Soon</div>} />
+    </Routes>
   )
 }
 
