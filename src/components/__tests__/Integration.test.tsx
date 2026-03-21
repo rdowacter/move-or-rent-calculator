@@ -104,7 +104,7 @@ describe('ResultsSections integration', () => {
   })
 
   it('renders gracefully when model output is null (not ready)', () => {
-    mockReturnValue = { modelOutput: null, isComputing: false, isReady: false, filledCount: 5, totalRequired: 22 }
+    mockReturnValue = { modelOutput: null, isComputing: false, isReady: false, filledCount: 5, totalRequired: 13 }
     render(<FormWrapper><ResultsSections /></FormWrapper>)
 
     // The wrapper should still render
@@ -112,11 +112,10 @@ describe('ResultsSections integration', () => {
 
     // ResultsGate should show the progress indicator instead of results
     expect(screen.getByText('Fill in your details to see your analysis')).toBeInTheDocument()
-    expect(screen.getByText('5 of 22 required fields completed')).toBeInTheDocument()
+    expect(screen.getByText('5 of 13 required fields completed')).toBeInTheDocument()
 
-    // Result sections should NOT be rendered when not ready
-    expect(screen.queryByText('Net Worth Over Time')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('responsive-container')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('stress-tests')).not.toBeInTheDocument()
+    // Result sections are in the DOM (hooks must always run) but hidden
+    expect(screen.queryByText('Net Worth Over Time')).toBeInTheDocument()
+    expect(screen.queryByText('Net Worth Over Time')!.closest('.hidden')).toBeTruthy()
   })
 })

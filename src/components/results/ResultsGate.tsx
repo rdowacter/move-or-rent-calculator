@@ -24,29 +24,34 @@ export function ResultsGate({ children }: ResultsGateProps) {
   const { isReady, filledCount, totalRequired } = useModelOutput()
   const switchToInputs = useSwitchToInputs()
 
-  if (!isReady) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <h2 className="text-lg font-semibold text-foreground mb-2">
-          Fill in your details to see your analysis
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          {filledCount} of {totalRequired} required fields completed
-        </p>
-        <div className="w-48 h-2 bg-muted rounded-full overflow-hidden mb-6">
-          <div
-            className="h-full bg-primary rounded-full transition-all duration-300"
-            style={{ width: `${(filledCount / totalRequired) * 100}%` }}
-          />
+  return (
+    <>
+      {!isReady && (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <h2 className="text-lg font-semibold text-foreground mb-2">
+            Fill in your details to see your analysis
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            {filledCount} of {totalRequired} required fields completed
+          </p>
+          <div className="w-48 h-2 bg-muted rounded-full overflow-hidden mb-6">
+            <div
+              className="h-full bg-primary rounded-full transition-all duration-300"
+              style={{ width: `${(filledCount / totalRequired) * 100}%` }}
+            />
+          </div>
+          {switchToInputs && (
+            <Button variant="outline" size="sm" onClick={switchToInputs}>
+              Go to Inputs
+            </Button>
+          )}
         </div>
-        {switchToInputs && (
-          <Button variant="outline" size="sm" onClick={switchToInputs}>
-            Go to Inputs
-          </Button>
-        )}
+      )}
+      {/* Always render children so hooks are called consistently.
+          Hide visually when not ready to prevent layout shift. */}
+      <div className={isReady ? undefined : 'hidden'}>
+        {children}
       </div>
-    )
-  }
-
-  return <>{children}</>
+    </>
+  )
 }

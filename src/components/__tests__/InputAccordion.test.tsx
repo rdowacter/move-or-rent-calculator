@@ -71,7 +71,9 @@ describe('InputAccordion', () => {
 
     expect(screen.getByText('Home Value')).toBeInTheDocument()
     expect(screen.getByText('Mortgage Balance')).toBeInTheDocument()
-    expect(screen.getByText('Interest Rate')).toBeInTheDocument()
+    // "Interest Rate" appears in both Current Home and New Home (both kept mounted),
+    // so use the label's htmlFor attribute to find the correct one
+    expect(screen.getByLabelText('Interest Rate', { selector: '#currentHome\\.interestRate' })).toBeInTheDocument()
     expect(screen.getByText('Expected Monthly Rent')).toBeInTheDocument()
   })
 
