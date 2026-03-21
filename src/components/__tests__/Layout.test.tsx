@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { renderHook, act } from "@testing-library/react"
+import { MemoryRouter } from "react-router-dom"
 import { useMediaQuery } from "@/hooks/useMediaQuery"
 import { DesktopLayout } from "@/components/DesktopLayout"
 import { MobileLayout } from "@/components/MobileLayout"
@@ -82,10 +83,12 @@ describe("useMediaQuery", () => {
 describe("DesktopLayout", () => {
   it("renders children in a two-column grid", () => {
     render(
-      <DesktopLayout
-        inputs={<div data-testid="inputs-panel">Inputs Content</div>}
-        results={<div data-testid="results-panel">Results Content</div>}
-      />
+      <MemoryRouter>
+        <DesktopLayout
+          inputs={<div data-testid="inputs-panel">Inputs Content</div>}
+          results={<div data-testid="results-panel">Results Content</div>}
+        />
+      </MemoryRouter>
     )
 
     expect(screen.getByTestId("inputs-panel")).toBeInTheDocument()
@@ -96,26 +99,32 @@ describe("DesktopLayout", () => {
 
   it("uses a flex layout with two columns", () => {
     const { container } = render(
-      <DesktopLayout
-        inputs={<div>Inputs</div>}
-        results={<div>Results</div>}
-      />
+      <MemoryRouter>
+        <DesktopLayout
+          inputs={<div>Inputs</div>}
+          results={<div>Results</div>}
+        />
+      </MemoryRouter>
     )
 
-    const flexContainer = container.firstElementChild as HTMLElement
-    expect(flexContainer).toHaveClass("flex")
+    const outerContainer = container.firstElementChild as HTMLElement
+    expect(outerContainer).toHaveClass("flex")
   })
 
   it("makes the results column independently scrollable", () => {
     const { container } = render(
-      <DesktopLayout
-        inputs={<div>Inputs</div>}
-        results={<div>Results</div>}
-      />
+      <MemoryRouter>
+        <DesktopLayout
+          inputs={<div>Inputs</div>}
+          results={<div>Results</div>}
+        />
+      </MemoryRouter>
     )
 
-    const flexContainer = container.firstElementChild as HTMLElement
-    const resultsColumn = flexContainer.children[1]
+    const outerContainer = container.firstElementChild as HTMLElement
+    // The main area is the first child of the outer flex-col container
+    const mainArea = outerContainer.children[0] as HTMLElement
+    const resultsColumn = mainArea.children[1]
 
     expect(resultsColumn).toHaveClass("overflow-y-auto")
   })
@@ -123,14 +132,18 @@ describe("DesktopLayout", () => {
   it("toggles input panel visibility with collapse button", async () => {
     const user = userEvent.setup()
     const { container, getByRole } = render(
-      <DesktopLayout
-        inputs={<div>Inputs</div>}
-        results={<div>Results</div>}
-      />
+      <MemoryRouter>
+        <DesktopLayout
+          inputs={<div>Inputs</div>}
+          results={<div>Results</div>}
+        />
+      </MemoryRouter>
     )
 
     const collapseButton = getByRole("button", { name: "Hide inputs" })
-    const inputsColumn = container.firstElementChild?.firstElementChild as HTMLElement
+    // outer > main area > inputs column
+    const mainArea = container.firstElementChild?.firstElementChild as HTMLElement
+    const inputsColumn = mainArea.firstElementChild as HTMLElement
 
     // Initially expanded at 40%
     expect(inputsColumn.style.width).toBe("40%")
@@ -147,6 +160,21 @@ describe("DesktopLayout", () => {
     await user.click(expandButton)
     expect(inputsColumn.style.width).toBe("40%")
   })
+
+  it("renders the footer with disclaimer text", () => {
+    render(
+      <MemoryRouter>
+        <DesktopLayout
+          inputs={<div>Inputs</div>}
+          results={<div>Results</div>}
+        />
+      </MemoryRouter>
+    )
+
+    expect(
+      screen.getByText(/HomeDecision is an educational financial modeling tool/)
+    ).toBeInTheDocument()
+  })
 })
 
 // --- MobileLayout ---
@@ -154,10 +182,12 @@ describe("DesktopLayout", () => {
 describe("MobileLayout", () => {
   it("renders a tab bar with Inputs and Results tabs", () => {
     render(
-      <MobileLayout
-        inputs={<div>Inputs Content</div>}
-        results={<div>Results Content</div>}
-      />
+      <MemoryRouter>
+        <MobileLayout
+          inputs={<div>Inputs Content</div>}
+          results={<div>Results Content</div>}
+        />
+      </MemoryRouter>
     )
 
     expect(screen.getByRole("tab", { name: /inputs/i })).toBeInTheDocument()
@@ -166,10 +196,12 @@ describe("MobileLayout", () => {
 
   it("shows the Inputs tab by default", () => {
     render(
-      <MobileLayout
-        inputs={<div>Inputs Content</div>}
-        results={<div>Results Content</div>}
-      />
+      <MemoryRouter>
+        <MobileLayout
+          inputs={<div>Inputs Content</div>}
+          results={<div>Results Content</div>}
+        />
+      </MemoryRouter>
     )
 
     expect(screen.getByText("Inputs Content")).toBeInTheDocument()
@@ -179,10 +211,12 @@ describe("MobileLayout", () => {
     const user = userEvent.setup()
 
     render(
-      <MobileLayout
-        inputs={<div>Inputs Content</div>}
-        results={<div>Results Content</div>}
-      />
+      <MemoryRouter>
+        <MobileLayout
+          inputs={<div>Inputs Content</div>}
+          results={<div>Results Content</div>}
+        />
+      </MemoryRouter>
     )
 
     const resultsTab = screen.getByRole("tab", { name: /results/i })
@@ -193,13 +227,31 @@ describe("MobileLayout", () => {
 
   it("renders full-width single column", () => {
     const { container } = render(
-      <MobileLayout
-        inputs={<div>Inputs</div>}
-        results={<div>Results</div>}
-      />
+      <MemoryRouter>
+        <MobileLayout
+          inputs={<div>Inputs</div>}
+          results={<div>Results</div>}
+        />
+      </MemoryRouter>
     )
 
-    const tabsContainer = container.firstElementChild as HTMLElement
-    expect(tabsContainer).toHaveClass("w-full")
+    // The outer wrapper is now the MobileTabProvider's child div
+    const tabsElement = container.querySelector("[class*='w-full']")
+    expect(tabsElement).toHaveClass("w-full")
+  })
+
+  it("renders the footer with disclaimer text", () => {
+    render(
+      <MemoryRouter>
+        <MobileLayout
+          inputs={<div>Inputs</div>}
+          results={<div>Results</div>}
+        />
+      </MemoryRouter>
+    )
+
+    expect(
+      screen.getByText(/HomeDecision is an educational financial modeling tool/)
+    ).toBeInTheDocument()
   })
 })

@@ -1,6 +1,7 @@
 import { useState, useCallback, type ReactNode } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MobileTabProvider } from "@/components/MobileTabContext"
+import { Footer } from "@/components/Footer"
 
 interface MobileLayoutProps {
   /** The input panel content */
@@ -24,18 +25,24 @@ export function MobileLayout({ inputs, results }: MobileLayoutProps) {
 
   return (
     <MobileTabProvider value={switchToInputs}>
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="w-full">
-          <TabsTrigger value="inputs">Inputs</TabsTrigger>
-          <TabsTrigger value="results">Results</TabsTrigger>
-        </TabsList>
-        <TabsContent value="inputs" className="p-4">
-          {inputs}
-        </TabsContent>
-        <TabsContent value="results" className="p-4">
-          {results}
-        </TabsContent>
-      </Tabs>
+      <div className="flex flex-col h-screen">
+        <div className="flex-1 min-h-0 flex flex-col">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex-1 flex flex-col">
+            <TabsList className="w-full">
+              <TabsTrigger value="inputs">Inputs</TabsTrigger>
+              <TabsTrigger value="results">Results</TabsTrigger>
+            </TabsList>
+            <TabsContent value="inputs" className="p-4 overflow-y-auto">
+              {inputs}
+            </TabsContent>
+            <TabsContent value="results" className="p-4 overflow-y-auto">
+              {results}
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        <Footer />
+      </div>
     </MobileTabProvider>
   )
 }
