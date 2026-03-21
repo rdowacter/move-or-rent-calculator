@@ -686,6 +686,36 @@ describe('scenarioInputsSchema', () => {
     })
   })
 
+  // ---- homeNames inputs -----------------------------------------------------
+
+  describe('homeNames inputs', () => {
+    it('rejects empty currentHomeName (min 1 character)', () => {
+      const input = { ...defaultValues, homeNames: { currentHomeName: '', newHomeName: 'New Home' } }
+      const result = scenarioInputsSchema.safeParse(input)
+      expect(result.success).toBe(false)
+    })
+
+    it('rejects empty newHomeName (min 1 character)', () => {
+      const input = { ...defaultValues, homeNames: { currentHomeName: 'Current Home', newHomeName: '' } }
+      const result = scenarioInputsSchema.safeParse(input)
+      expect(result.success).toBe(false)
+    })
+
+    it('rejects names longer than 50 characters', () => {
+      const longName = 'A'.repeat(51)
+      const input = { ...defaultValues, homeNames: { currentHomeName: longName, newHomeName: 'New Home' } }
+      const result = scenarioInputsSchema.safeParse(input)
+      expect(result.success).toBe(false)
+    })
+
+    it('accepts names at the 50-character boundary', () => {
+      const maxName = 'A'.repeat(50)
+      const input = { ...defaultValues, homeNames: { currentHomeName: maxName, newHomeName: maxName } }
+      const result = scenarioInputsSchema.safeParse(input)
+      expect(result.success).toBe(true)
+    })
+  })
+
   // ---- defaultValues export -----------------------------------------------
 
   describe('defaultValues export', () => {
@@ -697,6 +727,7 @@ describe('scenarioInputsSchema', () => {
       expect(defaultValues.commute).toEqual(DEFAULT_COMMUTE_INPUTS)
       expect(defaultValues.costs).toEqual(DEFAULT_COST_INPUTS)
       expect(defaultValues.projection).toEqual(DEFAULT_PROJECTION_INPUTS)
+      expect(defaultValues.homeNames).toEqual(DEFAULT_HOME_NAMES)
     })
   })
 })
