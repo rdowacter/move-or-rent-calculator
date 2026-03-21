@@ -78,7 +78,7 @@ describe('UpfrontCapital', () => {
     mockUseModelOutput.mockReturnValue({ modelOutput: realModelOutput, isComputing: false })
     render(<UpfrontCapital />)
 
-    // Baseline requires no capital event (stay in Kyle, no home purchase)
+    // Baseline requires no capital event (stay put, no home purchase)
     expect(
       screen.getByText(/No capital event needed/)
     ).toBeInTheDocument()
@@ -116,7 +116,7 @@ describe('UpfrontCapital', () => {
 
     const capitalA = realModelOutput.scenarioA.upfrontCapital
 
-    // Scenario A sells Kyle, so homeSaleNetProceeds should be non-null
+    // Scenario A sells current home, so homeSaleNetProceeds should be non-null
     expect(capitalA.homeSaleNetProceeds).not.toBeNull()
     expect(
       screen.getByText('Home Sale Net Proceeds')
@@ -215,7 +215,7 @@ describe('UpfrontCapital', () => {
 
     const capitalB = realModelOutput.scenarioB.upfrontCapital
 
-    // Scenario B keeps Kyle as rental, so homeSaleNetProceeds should be null
+    // Scenario B keeps current home as rental, so homeSaleNetProceeds should be null
     expect(capitalB.homeSaleNetProceeds).toBeNull()
 
     // Only one "Home Sale Net Proceeds" line should appear (from Scenario A)
