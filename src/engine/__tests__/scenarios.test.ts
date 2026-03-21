@@ -39,6 +39,7 @@ import {
   DEFAULT_COMMUTE_INPUTS,
   DEFAULT_COST_INPUTS,
   DEFAULT_PROJECTION_INPUTS,
+  DEFAULT_HOME_NAMES,
 } from '../constants'
 
 // ---- Test fixture: Preston's defaults ----
@@ -50,6 +51,7 @@ const prestonInputs: ScenarioInputs = {
   commute: { ...DEFAULT_COMMUTE_INPUTS },
   costs: { ...DEFAULT_COST_INPUTS },
   projection: { ...DEFAULT_PROJECTION_INPUTS },
+  homeNames: { ...DEFAULT_HOME_NAMES },
 }
 
 // ===========================================================================

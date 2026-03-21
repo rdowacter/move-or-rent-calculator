@@ -235,8 +235,8 @@ describe('WarningsList', () => {
     render(<WarningsList />)
 
     // The scenario name should appear in the alert description
-    expect(screen.getByText(/Baseline: Stay in Kyle/)).toBeInTheDocument()
-    expect(screen.getByText(/Scenario B: Keep Kyle/)).toBeInTheDocument()
+    expect(screen.getByText(/Baseline: Stay in Current Home/)).toBeInTheDocument()
+    expect(screen.getByText(/Scenario B: Keep Current Home/)).toBeInTheDocument()
   })
 
   it('renders warnings from real model output with default values', () => {

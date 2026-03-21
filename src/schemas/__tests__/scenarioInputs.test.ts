@@ -17,6 +17,7 @@ import {
   DEFAULT_COMMUTE_INPUTS,
   DEFAULT_COST_INPUTS,
   DEFAULT_PROJECTION_INPUTS,
+  DEFAULT_HOME_NAMES,
 } from '../../engine/constants'
 
 describe('scenarioInputsSchema', () => {
@@ -37,6 +38,7 @@ describe('scenarioInputsSchema', () => {
         commute: DEFAULT_COMMUTE_INPUTS,
         costs: DEFAULT_COST_INPUTS,
         projection: DEFAULT_PROJECTION_INPUTS,
+        homeNames: DEFAULT_HOME_NAMES,
       }
       const result = scenarioInputsSchema.safeParse(input)
       expect(result.success).toBe(true)

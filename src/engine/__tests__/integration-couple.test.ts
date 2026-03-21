@@ -101,6 +101,10 @@ const coupleInputs: ScenarioInputs = {
     timeHorizonYears: 10,
     plannedRentalExitYear: 5,
   },
+  homeNames: {
+    currentHomeName: 'Current Home',
+    newHomeName: 'New Home',
+  },
 }
 
 describe('Integration: Conservative Couple (Golden Run 2)', () => {

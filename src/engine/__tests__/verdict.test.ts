@@ -32,6 +32,7 @@ import {
   DEFAULT_COMMUTE_INPUTS,
   DEFAULT_COST_INPUTS,
   DEFAULT_PROJECTION_INPUTS,
+  DEFAULT_HOME_NAMES,
 } from '../constants'
 
 // ---------------------------------------------------------------------------
@@ -127,6 +128,7 @@ const prestonDefaults: ScenarioInputs = {
   commute: DEFAULT_COMMUTE_INPUTS,
   costs: DEFAULT_COST_INPUTS,
   projection: DEFAULT_PROJECTION_INPUTS,
+  homeNames: DEFAULT_HOME_NAMES,
 }
 
 /** Conservative couple inputs from integration-couple.test.ts. */
@@ -209,6 +211,7 @@ const coupleInputs: ScenarioInputs = {
     timeHorizonYears: 10,
     plannedRentalExitYear: 5,
   },
+  homeNames: DEFAULT_HOME_NAMES,
 }
 
 // ===========================================================================

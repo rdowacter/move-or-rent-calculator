@@ -11,6 +11,7 @@ import {
   DEFAULT_COMMUTE_INPUTS,
   DEFAULT_COST_INPUTS,
   DEFAULT_PROJECTION_INPUTS,
+  DEFAULT_HOME_NAMES,
 } from '@/engine/constants'
 import { formatCurrency } from '@/utils/formatters'
 import { IRATrajectoryChart } from '../IRATrajectoryChart'
@@ -28,6 +29,7 @@ const defaultInputs: ScenarioInputs = {
   commute: { ...DEFAULT_COMMUTE_INPUTS },
   costs: { ...DEFAULT_COST_INPUTS },
   projection: { ...DEFAULT_PROJECTION_INPUTS },
+  homeNames: { ...DEFAULT_HOME_NAMES },
 }
 
 // Generate real model output so the chart receives structurally valid data

@@ -19,6 +19,7 @@ import {
   DEFAULT_COMMUTE_INPUTS,
   DEFAULT_COST_INPUTS,
   DEFAULT_PROJECTION_INPUTS,
+  DEFAULT_HOME_NAMES,
 } from '../engine/constants'
 
 // ---- Rate helper: a number between 0 and 1 (inclusive) --------------------
@@ -206,6 +207,13 @@ const projectionInputsSchema = z.object({
   plannedRentalExitYear: z.number().int().min(1).max(30).nullable(),
 })
 
+const homeNamesSchema = z.object({
+  /** Display name for the current home. */
+  currentHomeName: z.string().min(1).max(50),
+  /** Display name for the new home. */
+  newHomeName: z.string().min(1).max(50),
+})
+
 // ---- Top-level schema -----------------------------------------------------
 
 /**
@@ -221,6 +229,7 @@ export const scenarioInputsSchema = z.object({
   commute: commuteInputsSchema,
   costs: costInputsSchema,
   projection: projectionInputsSchema,
+  homeNames: homeNamesSchema,
 })
 
 /** Inferred type from the zod schema — should be identical to ScenarioInputs. */
@@ -243,4 +252,5 @@ export const defaultValues: ScenarioInputs = {
   commute: DEFAULT_COMMUTE_INPUTS,
   costs: DEFAULT_COST_INPUTS,
   projection: DEFAULT_PROJECTION_INPUTS,
+  homeNames: DEFAULT_HOME_NAMES,
 }

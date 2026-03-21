@@ -19,6 +19,7 @@ import {
   DEFAULT_COMMUTE_INPUTS,
   DEFAULT_COST_INPUTS,
   DEFAULT_PROJECTION_INPUTS,
+  DEFAULT_HOME_NAMES,
 } from '@/engine/constants'
 import type { ScenarioInputs } from '@/engine/types'
 import { formatCurrency } from '@/utils/formatters'
@@ -32,6 +33,7 @@ const prestonInputs: ScenarioInputs = {
   commute: { ...DEFAULT_COMMUTE_INPUTS },
   costs: { ...DEFAULT_COST_INPUTS },
   projection: { ...DEFAULT_PROJECTION_INPUTS },
+  homeNames: { ...DEFAULT_HOME_NAMES },
 }
 
 const realModelOutput: ModelOutput = runModel(prestonInputs)

@@ -21,6 +21,7 @@ import {
   DEFAULT_COMMUTE_INPUTS,
   DEFAULT_COST_INPUTS,
   DEFAULT_PROJECTION_INPUTS,
+  DEFAULT_HOME_NAMES,
 } from '../constants'
 import type { ScenarioInputs, ModelOutput } from '../types'
 
@@ -32,6 +33,7 @@ const prestonInputs: ScenarioInputs = {
   commute: DEFAULT_COMMUTE_INPUTS,
   costs: DEFAULT_COST_INPUTS,
   projection: DEFAULT_PROJECTION_INPUTS,
+  homeNames: DEFAULT_HOME_NAMES,
 }
 
 describe('Integration: Preston Defaults (Golden Run 1)', () => {

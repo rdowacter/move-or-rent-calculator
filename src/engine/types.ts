@@ -224,6 +224,14 @@ export interface ProjectionInputs {
   plannedRentalExitYear: number | null
 }
 
+/** User-configurable display names for the two properties. */
+export interface HomeNames {
+  /** Display name for the current home (e.g. "Denver Condo"). */
+  currentHomeName: string
+  /** Display name for the new home (e.g. "Austin House"). */
+  newHomeName: string
+}
+
 /**
  * Top-level input interface — combines all input groups.
  * This is the single argument passed to the scenario orchestrator.
@@ -236,6 +244,7 @@ export interface ScenarioInputs {
   commute: CommuteInputs
   costs: CostInputs
   projection: ProjectionInputs
+  homeNames: HomeNames
 }
 
 // ---- Cash Flow Breakdown --------------------------------------------------

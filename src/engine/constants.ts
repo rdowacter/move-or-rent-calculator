@@ -378,3 +378,9 @@ export const DEFAULT_PROJECTION_INPUTS = {
   // the user holds the rental indefinitely.
   plannedRentalExitYear: null,
 } satisfies Record<string, unknown>
+
+/** Default display names for the two properties. */
+export const DEFAULT_HOME_NAMES = {
+  currentHomeName: 'Current Home',
+  newHomeName: 'New Home',
+} satisfies Record<string, unknown>

@@ -371,7 +371,7 @@ export function projectBaseline(inputs: ScenarioInputs): ScenarioOutput {
   )
 
   return {
-    name: 'Baseline: Stay in Kyle',
+    name: `Baseline: Stay in ${inputs.homeNames.currentHomeName}`,
     yearlySnapshots: snapshots,
     upfrontCapital,
     dtiResult,
@@ -602,7 +602,7 @@ export function projectScenarioA(inputs: ScenarioInputs): ScenarioOutput {
   )
 
   return {
-    name: 'Scenario A: Sell Kyle, Buy Austin',
+    name: `Scenario A: Sell ${inputs.homeNames.currentHomeName}, Buy ${inputs.homeNames.newHomeName}`,
     yearlySnapshots: snapshots,
     upfrontCapital,
     dtiResult,
@@ -1087,7 +1087,7 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
   )
 
   return {
-    name: 'Scenario B: Keep Kyle as Rental, Buy Austin',
+    name: `Scenario B: Keep ${inputs.homeNames.currentHomeName} as Rental, Buy ${inputs.homeNames.newHomeName}`,
     yearlySnapshots: snapshots,
     upfrontCapital,
     dtiResult,
