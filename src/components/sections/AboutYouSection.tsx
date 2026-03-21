@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useFormContext, Controller } from 'react-hook-form'
 import type { ScenarioInputs } from '@/engine/types'
 import { CurrencyInput } from '@/components/CurrencyInput'
@@ -11,6 +12,13 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select'
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from '@/components/ui/collapsible'
+import { ChevronDown } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 const FILING_STATUS_OPTIONS = [
   { value: 'single', label: 'Single' },
@@ -21,11 +29,15 @@ const FILING_STATUS_OPTIONS = [
 
 /**
  * About You section — collects personal financial profile inputs.
- * Fields cover age, income, filing status, expenses, savings,
- * salary growth, debt, and state tax rate.
+ *
+ * Fields are split into simple (always visible) and advanced (behind a
+ * collapsible toggle) to reduce initial cognitive load. The five required
+ * financial inputs are shown by default; less commonly changed assumptions
+ * (age, salary growth, state tax) are tucked into "Advanced."
  */
 function AboutYouSection() {
   const { control } = useFormContext<ScenarioInputs>()
+  const [advancedOpen, setAdvancedOpen] = useState(false)
 
   return (
     <div className="space-y-4">
@@ -50,17 +62,8 @@ function AboutYouSection() {
         />
       </div>
 
-      {/* Primary info */}
+      {/* Simple fields — the 5 required inputs visible by default */}
       <div className="space-y-3">
-        <FormField
-          name="personal.age"
-          label="Age"
-          control={control}
-          type="number"
-          inputMode="numeric"
-          description="Used to determine early withdrawal penalty eligibility (under 59.5)"
-        />
-
         <CurrencyInput
           name="personal.annualGrossIncome"
           label="Annual Gross Income"
@@ -99,11 +102,14 @@ function AboutYouSection() {
             Determines which IRS tax brackets apply
           </p>
         </div>
-      </div>
 
-      {/* Monthly expenses */}
-      <div className="space-y-3 border-t pt-4">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Monthly Expenses</p>
+        <CurrencyInput
+          name="personal.liquidSavings"
+          label="Liquid Savings"
+          control={control}
+          description="Cash on hand available for down payment and closing costs"
+        />
+
         <CurrencyInput
           name="personal.monthlyLivingExpenses"
           label="Monthly Living Expenses"
@@ -119,30 +125,44 @@ function AboutYouSection() {
         />
       </div>
 
-      {/* Growth & tax */}
-      <div className="space-y-3 border-t pt-4">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Growth & Tax</p>
-        <PercentInput
-          name="personal.annualSalaryGrowthRate"
-          label="Salary Growth Rate"
-          control={control}
-          description="Expected annual salary increase (e.g. 3%)"
-        />
+      {/* Advanced fields — less commonly changed assumptions */}
+      <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
+        <CollapsibleTrigger className="flex w-full items-center justify-between rounded-md px-1 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          <span>Advanced</span>
+          <ChevronDown
+            className={cn(
+              'h-4 w-4 transition-transform duration-200',
+              advancedOpen && 'rotate-180'
+            )}
+          />
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className="space-y-3 pt-2">
+            <FormField
+              name="personal.age"
+              label="Age"
+              control={control}
+              type="number"
+              inputMode="numeric"
+              description="Used to determine early withdrawal penalty eligibility (under 59.5)"
+            />
 
-        <PercentInput
-          name="personal.stateIncomeTaxRate"
-          label="State Income Tax Rate"
-          control={control}
-          description="Your state's income tax rate (0% if no state income tax)"
-        />
+            <PercentInput
+              name="personal.annualSalaryGrowthRate"
+              label="Salary Growth Rate"
+              control={control}
+              description="Expected annual salary increase (e.g. 3%)"
+            />
 
-        <CurrencyInput
-          name="personal.liquidSavings"
-          label="Liquid Savings"
-          control={control}
-          description="Cash on hand available for down payment and closing costs"
-        />
-      </div>
+            <PercentInput
+              name="personal.stateIncomeTaxRate"
+              label="State Income Tax Rate"
+              control={control}
+              description="Your state's income tax rate (0% if no state income tax)"
+            />
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
     </div>
   )
 }

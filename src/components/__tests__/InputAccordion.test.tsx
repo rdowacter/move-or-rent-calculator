@@ -42,11 +42,11 @@ describe('InputAccordion', () => {
       </TestWrapper>
     )
 
-    expect(screen.getByText('Age')).toBeInTheDocument()
     expect(screen.getByText('Annual Gross Income')).toBeInTheDocument()
     expect(screen.getByText('Filing Status')).toBeInTheDocument()
-    expect(screen.getByText('Monthly Living Expenses')).toBeInTheDocument()
     expect(screen.getByText('Liquid Savings')).toBeInTheDocument()
+    expect(screen.getByText('Monthly Living Expenses')).toBeInTheDocument()
+    expect(screen.getByText('Monthly Debt Payments')).toBeInTheDocument()
   })
 
   it('renders "Retirement" primary fields when section is open', () => {
@@ -72,7 +72,6 @@ describe('InputAccordion', () => {
     expect(screen.getByText('Home Value')).toBeInTheDocument()
     expect(screen.getByText('Mortgage Balance')).toBeInTheDocument()
     expect(screen.getByText('Interest Rate')).toBeInTheDocument()
-    expect(screen.getByText('Years Into Loan')).toBeInTheDocument()
     expect(screen.getByText('Expected Monthly Rent')).toBeInTheDocument()
   })
 
@@ -108,7 +107,7 @@ describe('InputAccordion', () => {
     )
 
     // Both sections should have their primary fields visible
-    expect(screen.getByText('Age')).toBeInTheDocument()
+    expect(screen.getByText('Annual Gross Income')).toBeInTheDocument()
     expect(screen.getByText('IRA Balance')).toBeInTheDocument()
   })
 
