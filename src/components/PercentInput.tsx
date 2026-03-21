@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   Controller,
   type Control,
@@ -83,11 +83,13 @@ function PercentInputInner({
   // that would be lost if we converted to Number on every keystroke
   const [localValue, setLocalValue] = useState(() => computeDisplay(field.value))
   const [isFocused, setIsFocused] = useState(false)
+  const lastOnChangeValue = useRef<unknown>(field.value)
 
-  // Sync from form state when not actively editing
+  // Sync from form state only for EXTERNAL changes (form reset, localStorage load).
   useEffect(() => {
-    if (!isFocused) {
+    if (!isFocused && field.value !== lastOnChangeValue.current) {
       setLocalValue(computeDisplay(field.value))
+      lastOnChangeValue.current = field.value
     }
   }, [field.value, isFocused])
 
@@ -116,17 +118,18 @@ function PercentInputInner({
           value={localValue}
           onFocus={() => setIsFocused(true)}
           onBlur={() => {
-            // Normalize display on blur — set localValue BEFORE clearing
-            // isFocused to prevent the sync effect from restoring old values
             const trimmed = localValue.trim()
             if (trimmed === '') {
               setLocalValue('')
+              lastOnChangeValue.current = undefined
               field.onChange(undefined)
             } else {
               const parsed = Number(trimmed)
               if (!isNaN(parsed)) {
                 setLocalValue(parsed.toString())
-                field.onChange(parsed / PERCENT_DISPLAY_MULTIPLIER)
+                const decimal = parsed / PERCENT_DISPLAY_MULTIPLIER
+                lastOnChangeValue.current = decimal
+                field.onChange(decimal)
               }
             }
             setIsFocused(false)
@@ -138,14 +141,15 @@ function PercentInputInner({
             const rawValue = e.target.value
             setLocalValue(rawValue)
             if (rawValue === '') {
+              lastOnChangeValue.current = undefined
               field.onChange(undefined)
               return
             }
             const parsed = Number(rawValue)
             if (!isNaN(parsed)) {
-              // Convert percentage input back to decimal for form state
-              // e.g., user types "3" -> store 0.03
-              field.onChange(parsed / PERCENT_DISPLAY_MULTIPLIER)
+              const decimal = parsed / PERCENT_DISPLAY_MULTIPLIER
+              lastOnChangeValue.current = decimal
+              field.onChange(decimal)
             }
           }}
         />

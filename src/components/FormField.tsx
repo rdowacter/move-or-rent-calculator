@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   Controller,
   type Control,
@@ -93,11 +93,18 @@ function NumericFieldInner({
 }) {
   const [localValue, setLocalValue] = useState(() => formatWithCommas(field.value))
   const [isFocused, setIsFocused] = useState(false)
+  // Track the last value we sent to the form via field.onChange so the
+  // sync effect can distinguish external changes (form reset, localStorage)
+  // from our own updates echoing back.
+  const lastOnChangeValue = useRef<unknown>(field.value)
 
-  // Sync from form state when not actively editing
+  // Sync from form state only for EXTERNAL changes (form reset, localStorage load).
+  // Skip when the field.value matches what we last set via onChange — that's just
+  // our own update echoing back through react-hook-form.
   useEffect(() => {
-    if (!isFocused) {
+    if (!isFocused && field.value !== lastOnChangeValue.current) {
       setLocalValue(formatWithCommas(field.value))
+      lastOnChangeValue.current = field.value
     }
   }, [field.value, isFocused])
 
@@ -143,6 +150,7 @@ function NumericFieldInner({
             setLocalValue(rawValue)
 
             if (rawValue === '') {
+              lastOnChangeValue.current = undefined
               field.onChange(undefined)
               return
             }
@@ -152,6 +160,7 @@ function NumericFieldInner({
             }
             const parsed = parseNumericInput(rawValue)
             if (parsed !== undefined) {
+              lastOnChangeValue.current = parsed
               field.onChange(parsed)
             }
           }}
@@ -160,9 +169,11 @@ function NumericFieldInner({
             const parsed = parseNumericInput(localValue)
             if (parsed !== undefined) {
               setLocalValue(formatWithCommas(parsed))
+              lastOnChangeValue.current = parsed
               field.onChange(parsed)
             } else {
               setLocalValue('')
+              lastOnChangeValue.current = undefined
               field.onChange(undefined)
             }
             setIsFocused(false)
