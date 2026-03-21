@@ -40,7 +40,7 @@ describe('checkRequiredFields', () => {
 
   it('counts NaN as missing', () => {
     const values = structuredClone(defaultValues)
-    values.personal.age = NaN
+    values.personal.annualGrossIncome = NaN
     const result = checkRequiredFields(values)
     expect(result.isReady).toBe(false)
     expect(result.filledCount).toBe(REQUIRED_FIELDS.length - 1)
@@ -48,7 +48,7 @@ describe('checkRequiredFields', () => {
 
   it('counts null as missing', () => {
     const values = structuredClone(defaultValues) as Record<string, unknown>
-    ;(values.personal as Record<string, unknown>).age = null
+    ;(values.personal as Record<string, unknown>).annualGrossIncome = null
     const result = checkRequiredFields(values)
     expect(result.isReady).toBe(false)
   })
@@ -68,11 +68,11 @@ describe('checkRequiredFields', () => {
   it('correctly counts partially filled fields', () => {
     // Fill only the first 5 required fields
     const values = structuredClone(formDefaultValues) as Record<string, Record<string, unknown>>
-    values.personal.age = 35
     values.personal.annualGrossIncome = 100_000
     values.personal.filingStatus = 'single'
-    values.personal.monthlyLivingExpenses = 3_000
     values.personal.liquidSavings = 10_000
+    values.personal.monthlyLivingExpenses = 3_000
+    values.personal.monthlyDebtPayments = 500
     const result = checkRequiredFields(values)
     expect(result.filledCount).toBe(5)
     expect(result.isReady).toBe(false)
