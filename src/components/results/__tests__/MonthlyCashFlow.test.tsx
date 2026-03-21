@@ -29,7 +29,7 @@ const modelOutput = runModel(defaultValues)
 
 describe('MonthlyCashFlow', () => {
   it('renders 3 scenario cards', () => {
-    mockUseModelOutput.mockReturnValue({ modelOutput, isComputing: false })
+    mockUseModelOutput.mockReturnValue({ modelOutput, isComputing: false, isReady: true, filledCount: 13, totalRequired: 13 })
     render(<MonthlyCashFlow />)
 
     // Each scenario has a card with its name
@@ -39,7 +39,7 @@ describe('MonthlyCashFlow', () => {
   })
 
   it('each card shows net monthly cash flow', () => {
-    mockUseModelOutput.mockReturnValue({ modelOutput, isComputing: false })
+    mockUseModelOutput.mockReturnValue({ modelOutput, isComputing: false, isReady: true, filledCount: 13, totalRequired: 13 })
     render(<MonthlyCashFlow />)
 
     const baselineSnap = modelOutput.baseline.yearlySnapshots[0]
@@ -55,7 +55,7 @@ describe('MonthlyCashFlow', () => {
   })
 
   it('Scenario B shows both best-case and worst-case monthly cash flow', () => {
-    mockUseModelOutput.mockReturnValue({ modelOutput, isComputing: false })
+    mockUseModelOutput.mockReturnValue({ modelOutput, isComputing: false, isReady: true, filledCount: 13, totalRequired: 13 })
     render(<MonthlyCashFlow />)
 
     const scenarioBSnap = modelOutput.scenarioB.yearlySnapshots[0]
@@ -72,7 +72,7 @@ describe('MonthlyCashFlow', () => {
   })
 
   it('negative cash flow values have text-destructive class', () => {
-    mockUseModelOutput.mockReturnValue({ modelOutput, isComputing: false })
+    mockUseModelOutput.mockReturnValue({ modelOutput, isComputing: false, isReady: true, filledCount: 13, totalRequired: 13 })
     const { container } = render(<MonthlyCashFlow />)
 
     // Find all elements with the text-destructive class
@@ -96,7 +96,7 @@ describe('MonthlyCashFlow', () => {
   })
 
   it('handles null modelOutput gracefully', () => {
-    mockUseModelOutput.mockReturnValue({ modelOutput: null, isComputing: false })
+    mockUseModelOutput.mockReturnValue({ modelOutput: null, isComputing: false, isReady: false, filledCount: 0, totalRequired: 13 })
     const { container } = render(<MonthlyCashFlow />)
 
     // Should not render any cards when modelOutput is null
@@ -104,7 +104,7 @@ describe('MonthlyCashFlow', () => {
   })
 
   it('shows annual savings capacity translation on each card', () => {
-    mockUseModelOutput.mockReturnValue({ modelOutput, isComputing: false })
+    mockUseModelOutput.mockReturnValue({ modelOutput, isComputing: false, isReady: true, filledCount: 13, totalRequired: 13 })
     render(<MonthlyCashFlow />)
 
     // Each card translates monthly cash flow to annual savings capacity
@@ -114,7 +114,7 @@ describe('MonthlyCashFlow', () => {
   })
 
   it('shows "See breakdown" trigger on each card', () => {
-    mockUseModelOutput.mockReturnValue({ modelOutput, isComputing: false })
+    mockUseModelOutput.mockReturnValue({ modelOutput, isComputing: false, isReady: true, filledCount: 13, totalRequired: 13 })
     render(<MonthlyCashFlow />)
 
     // All 3 cards should have a "See breakdown" collapsible trigger
