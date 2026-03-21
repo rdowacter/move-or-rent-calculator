@@ -150,8 +150,14 @@ describe('CurrencyInput', () => {
     )
 
     const input = screen.getByRole('textbox')
+    // Simulate user interaction: focus, type, blur
+    fireEvent.focus(input)
     fireEvent.change(input, { target: { value: '270000' } })
+    // While typing, the raw value is shown (no formatting mid-keystroke)
     expect(input).toHaveValue('270000')
+    // On blur, it formats with commas
+    fireEvent.blur(input)
+    expect(input).toHaveValue('270,000')
   })
 
   it('displays the initial value from defaultValues', () => {
@@ -164,7 +170,8 @@ describe('CurrencyInput', () => {
     )
 
     const input = screen.getByRole('textbox')
-    expect(input).toHaveValue('270000')
+    // Numeric values are displayed with comma formatting
+    expect(input).toHaveValue('270,000')
   })
 })
 
