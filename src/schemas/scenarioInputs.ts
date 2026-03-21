@@ -349,6 +349,7 @@ export const REQUIRED_FIELDS = [
   'personal.liquidSavings',
   'retirement.iraBalance',
   'retirement.iraType',
+  'retirement.iraWithdrawalAmountScenarioB',
   'currentHome.homeValue',
   'currentHome.mortgageBalance',
   'currentHome.interestRate',
