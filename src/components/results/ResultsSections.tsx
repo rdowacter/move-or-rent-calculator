@@ -12,9 +12,9 @@
 
 import { ExecutiveSummary } from './ExecutiveSummary'
 import { AlertTriangle, TrendingUp, PiggyBank, DollarSign, Wallet, Calendar, Layers, Table2, BookOpen } from 'lucide-react'
-import { useFormContext } from 'react-hook-form'
+import { useFormContext, Controller } from 'react-hook-form'
 import type { ScenarioInputs } from '@/engine/types'
-import { FormField } from '@/components/FormField'
+import { Slider } from '@/components/ui/slider'
 import { ResultSection } from './ResultSection'
 import { ResultsGate } from './ResultsGate'
 import { NetWorthChart } from './NetWorthChart'
@@ -47,13 +47,25 @@ export function ResultsSections() {
             <h2 className="text-lg font-semibold tracking-tight">Financial Comparison</h2>
             <p className="text-sm text-muted-foreground">All projections below use this time horizon</p>
           </div>
-          <div className="ml-auto min-w-[120px] max-w-[160px]">
-            <FormField
+          <div className="ml-auto flex items-center gap-3 min-w-[200px] max-w-[280px]">
+            <Controller
               name="projection.timeHorizonYears"
-              label="Years"
               control={control}
-              type="number"
-              inputMode="numeric"
+              render={({ field }) => (
+                <>
+                  <Slider
+                    min={5}
+                    max={30}
+                    step={1}
+                    value={field.value}
+                    onValueChange={(val) => field.onChange(val)}
+                    aria-label="Time horizon in years"
+                  />
+                  <span className="text-sm font-medium tabular-nums w-10 text-right shrink-0">
+                    {field.value} yr
+                  </span>
+                </>
+              )}
             />
           </div>
         </div>
