@@ -12,6 +12,9 @@ import { MobileLayout } from '@/components/MobileLayout'
 import { InputAccordion } from '@/components/InputAccordion'
 import { ResultsSections } from '@/components/results/ResultsSections'
 import { Button } from '@/components/ui/button'
+import { TermsOfService } from '@/pages/TermsOfService'
+import { PrivacyPolicy } from '@/pages/PrivacyPolicy'
+import { Disclaimer } from '@/pages/Disclaimer'
 
 function Calculator() {
   const { initialValues, save, resetToDefaults } = useFormPersistence()
@@ -75,9 +78,9 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Calculator />} />
-      <Route path="/terms" element={<div className="max-w-3xl mx-auto px-4 py-8">Terms of Service — Coming Soon</div>} />
-      <Route path="/privacy" element={<div className="max-w-3xl mx-auto px-4 py-8">Privacy Policy — Coming Soon</div>} />
-      <Route path="/disclaimer" element={<div className="max-w-3xl mx-auto px-4 py-8">Disclaimer — Coming Soon</div>} />
+      <Route path="/terms" element={<TermsOfService />} />
+      <Route path="/privacy" element={<PrivacyPolicy />} />
+      <Route path="/disclaimer" element={<Disclaimer />} />
     </Routes>
   )
 }
