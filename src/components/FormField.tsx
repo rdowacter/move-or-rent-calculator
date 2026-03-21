@@ -96,13 +96,13 @@ function FormField<T extends FieldValues>({
                     // User still typing a decimal — keep raw string
                     field.onChange(rawValue)
                   } else {
-                    const parsed = Number(rawValue)
+                    // Strip commas so users can type "1,100,000" and get 1100000
+                    const cleaned = rawValue.replace(/,/g, '')
+                    const parsed = Number(cleaned)
                     if (!isNaN(parsed)) {
                       field.onChange(parsed)
-                    } else {
-                      // Invalid number — pass raw string, let validation handle it
-                      field.onChange(rawValue)
                     }
+                    // If still NaN after stripping commas, ignore the keystroke
                   }
                 } else {
                   field.onChange(rawValue)
@@ -115,7 +115,7 @@ function FormField<T extends FieldValues>({
                 // For numeric fields, convert the final string to a Number
                 // so the form value is the correct type for the engine.
                 if (type === 'number' || inputMode === 'decimal') {
-                  const rawValue = e.target.value.trim()
+                  const rawValue = e.target.value.trim().replace(/,/g, '')
                   if (rawValue === '') {
                     field.onChange(undefined)
                     return
