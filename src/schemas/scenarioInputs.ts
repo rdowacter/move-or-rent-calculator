@@ -242,7 +242,8 @@ void _typeCheck
 
 /**
  * Default values for all input fields, assembled from the engine's
- * DEFAULT_* constants. Used as the initial values for react-hook-form.
+ * DEFAULT_* constants. Used by engine tests and as a complete reference.
+ * NOT used for form initialization — see formDefaultValues instead.
  */
 export const defaultValues: ScenarioInputs = {
   personal: DEFAULT_PERSONAL_INPUTS,
@@ -253,4 +254,140 @@ export const defaultValues: ScenarioInputs = {
   costs: DEFAULT_COST_INPUTS,
   projection: DEFAULT_PROJECTION_INPUTS,
   homeNames: DEFAULT_HOME_NAMES,
+}
+
+/**
+ * Form default values — personal/financial fields are blank (undefined) so
+ * users must enter their own numbers. Structural/assumption fields keep
+ * defaults. Used by react-hook-form as initial values for new users.
+ *
+ * The `as unknown as T` casts are necessary because the Zod schema requires
+ * all fields to be present, but we want the form to start with blank fields
+ * that the user must fill in before the engine can run.
+ */
+export const formDefaultValues = {
+  personal: {
+    age: undefined as unknown as number,
+    annualGrossIncome: undefined as unknown as number,
+    annualSalaryGrowthRate: DEFAULT_PERSONAL_INPUTS.annualSalaryGrowthRate,
+    filingStatus: undefined as unknown as 'single' | 'married_filing_jointly' | 'married_filing_separately' | 'head_of_household',
+    stateIncomeTaxRate: DEFAULT_PERSONAL_INPUTS.stateIncomeTaxRate,
+    monthlyLivingExpenses: undefined as unknown as number,
+    monthlyDebtPayments: DEFAULT_PERSONAL_INPUTS.monthlyDebtPayments,
+    liquidSavings: undefined as unknown as number,
+  },
+  retirement: {
+    iraBalance: undefined as unknown as number,
+    iraType: undefined as unknown as 'traditional' | 'roth',
+    iraExpectedAnnualReturn: DEFAULT_RETIREMENT_INPUTS.iraExpectedAnnualReturn,
+    annualIRAContributionScenarioA: DEFAULT_RETIREMENT_INPUTS.annualIRAContributionScenarioA,
+    annualIRAContributionScenarioB: DEFAULT_RETIREMENT_INPUTS.annualIRAContributionScenarioB,
+    iraWithdrawalAmountScenarioB: undefined as unknown as number,
+    hasEmployerMatch: DEFAULT_RETIREMENT_INPUTS.hasEmployerMatch,
+    employerMatchPercentage: DEFAULT_RETIREMENT_INPUTS.employerMatchPercentage,
+    hasOtherRetirementSavings: DEFAULT_RETIREMENT_INPUTS.hasOtherRetirementSavings,
+    otherRetirementBalance: DEFAULT_RETIREMENT_INPUTS.otherRetirementBalance,
+  },
+  currentHome: {
+    homeValue: undefined as unknown as number,
+    mortgageBalance: undefined as unknown as number,
+    interestRate: undefined as unknown as number,
+    originalLoanTermYears: undefined as unknown as number,
+    yearsIntoLoan: undefined as unknown as number,
+    annualPropertyTaxRate: undefined as unknown as number,
+    annualInsurance: undefined as unknown as number,
+    landlordInsurancePremiumIncrease: DEFAULT_CURRENT_HOME_INPUTS.landlordInsurancePremiumIncrease,
+    maintenanceReserveRate: DEFAULT_CURRENT_HOME_INPUTS.maintenanceReserveRate,
+    monthlyHOA: DEFAULT_CURRENT_HOME_INPUTS.monthlyHOA,
+    expectedMonthlyRent: undefined as unknown as number,
+    annualRentGrowthRate: DEFAULT_CURRENT_HOME_INPUTS.annualRentGrowthRate,
+    vacancyRate: DEFAULT_CURRENT_HOME_INPUTS.vacancyRate,
+    propertyManagementFeeRate: DEFAULT_CURRENT_HOME_INPUTS.propertyManagementFeeRate,
+    tenantTurnoverFrequencyYears: DEFAULT_CURRENT_HOME_INPUTS.tenantTurnoverFrequencyYears,
+    costPerTurnover: DEFAULT_CURRENT_HOME_INPUTS.costPerTurnover,
+    sellingCostsRate: DEFAULT_CURRENT_HOME_INPUTS.sellingCostsRate,
+    annualAppreciationRate: DEFAULT_CURRENT_HOME_INPUTS.annualAppreciationRate,
+    landValuePercentage: DEFAULT_CURRENT_HOME_INPUTS.landValuePercentage,
+    rentalIncomeDTICreditRate: DEFAULT_CURRENT_HOME_INPUTS.rentalIncomeDTICreditRate,
+  },
+  newHome: {
+    purchasePrice: undefined as unknown as number,
+    interestRate: undefined as unknown as number,
+    loanTermYears: DEFAULT_NEW_HOME_INPUTS.loanTermYears,
+    downPaymentPercentScenarioA: undefined as unknown as number,
+    downPaymentPercentScenarioB: undefined as unknown as number,
+    annualPMIRate: DEFAULT_NEW_HOME_INPUTS.annualPMIRate,
+    annualPropertyTaxRate: undefined as unknown as number,
+    annualInsurance: undefined as unknown as number,
+    closingCostsRate: DEFAULT_NEW_HOME_INPUTS.closingCostsRate,
+    annualAppreciationRate: DEFAULT_NEW_HOME_INPUTS.annualAppreciationRate,
+  },
+  commute: {
+    currentRoundTripMiles: undefined as unknown as number,
+    workDaysPerYear: DEFAULT_COMMUTE_INPUTS.workDaysPerYear,
+    irsMileageRate: DEFAULT_COMMUTE_INPUTS.irsMileageRate,
+    currentMonthlyTolls: DEFAULT_COMMUTE_INPUTS.currentMonthlyTolls,
+    newRoundTripMiles: DEFAULT_COMMUTE_INPUTS.newRoundTripMiles,
+    newMonthlyTolls: DEFAULT_COMMUTE_INPUTS.newMonthlyTolls,
+    commuteTimeSavedPerDayHours: DEFAULT_COMMUTE_INPUTS.commuteTimeSavedPerDayHours,
+    landlordHoursPerMonth: DEFAULT_COMMUTE_INPUTS.landlordHoursPerMonth,
+  },
+  costs: DEFAULT_COST_INPUTS,
+  projection: DEFAULT_PROJECTION_INPUTS,
+  homeNames: DEFAULT_HOME_NAMES,
+}
+
+/**
+ * Field paths that must be filled before the engine can run.
+ * These are the personal/financial fields with no structural defaults.
+ */
+export const REQUIRED_FIELDS = [
+  'personal.age',
+  'personal.annualGrossIncome',
+  'personal.filingStatus',
+  'personal.monthlyLivingExpenses',
+  'personal.liquidSavings',
+  'retirement.iraBalance',
+  'retirement.iraType',
+  'currentHome.homeValue',
+  'currentHome.mortgageBalance',
+  'currentHome.interestRate',
+  'currentHome.originalLoanTermYears',
+  'currentHome.yearsIntoLoan',
+  'currentHome.expectedMonthlyRent',
+  'currentHome.annualPropertyTaxRate',
+  'currentHome.annualInsurance',
+  'newHome.purchasePrice',
+  'newHome.interestRate',
+  'newHome.downPaymentPercentScenarioA',
+  'newHome.downPaymentPercentScenarioB',
+  'newHome.annualPropertyTaxRate',
+  'newHome.annualInsurance',
+  'commute.currentRoundTripMiles',
+] as const
+
+/**
+ * Check if all required fields have been filled (not undefined/null/NaN).
+ * Returns { isReady, filledCount, totalRequired }.
+ */
+export function checkRequiredFields(values: unknown): {
+  isReady: boolean
+  filledCount: number
+  totalRequired: number
+} {
+  const totalRequired = REQUIRED_FIELDS.length
+  let filledCount = 0
+
+  for (const path of REQUIRED_FIELDS) {
+    const parts = path.split('.')
+    let current: unknown = values
+    for (const part of parts) {
+      current = (current as Record<string, unknown>)?.[part]
+    }
+    if (current !== undefined && current !== null && !Number.isNaN(current)) {
+      filledCount++
+    }
+  }
+
+  return { isReady: filledCount === totalRequired, filledCount, totalRequired }
 }

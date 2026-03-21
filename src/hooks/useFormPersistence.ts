@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react'
-import { scenarioInputsSchema, defaultValues } from '@/schemas/scenarioInputs'
+import { scenarioInputsSchema, formDefaultValues } from '@/schemas/scenarioInputs'
 import type { ScenarioInputs } from '@/engine/types'
 
 /** localStorage key for persisted scenario inputs */
@@ -60,7 +60,7 @@ export function useFormPersistence() {
       // localStorage may be unavailable — silently ignore
     }
 
-    return defaultValues
+    return formDefaultValues as ScenarioInputs
   }, [])
 
   return { initialValues, save, resetToDefaults }
@@ -74,19 +74,20 @@ function readFromStorage(): ScenarioInputs {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw === null) {
-      return defaultValues
+      return formDefaultValues as ScenarioInputs
     }
 
     const parsed = JSON.parse(raw)
     const result = scenarioInputsSchema.safeParse(parsed)
 
     if (result.success) {
+      // User has previously saved valid data — use it as-is
       return result.data
     }
 
-    return defaultValues
+    return formDefaultValues as ScenarioInputs
   } catch {
-    // JSON.parse failed or localStorage threw — fall back to defaults
-    return defaultValues
+    // JSON.parse failed or localStorage threw — fall back to form defaults
+    return formDefaultValues as ScenarioInputs
   }
 }

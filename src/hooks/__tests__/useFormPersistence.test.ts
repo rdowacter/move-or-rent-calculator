@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useFormPersistence } from '../useFormPersistence'
-import { defaultValues } from '@/schemas/scenarioInputs'
+import { defaultValues, formDefaultValues } from '@/schemas/scenarioInputs'
 
 const STORAGE_KEY = 'scenario-inputs'
 
@@ -55,10 +55,10 @@ describe('useFormPersistence', () => {
     vi.useRealTimers()
   })
 
-  it('returns default values when localStorage is empty', () => {
+  it('returns form default values (with blanks) when localStorage is empty', () => {
     const { result } = renderHook(() => useFormPersistence())
 
-    expect(result.current.initialValues).toEqual(defaultValues)
+    expect(result.current.initialValues).toEqual(formDefaultValues)
     expect(mockStorage.getItem).toHaveBeenCalledWith(STORAGE_KEY)
   })
 
@@ -80,15 +80,15 @@ describe('useFormPersistence', () => {
     expect(result.current.initialValues.personal.annualGrossIncome).toBe(150_000)
   })
 
-  it('falls back to defaults when localStorage has invalid JSON', () => {
+  it('falls back to form defaults when localStorage has invalid JSON', () => {
     mockStorage.getItem.mockReturnValue('not valid json {{{')
 
     const { result } = renderHook(() => useFormPersistence())
 
-    expect(result.current.initialValues).toEqual(defaultValues)
+    expect(result.current.initialValues).toEqual(formDefaultValues)
   })
 
-  it('falls back to defaults when localStorage has valid JSON but invalid schema', () => {
+  it('falls back to form defaults when localStorage has valid JSON but invalid schema', () => {
     const invalidData = {
       personal: { age: 'not a number' },
     }
@@ -96,17 +96,17 @@ describe('useFormPersistence', () => {
 
     const { result } = renderHook(() => useFormPersistence())
 
-    expect(result.current.initialValues).toEqual(defaultValues)
+    expect(result.current.initialValues).toEqual(formDefaultValues)
   })
 
-  it('falls back to defaults when localStorage throws an error', () => {
+  it('falls back to form defaults when localStorage throws an error', () => {
     mockStorage.getItem.mockImplementation(() => {
       throw new Error('localStorage is not available')
     })
 
     const { result } = renderHook(() => useFormPersistence())
 
-    expect(result.current.initialValues).toEqual(defaultValues)
+    expect(result.current.initialValues).toEqual(formDefaultValues)
   })
 
   it('writes values to localStorage when save is called (debounced 500ms)', () => {
@@ -172,15 +172,15 @@ describe('useFormPersistence', () => {
     )
   })
 
-  it('resetToDefaults clears localStorage and returns defaults', () => {
+  it('resetToDefaults clears localStorage and returns form defaults (with blanks)', () => {
     const { result } = renderHook(() => useFormPersistence())
 
-    let resetResult: typeof defaultValues | undefined
+    let resetResult: ReturnType<typeof result.current.resetToDefaults> | undefined
     act(() => {
       resetResult = result.current.resetToDefaults()
     })
 
     expect(mockStorage.removeItem).toHaveBeenCalledWith(STORAGE_KEY)
-    expect(resetResult).toEqual(defaultValues)
+    expect(resetResult).toEqual(formDefaultValues)
   })
 })
