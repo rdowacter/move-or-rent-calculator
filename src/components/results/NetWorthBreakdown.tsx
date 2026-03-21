@@ -6,10 +6,10 @@
 // Displayed below the Net Worth Projection chart for detailed comparison.
 // ---------------------------------------------------------------------------
 
-import { useWatch } from 'react-hook-form'
 import { useModelOutput } from '@/components/ScenarioModelProvider'
+import { useHomeNames } from '@/hooks/useHomeNames'
 import { formatCurrency } from '@/utils/formatters'
-import type { ScenarioInputs, YearlySnapshot } from '@/engine/types'
+import type { YearlySnapshot } from '@/engine/types'
 
 /**
  * Returns the last element of a YearlySnapshot array, representing the
@@ -37,9 +37,7 @@ function formatOrDash(value: number): string {
  */
 export function NetWorthBreakdown() {
   const { modelOutput } = useModelOutput()
-  const formValues = useWatch<ScenarioInputs>()
-  const currentHomeName = (formValues as ScenarioInputs)?.homeNames?.currentHomeName || 'Current Home'
-  const newHomeName = (formValues as ScenarioInputs)?.homeNames?.newHomeName || 'New Home'
+  const { currentHomeName, newHomeName } = useHomeNames()
 
   if (!modelOutput) {
     return null

@@ -6,11 +6,11 @@
 // Provides the granular view that power users and financial advisors need.
 // ---------------------------------------------------------------------------
 
-import { useWatch } from 'react-hook-form'
+import { useHomeNames } from '@/hooks/useHomeNames'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { useModelOutput } from '@/components/ScenarioModelProvider'
 import { formatCurrency } from '@/utils/formatters'
-import type { ScenarioInputs, YearlySnapshot } from '@/engine/types'
+import type { YearlySnapshot } from '@/engine/types'
 import { cn } from '@/lib/utils'
 
 /**
@@ -151,9 +151,7 @@ function ScenarioTable({
  */
 export function YearByYearTable() {
   const { modelOutput } = useModelOutput()
-  const formValues = useWatch<ScenarioInputs>()
-  const currentHomeName = (formValues as ScenarioInputs)?.homeNames?.currentHomeName || 'Current Home'
-  const newHomeName = (formValues as ScenarioInputs)?.homeNames?.newHomeName || 'New Home'
+  const { currentHomeName, newHomeName } = useHomeNames()
 
   if (!modelOutput) {
     return null

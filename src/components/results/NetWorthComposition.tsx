@@ -6,7 +6,6 @@
 // current home equity, and new home equity.
 // ---------------------------------------------------------------------------
 
-import { useWatch } from 'react-hook-form'
 import {
   ResponsiveContainer,
   AreaChart,
@@ -17,11 +16,12 @@ import {
   CartesianGrid,
 } from 'recharts'
 import { useModelOutput } from '@/components/ScenarioModelProvider'
+import { useHomeNames } from '@/hooks/useHomeNames'
 import {
   formatCurrency,
   formatCompactCurrency,
 } from '@/utils/formatters'
-import type { ScenarioInputs, YearlySnapshot } from '@/engine/types'
+import type { YearlySnapshot } from '@/engine/types'
 
 /**
  * Color palette for the stacked layers — consistent across all three charts
@@ -180,9 +180,7 @@ function ScenarioCompositionChart({
  */
 export function NetWorthComposition() {
   const { modelOutput } = useModelOutput()
-  const formValues = useWatch<ScenarioInputs>()
-  const currentHomeName = (formValues as ScenarioInputs)?.homeNames?.currentHomeName || 'Current Home'
-  const newHomeName = (formValues as ScenarioInputs)?.homeNames?.newHomeName || 'New Home'
+  const { currentHomeName, newHomeName } = useHomeNames()
 
   if (!modelOutput) {
     return null

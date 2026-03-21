@@ -13,8 +13,8 @@
 // ---------------------------------------------------------------------------
 
 import { useState } from 'react'
-import { useWatch } from 'react-hook-form'
 import { useModelOutput } from '@/components/ScenarioModelProvider'
+import { useHomeNames } from '@/hooks/useHomeNames'
 import {
   Card,
   CardHeader,
@@ -30,7 +30,7 @@ import { ChevronDown } from 'lucide-react'
 import { LineChart, Line } from 'recharts'
 import { formatCurrency } from '@/utils/formatters'
 import { SCENARIO_COLORS, type ScenarioColorKey } from '@/utils/scenarioColors'
-import type { ScenarioInputs, ScenarioOutput, CashFlowBreakdown } from '@/engine/types'
+import type { ScenarioOutput, CashFlowBreakdown } from '@/engine/types'
 
 type ScenarioKey = ScenarioColorKey
 
@@ -396,9 +396,7 @@ function RentalScenarioCard({ scenario, currentHomeName, newHomeName }: { scenar
  */
 export function MonthlyCashFlow() {
   const { modelOutput } = useModelOutput()
-  const formValues = useWatch<ScenarioInputs>()
-  const currentHomeName = (formValues as ScenarioInputs)?.homeNames?.currentHomeName || 'Current Home'
-  const newHomeName = (formValues as ScenarioInputs)?.homeNames?.newHomeName || 'New Home'
+  const { currentHomeName, newHomeName } = useHomeNames()
 
   if (!modelOutput) {
     return null

@@ -1,4 +1,3 @@
-import { useWatch } from 'react-hook-form'
 import {
   Accordion,
   AccordionItem,
@@ -12,7 +11,7 @@ import { NewHomeSection } from '@/components/sections/NewHomeSection'
 import { CommuteSection } from '@/components/sections/CommuteSection'
 import { CostsProjectionSection } from '@/components/sections/CostsProjectionSection'
 import { User, PiggyBank, Home, Building2, Car, Settings } from 'lucide-react'
-import type { ScenarioInputs } from '@/engine/types'
+import { useHomeNames } from '@/hooks/useHomeNames'
 
 /** All accordion section values for programmatic control */
 const ALL_SECTIONS = [
@@ -36,8 +35,7 @@ interface InputAccordionProps {
  * are always visible when expanded, advanced fields are behind a toggle.
  */
 function InputAccordion({ defaultOpenSections = ['about-you'] }: InputAccordionProps) {
-  const currentHomeName = useWatch<ScenarioInputs, 'homeNames.currentHomeName'>({ name: 'homeNames.currentHomeName' }) || 'Current Home'
-  const newHomeName = useWatch<ScenarioInputs, 'homeNames.newHomeName'>({ name: 'homeNames.newHomeName' }) || 'New Home'
+  const { currentHomeName, newHomeName } = useHomeNames()
 
   return (
     <Accordion multiple defaultValue={defaultOpenSections} className="space-y-2">

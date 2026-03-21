@@ -26,6 +26,7 @@ import type {
 } from '@/engine/types'
 import { formatCurrency } from '@/utils/formatters'
 import { SCENARIO_COLORS } from '@/utils/scenarioColors'
+import { useHomeNames } from '@/hooks/useHomeNames'
 import { cn } from '@/lib/utils'
 
 /** Build scenario labels from the user's home names. */
@@ -304,8 +305,7 @@ export function ExecutiveSummary() {
   }
 
   const timeHorizon = (formValues as ScenarioInputs)?.projection?.timeHorizonYears ?? 10
-  const currentHomeName = (formValues as ScenarioInputs)?.homeNames?.currentHomeName || 'Current Home'
-  const newHomeName = (formValues as ScenarioInputs)?.homeNames?.newHomeName || 'New Home'
+  const { currentHomeName, newHomeName } = useHomeNames()
   const scenarioLabels = buildScenarioLabels(currentHomeName, newHomeName)
 
   return (
