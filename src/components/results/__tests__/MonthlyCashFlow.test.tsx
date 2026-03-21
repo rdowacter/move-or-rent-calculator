@@ -15,6 +15,15 @@ vi.mock('@/components/ScenarioModelProvider', () => ({
   useModelOutput: () => mockUseModelOutput(),
 }))
 
+// Mock useWatch to return homeNames without requiring a FormProvider
+vi.mock('react-hook-form', async () => {
+  const actual = await vi.importActual('react-hook-form')
+  return {
+    ...actual,
+    useWatch: () => defaultValues,
+  }
+})
+
 /** Pre-computed model output using real engine + default inputs. */
 const modelOutput = runModel(defaultValues)
 

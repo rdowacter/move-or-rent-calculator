@@ -6,6 +6,7 @@
 // current home equity, and new home equity.
 // ---------------------------------------------------------------------------
 
+import { useWatch } from 'react-hook-form'
 import {
   ResponsiveContainer,
   AreaChart,
@@ -20,7 +21,7 @@ import {
   formatCurrency,
   formatCompactCurrency,
 } from '@/utils/formatters'
-import type { YearlySnapshot } from '@/engine/types'
+import type { ScenarioInputs, YearlySnapshot } from '@/engine/types'
 
 /**
  * Color palette for the stacked layers — consistent across all three charts
@@ -105,9 +106,13 @@ function CompositionTooltipContent({
 function ScenarioCompositionChart({
   title,
   data,
+  currentHomeName,
+  newHomeName,
 }: {
   title: string
   data: CompositionDataPoint[]
+  currentHomeName: string
+  newHomeName: string
 }) {
   return (
     <div>
@@ -146,7 +151,7 @@ function ScenarioCompositionChart({
           <Area
             type="monotone"
             dataKey="currentHomeEquity"
-            name="Current Home Equity"
+            name={`${currentHomeName} Equity`}
             stackId="1"
             stroke={LAYER_COLORS.currentHomeEquity}
             fill={LAYER_COLORS.currentHomeEquity}
@@ -155,7 +160,7 @@ function ScenarioCompositionChart({
           <Area
             type="monotone"
             dataKey="newHomeEquity"
-            name="New Home Equity"
+            name={`${newHomeName} Equity`}
             stackId="1"
             stroke={LAYER_COLORS.newHomeEquity}
             fill={LAYER_COLORS.newHomeEquity}
@@ -175,6 +180,9 @@ function ScenarioCompositionChart({
  */
 export function NetWorthComposition() {
   const { modelOutput } = useModelOutput()
+  const formValues = useWatch<ScenarioInputs>()
+  const currentHomeName = (formValues as ScenarioInputs)?.homeNames?.currentHomeName || 'Current Home'
+  const newHomeName = (formValues as ScenarioInputs)?.homeNames?.newHomeName || 'New Home'
 
   if (!modelOutput) {
     return null
@@ -189,9 +197,9 @@ export function NetWorthComposition() {
   return (
     <div className="w-full space-y-4">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <ScenarioCompositionChart title="Baseline" data={baselineData} />
-        <ScenarioCompositionChart title="Scenario A" data={scenarioAData} />
-        <ScenarioCompositionChart title="Scenario B" data={scenarioBData} />
+        <ScenarioCompositionChart title="Baseline" data={baselineData} currentHomeName={currentHomeName} newHomeName={newHomeName} />
+        <ScenarioCompositionChart title="Scenario A" data={scenarioAData} currentHomeName={currentHomeName} newHomeName={newHomeName} />
+        <ScenarioCompositionChart title="Scenario B" data={scenarioBData} currentHomeName={currentHomeName} newHomeName={newHomeName} />
       </div>
 
       {/* Shared legend rendered once below all three charts */}
@@ -199,8 +207,8 @@ export function NetWorthComposition() {
         {[
           { label: 'Liquid Savings', color: LAYER_COLORS.liquidSavings },
           { label: 'IRA Balance', color: LAYER_COLORS.ira },
-          { label: 'Current Home Equity', color: LAYER_COLORS.currentHomeEquity },
-          { label: 'New Home Equity', color: LAYER_COLORS.newHomeEquity },
+          { label: `${currentHomeName} Equity`, color: LAYER_COLORS.currentHomeEquity },
+          { label: `${newHomeName} Equity`, color: LAYER_COLORS.newHomeEquity },
         ].map(({ label, color }) => (
           <span key={label} className="flex items-center gap-1.5">
             <span

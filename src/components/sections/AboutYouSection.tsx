@@ -29,6 +29,27 @@ function AboutYouSection() {
 
   return (
     <div className="space-y-4">
+      {/* Home names */}
+      <div className="space-y-3 pb-4 border-b">
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Your Homes</p>
+        <FormField
+          name="homeNames.currentHomeName"
+          label="Current Home Name"
+          control={control}
+          type="text"
+          description="Give your current home a name"
+          placeholder="e.g., Denver Condo, Our Ranch House"
+        />
+        <FormField
+          name="homeNames.newHomeName"
+          label="New Home Name"
+          control={control}
+          type="text"
+          description="Give the home you're buying a name"
+          placeholder="e.g., Austin House, The New Place"
+        />
+      </div>
+
       {/* Primary info */}
       <div className="space-y-3">
         <FormField

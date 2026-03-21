@@ -6,10 +6,11 @@
 // Provides the granular view that power users and financial advisors need.
 // ---------------------------------------------------------------------------
 
+import { useWatch } from 'react-hook-form'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { useModelOutput } from '@/components/ScenarioModelProvider'
 import { formatCurrency } from '@/utils/formatters'
-import type { YearlySnapshot } from '@/engine/types'
+import type { ScenarioInputs, YearlySnapshot } from '@/engine/types'
 import { cn } from '@/lib/utils'
 
 /**
@@ -64,25 +65,22 @@ function CurrencyOrDashCell({ value }: { value: number }) {
   )
 }
 
-/** Column header definitions for the year-by-year table. */
-const COLUMNS = [
-  { key: 'year', label: 'Year', align: 'left' as const },
-  { key: 'income', label: 'Income', align: 'right' as const },
-  { key: 'cashFlow', label: 'Monthly Cash Flow', align: 'right' as const },
-  { key: 'liquid', label: 'Liquid Savings', align: 'right' as const },
-  { key: 'ira', label: 'IRA Balance', align: 'right' as const },
-  { key: 'currentHome', label: 'Current Home Equity', align: 'right' as const },
-  { key: 'newHome', label: 'New Home Equity', align: 'right' as const },
-  { key: 'netWorth', label: 'Net Worth', align: 'right' as const },
-] as const
+/** Column definition for the year-by-year table. */
+interface ColumnDef {
+  key: string
+  label: string
+  align: 'left' | 'right'
+}
 
 /** Render the table for a single scenario's yearly snapshots. */
 function ScenarioTable({
   snapshots,
   scenarioKey,
+  columns,
 }: {
   snapshots: YearlySnapshot[]
   scenarioKey: 'baseline' | 'scenarioA' | 'scenarioB'
+  columns: ColumnDef[]
 }) {
   /**
    * Determine which equity columns show dashes vs values:
@@ -98,7 +96,7 @@ function ScenarioTable({
       <table className="w-full border-collapse text-sm" data-testid={`year-by-year-${scenarioKey}`}>
         <thead>
           <tr className="bg-muted/50">
-            {COLUMNS.map((col) => (
+            {columns.map((col) => (
               <th
                 key={col.key}
                 className={cn(
@@ -153,10 +151,24 @@ function ScenarioTable({
  */
 export function YearByYearTable() {
   const { modelOutput } = useModelOutput()
+  const formValues = useWatch<ScenarioInputs>()
+  const currentHomeName = (formValues as ScenarioInputs)?.homeNames?.currentHomeName || 'Current Home'
+  const newHomeName = (formValues as ScenarioInputs)?.homeNames?.newHomeName || 'New Home'
 
   if (!modelOutput) {
     return null
   }
+
+  const columns: ColumnDef[] = [
+    { key: 'year', label: 'Year', align: 'left' },
+    { key: 'income', label: 'Income', align: 'right' },
+    { key: 'cashFlow', label: 'Monthly Cash Flow', align: 'right' },
+    { key: 'liquid', label: 'Liquid Savings', align: 'right' },
+    { key: 'ira', label: 'IRA Balance', align: 'right' },
+    { key: 'currentHome', label: `${currentHomeName} Equity`, align: 'right' },
+    { key: 'newHome', label: `${newHomeName} Equity`, align: 'right' },
+    { key: 'netWorth', label: 'Net Worth', align: 'right' },
+  ]
 
   const { baseline, scenarioA, scenarioB } = modelOutput
 
@@ -172,18 +184,21 @@ export function YearByYearTable() {
           <ScenarioTable
             snapshots={baseline.yearlySnapshots}
             scenarioKey="baseline"
+            columns={columns}
           />
         </TabsContent>
         <TabsContent value="scenarioA">
           <ScenarioTable
             snapshots={scenarioA.yearlySnapshots}
             scenarioKey="scenarioA"
+            columns={columns}
           />
         </TabsContent>
         <TabsContent value="scenarioB">
           <ScenarioTable
             snapshots={scenarioB.yearlySnapshots}
             scenarioKey="scenarioB"
+            columns={columns}
           />
         </TabsContent>
       </Tabs>

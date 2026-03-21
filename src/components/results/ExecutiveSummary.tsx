@@ -28,11 +28,14 @@ import { formatCurrency } from '@/utils/formatters'
 import { SCENARIO_COLORS } from '@/utils/scenarioColors'
 import { cn } from '@/lib/utils'
 
-const SCENARIO_LABELS = {
-  baseline: { short: 'Baseline', full: 'Stay in current home, keep the IRA, keep commuting' },
-  scenarioA: { short: 'Scenario A', full: 'Sell current home, buy new home, keep IRA intact + contributing' },
-  scenarioB: { short: 'Scenario B', full: 'Keep current home as rental, withdraw IRA for down payment, buy new home' },
-} as const
+/** Build scenario labels from the user's home names. */
+function buildScenarioLabels(currentHomeName: string, newHomeName: string) {
+  return {
+    baseline: { short: 'Baseline', full: `Stay in ${currentHomeName}, keep the IRA, keep commuting` },
+    scenarioA: { short: 'Scenario A', full: `Sell ${currentHomeName}, buy ${newHomeName}, keep IRA intact + contributing` },
+    scenarioB: { short: 'Scenario B', full: `Keep ${currentHomeName} as rental, withdraw IRA for down payment, buy ${newHomeName}` },
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Badge styling maps
@@ -87,9 +90,11 @@ function formatCashFlowCell(row: ScorecardRow, index: number): string {
 function ScorecardTable({
   rows,
   timeHorizon,
+  scenarioLabels,
 }: {
   rows: [ScorecardRow, ScorecardRow, ScorecardRow]
   timeHorizon: number
+  scenarioLabels: ReturnType<typeof buildScenarioLabels>
 }) {
   return (
     <div className="hidden md:block overflow-x-auto" data-testid="scorecard-table">
@@ -104,7 +109,7 @@ function ScorecardTable({
                     className="inline-block h-2.5 w-2.5 rounded-full shrink-0"
                     style={{ backgroundColor: Object.values(SCENARIO_COLORS)[i] }}
                   />
-                  {Object.values(SCENARIO_LABELS)[i].short}
+                  {Object.values(scenarioLabels)[i].short}
                 </span>
               </th>
             ))}
@@ -178,9 +183,11 @@ function ScorecardTable({
 function ScorecardCards({
   rows,
   timeHorizon,
+  scenarioLabels,
 }: {
   rows: [ScorecardRow, ScorecardRow, ScorecardRow]
   timeHorizon: number
+  scenarioLabels: ReturnType<typeof buildScenarioLabels>
 }) {
   const scenarioKeys = ['baseline', 'scenarioA', 'scenarioB'] as const
 
@@ -202,7 +209,7 @@ function ScorecardCards({
                   className="inline-block h-2.5 w-2.5 rounded-full shrink-0"
                   style={{ backgroundColor: color }}
                 />
-                {SCENARIO_LABELS[key].short}
+                {scenarioLabels[key].short}
                 {row.isWinner && <span className="text-amber-500" aria-label="Winner">&#9733;</span>}
               </span>
               <Badge className={FEASIBILITY_STYLES[row.feasibility.status]}>
@@ -238,7 +245,7 @@ function ScorecardCards({
 // Scenario Legend
 // ---------------------------------------------------------------------------
 
-function ScenarioLegend() {
+function ScenarioLegend({ scenarioLabels }: { scenarioLabels: ReturnType<typeof buildScenarioLabels> }) {
   const scenarioKeys = ['baseline', 'scenarioA', 'scenarioB'] as const
 
   return (
@@ -254,8 +261,8 @@ function ScenarioLegend() {
               style={{ backgroundColor: SCENARIO_COLORS[key] }}
             />
             <span>
-              <span className="font-medium text-foreground">{SCENARIO_LABELS[key].short}:</span>{' '}
-              {SCENARIO_LABELS[key].full}
+              <span className="font-medium text-foreground">{scenarioLabels[key].short}:</span>{' '}
+              {scenarioLabels[key].full}
             </span>
           </li>
         ))}
@@ -297,6 +304,9 @@ export function ExecutiveSummary() {
   }
 
   const timeHorizon = (formValues as ScenarioInputs)?.projection?.timeHorizonYears ?? 10
+  const currentHomeName = (formValues as ScenarioInputs)?.homeNames?.currentHomeName || 'Current Home'
+  const newHomeName = (formValues as ScenarioInputs)?.homeNames?.newHomeName || 'New Home'
+  const scenarioLabels = buildScenarioLabels(currentHomeName, newHomeName)
 
   return (
     <div
@@ -311,8 +321,8 @@ export function ExecutiveSummary() {
       </p>
 
       {/* Scorecard — table on desktop, stacked cards on mobile */}
-      <ScorecardTable rows={verdict.scorecard} timeHorizon={timeHorizon} />
-      <ScorecardCards rows={verdict.scorecard} timeHorizon={timeHorizon} />
+      <ScorecardTable rows={verdict.scorecard} timeHorizon={timeHorizon} scenarioLabels={scenarioLabels} />
+      <ScorecardCards rows={verdict.scorecard} timeHorizon={timeHorizon} scenarioLabels={scenarioLabels} />
 
       {/* Guardrail callout */}
       {verdict.guardrailCallout && (
@@ -328,7 +338,7 @@ export function ExecutiveSummary() {
       )}
 
       {/* Scenario Legend */}
-      <ScenarioLegend />
+      <ScenarioLegend scenarioLabels={scenarioLabels} />
     </div>
   )
 }

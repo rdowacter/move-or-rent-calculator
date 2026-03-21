@@ -1,3 +1,4 @@
+import { useWatch } from 'react-hook-form'
 import {
   Accordion,
   AccordionItem,
@@ -11,6 +12,7 @@ import { NewHomeSection } from '@/components/sections/NewHomeSection'
 import { CommuteSection } from '@/components/sections/CommuteSection'
 import { CostsProjectionSection } from '@/components/sections/CostsProjectionSection'
 import { User, PiggyBank, Home, Building2, Car, Settings } from 'lucide-react'
+import type { ScenarioInputs } from '@/engine/types'
 
 /** All accordion section values for programmatic control */
 const ALL_SECTIONS = [
@@ -34,6 +36,9 @@ interface InputAccordionProps {
  * are always visible when expanded, advanced fields are behind a toggle.
  */
 function InputAccordion({ defaultOpenSections = ['about-you'] }: InputAccordionProps) {
+  const currentHomeName = useWatch<ScenarioInputs, 'homeNames.currentHomeName'>({ name: 'homeNames.currentHomeName' }) || 'Current Home'
+  const newHomeName = useWatch<ScenarioInputs, 'homeNames.newHomeName'>({ name: 'homeNames.newHomeName' }) || 'New Home'
+
   return (
     <Accordion multiple defaultValue={defaultOpenSections} className="space-y-2">
       <AccordionItem value="about-you" className="rounded-lg border border-border/50 px-4 data-open:bg-blue-50/30 data-open:shadow-sm data-open:border-blue-200/50 dark:data-open:bg-blue-950/20 dark:data-open:border-blue-800/30">
@@ -77,7 +82,7 @@ function InputAccordion({ defaultOpenSections = ['about-you'] }: InputAccordionP
               <Home className="h-4 w-4" />
             </div>
             <div className="text-left">
-              <div className="text-sm font-semibold">Current Home</div>
+              <div className="text-sm font-semibold">{currentHomeName}</div>
               <div className="text-xs font-normal text-muted-foreground">Mortgage, rent, property details</div>
             </div>
           </div>
@@ -94,7 +99,7 @@ function InputAccordion({ defaultOpenSections = ['about-you'] }: InputAccordionP
               <Building2 className="h-4 w-4" />
             </div>
             <div className="text-left">
-              <div className="text-sm font-semibold">New Home</div>
+              <div className="text-sm font-semibold">{newHomeName}</div>
               <div className="text-xs font-normal text-muted-foreground">Purchase price, down payment, costs</div>
             </div>
           </div>

@@ -13,6 +13,7 @@
 // ---------------------------------------------------------------------------
 
 import { useState } from 'react'
+import { useWatch } from 'react-hook-form'
 import { useModelOutput } from '@/components/ScenarioModelProvider'
 import {
   Card,
@@ -29,7 +30,7 @@ import { ChevronDown } from 'lucide-react'
 import { LineChart, Line } from 'recharts'
 import { formatCurrency } from '@/utils/formatters'
 import { SCENARIO_COLORS, type ScenarioColorKey } from '@/utils/scenarioColors'
-import type { ScenarioOutput, CashFlowBreakdown } from '@/engine/types'
+import type { ScenarioInputs, ScenarioOutput, CashFlowBreakdown } from '@/engine/types'
 
 type ScenarioKey = ScenarioColorKey
 
@@ -225,7 +226,7 @@ function SimpleBreakdown({ breakdown, cashFlow }: { breakdown: CashFlowBreakdown
  * Collapsible cash flow breakdown for Scenario B.
  * Includes an additional "Rental Property" section between Housing and Other.
  */
-function RentalBreakdown({ breakdown, cashFlow }: { breakdown: CashFlowBreakdown; cashFlow: number }) {
+function RentalBreakdown({ breakdown, cashFlow, currentHomeName, newHomeName }: { breakdown: CashFlowBreakdown; cashFlow: number; currentHomeName: string; newHomeName: string }) {
   const [open, setOpen] = useState(false)
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
@@ -240,7 +241,7 @@ function RentalBreakdown({ breakdown, cashFlow }: { breakdown: CashFlowBreakdown
           <BreakdownSectionHeader title="Income" />
           <BreakdownLine label="Take-home pay" value={breakdown.takeHomePay} type="income" />
 
-          <BreakdownSectionHeader title="Housing (New Home)" />
+          <BreakdownSectionHeader title={`Housing (${newHomeName})`} />
           <BreakdownLine label="Mortgage P&I" value={breakdown.mortgagePI} type="expense" />
           <BreakdownLine label="Property Tax" value={breakdown.propertyTax} type="expense" />
           <BreakdownLine label="Insurance" value={breakdown.insurance} type="expense" />
@@ -248,11 +249,11 @@ function RentalBreakdown({ breakdown, cashFlow }: { breakdown: CashFlowBreakdown
             <BreakdownLine label="PMI" value={breakdown.pmi} type="expense" />
           )}
 
-          <BreakdownSectionHeader title="Rental Property" />
+          <BreakdownSectionHeader title={`Rental Property (${currentHomeName})`} />
           <BreakdownLine label="Rental Income" value={breakdown.rentalIncome} type="income" />
-          <BreakdownLine label="Rental Mortgage" value={breakdown.rentalMortgagePI} type="expense" />
-          <BreakdownLine label="Rental Property Tax" value={breakdown.rentalPropertyTax} type="expense" />
-          <BreakdownLine label="Rental Insurance" value={breakdown.rentalInsurance} type="expense" />
+          <BreakdownLine label={`${currentHomeName} Mortgage`} value={breakdown.rentalMortgagePI} type="expense" />
+          <BreakdownLine label={`${currentHomeName} Property Tax`} value={breakdown.rentalPropertyTax} type="expense" />
+          <BreakdownLine label={`${currentHomeName} Insurance`} value={breakdown.rentalInsurance} type="expense" />
           <BreakdownLine label="Maintenance" value={breakdown.rentalMaintenance} type="expense" />
           {breakdown.rentalManagementFee > 0 && (
             <BreakdownLine label="Management Fee" value={breakdown.rentalManagementFee} type="expense" />
@@ -341,7 +342,7 @@ function SimpleScenarioCard({
  * cash flow, sparkline, annual translation, early-years callout,
  * and collapsible rental breakdown.
  */
-function RentalScenarioCard({ scenario }: { scenario: ScenarioOutput }) {
+function RentalScenarioCard({ scenario, currentHomeName, newHomeName }: { scenario: ScenarioOutput; currentHomeName: string; newHomeName: string }) {
   const snapshot = scenario.yearlySnapshots[0]
   if (!snapshot) return null
 
@@ -376,6 +377,8 @@ function RentalScenarioCard({ scenario }: { scenario: ScenarioOutput }) {
         <RentalBreakdown
           breakdown={snapshot.cashFlowBreakdown}
           cashFlow={snapshot.monthlyCashFlowBestCase}
+          currentHomeName={currentHomeName}
+          newHomeName={newHomeName}
         />
       </CardContent>
     </Card>
@@ -393,6 +396,9 @@ function RentalScenarioCard({ scenario }: { scenario: ScenarioOutput }) {
  */
 export function MonthlyCashFlow() {
   const { modelOutput } = useModelOutput()
+  const formValues = useWatch<ScenarioInputs>()
+  const currentHomeName = (formValues as ScenarioInputs)?.homeNames?.currentHomeName || 'Current Home'
+  const newHomeName = (formValues as ScenarioInputs)?.homeNames?.newHomeName || 'New Home'
 
   if (!modelOutput) {
     return null
@@ -408,7 +414,11 @@ export function MonthlyCashFlow() {
         scenario={modelOutput.scenarioA}
         colorKey="scenarioA"
       />
-      <RentalScenarioCard scenario={modelOutput.scenarioB} />
+      <RentalScenarioCard
+        scenario={modelOutput.scenarioB}
+        currentHomeName={currentHomeName}
+        newHomeName={newHomeName}
+      />
     </div>
   )
 }

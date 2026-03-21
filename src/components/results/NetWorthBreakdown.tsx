@@ -6,9 +6,10 @@
 // Displayed below the Net Worth Projection chart for detailed comparison.
 // ---------------------------------------------------------------------------
 
+import { useWatch } from 'react-hook-form'
 import { useModelOutput } from '@/components/ScenarioModelProvider'
 import { formatCurrency } from '@/utils/formatters'
-import type { YearlySnapshot } from '@/engine/types'
+import type { ScenarioInputs, YearlySnapshot } from '@/engine/types'
 
 /**
  * Returns the last element of a YearlySnapshot array, representing the
@@ -36,6 +37,9 @@ function formatOrDash(value: number): string {
  */
 export function NetWorthBreakdown() {
   const { modelOutput } = useModelOutput()
+  const formValues = useWatch<ScenarioInputs>()
+  const currentHomeName = (formValues as ScenarioInputs)?.homeNames?.currentHomeName || 'Current Home'
+  const newHomeName = (formValues as ScenarioInputs)?.homeNames?.newHomeName || 'New Home'
 
   if (!modelOutput) {
     return null
@@ -61,7 +65,7 @@ export function NetWorthBreakdown() {
       isBold: false,
     },
     {
-      label: 'Current Home Equity',
+      label: `${currentHomeName} Equity`,
       // Baseline keeps current home; Scenario A sells it (no equity); Scenario B keeps as rental
       baseline: formatCurrency(baselineFinal.currentHomeEquity),
       scenarioA: formatOrDash(scenarioAFinal.currentHomeEquity),
@@ -69,7 +73,7 @@ export function NetWorthBreakdown() {
       isBold: false,
     },
     {
-      label: 'New Home Equity',
+      label: `${newHomeName} Equity`,
       // Baseline has no new home; Scenario A and B both buy new home
       baseline: formatOrDash(baselineFinal.newHomeEquity),
       scenarioA: formatCurrency(scenarioAFinal.newHomeEquity),
