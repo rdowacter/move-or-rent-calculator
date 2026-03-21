@@ -69,12 +69,22 @@ export function useScenarioModel(): UseScenarioModelResult {
       return
     }
 
+    // Wrap runModel in a try-catch so a calculation error (e.g., NaN from
+    // a race between checkRequiredFields and actual form values) doesn't
+    // crash the entire page.
+    const safeRunModel = () => {
+      try {
+        return runModel(formValues as ScenarioInputs)
+      } catch {
+        return null
+      }
+    }
+
     // On the very first render with complete data, compute immediately
     // with no debounce so the user sees results right away.
     if (isFirstRun.current) {
       isFirstRun.current = false
-      const output = runModel(formValues as ScenarioInputs)
-      setModelOutput(output)
+      setModelOutput(safeRunModel())
       return
     }
 
@@ -86,8 +96,7 @@ export function useScenarioModel(): UseScenarioModelResult {
     }
 
     timerRef.current = setTimeout(() => {
-      const output = runModel(formValues as ScenarioInputs)
-      setModelOutput(output)
+      setModelOutput(safeRunModel())
       setIsComputing(false)
       timerRef.current = null
     }, DEBOUNCE_MS)
