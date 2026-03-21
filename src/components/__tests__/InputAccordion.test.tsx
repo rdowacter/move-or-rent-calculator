@@ -27,8 +27,8 @@ describe('InputAccordion', () => {
 
     expect(screen.getByText('About You')).toBeInTheDocument()
     expect(screen.getByText('Retirement')).toBeInTheDocument()
-    expect(screen.getByText('Current Home (Kyle)')).toBeInTheDocument()
-    expect(screen.getByText('New Home (Austin)')).toBeInTheDocument()
+    expect(screen.getByText('Current Home')).toBeInTheDocument()
+    expect(screen.getByText('New Home')).toBeInTheDocument()
     expect(screen.getByText('Commute')).toBeInTheDocument()
     expect(screen.getByText('Costs & Assumptions')).toBeInTheDocument()
   })
@@ -60,7 +60,7 @@ describe('InputAccordion', () => {
     expect(screen.getByText('Annual Contribution — Scenario B')).toBeInTheDocument()
   })
 
-  it('renders "Current Home (Kyle)" primary fields when section is open', () => {
+  it('renders "Current Home" primary fields when section is open', () => {
     render(
       <TestWrapper>
         <InputAccordion defaultOpenSections={['current-home']} />
@@ -74,7 +74,7 @@ describe('InputAccordion', () => {
     expect(screen.getByText('Expected Monthly Rent')).toBeInTheDocument()
   })
 
-  it('renders "New Home (Austin)" primary fields when section is open', () => {
+  it('renders "New Home" primary fields when section is open', () => {
     render(
       <TestWrapper>
         <InputAccordion defaultOpenSections={['new-home']} />

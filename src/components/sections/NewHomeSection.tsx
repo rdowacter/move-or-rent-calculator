@@ -5,7 +5,7 @@ import { PercentInput } from '@/components/PercentInput'
 import { FormField } from '@/components/FormField'
 
 /**
- * New Home (Austin) section — collects inputs about the prospective purchase.
+ * New Home section — collects inputs about the prospective purchase.
  * Fields cover purchase price, interest rate, down payment percentages,
  * loan term, PMI, property tax, insurance, closing costs, and appreciation.
  */
@@ -20,7 +20,7 @@ function NewHomeSection() {
           name="newHome.purchasePrice"
           label="Purchase Price"
           control={control}
-          description="Target purchase price for the Austin home"
+          description="Target purchase price for the new home"
         />
 
         <PercentInput
@@ -47,14 +47,14 @@ function NewHomeSection() {
           name="newHome.downPaymentPercentScenarioA"
           label="Down Payment % — Scenario A"
           control={control}
-          description="Down payment if selling Kyle (larger, from sale proceeds)"
+          description="Down payment if selling current home (larger, from sale proceeds)"
         />
 
         <PercentInput
           name="newHome.downPaymentPercentScenarioB"
           label="Down Payment % — Scenario B"
           control={control}
-          description="Down payment if keeping Kyle as rental (smaller, from savings + IRA)"
+          description="Down payment if keeping current home as rental (smaller, from savings + IRA)"
         />
       </div>
 
@@ -93,7 +93,7 @@ function NewHomeSection() {
           name="newHome.annualAppreciationRate"
           label="Annual Appreciation Rate"
           control={control}
-          description="Expected annual home value appreciation for Austin area"
+          description="Expected annual home value appreciation"
         />
       </div>
     </div>

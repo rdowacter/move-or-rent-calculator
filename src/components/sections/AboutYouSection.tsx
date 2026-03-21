@@ -112,7 +112,7 @@ function AboutYouSection() {
           name="personal.stateIncomeTaxRate"
           label="State Income Tax Rate"
           control={control}
-          description="0% for Texas residents"
+          description="Your state's income tax rate (0% if no state income tax)"
         />
 
         <CurrencyInput

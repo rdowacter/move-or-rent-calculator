@@ -5,7 +5,7 @@ import { PercentInput } from '@/components/PercentInput'
 import { FormField } from '@/components/FormField'
 
 /**
- * Current Home (Kyle) section — collects inputs about the existing property.
+ * Current Home section — collects inputs about the existing property.
  * Fields cover value, mortgage, rate, loan position, expected rent,
  * property taxes, insurance, maintenance, vacancy, management fees,
  * appreciation, and tenant turnover assumptions.
@@ -110,7 +110,7 @@ function CurrentHomeSection() {
           label="Lender Rental Income Credit"
           control={control}
           description="How much rental income lenders count toward DTI. 75% standard, 0% if no landlord history."
-          info="When qualifying for the Austin mortgage, lenders discount rental income to account for risk. 75% is standard (Fannie Mae). Some lenders use 0% for first-time landlords."
+          info="When qualifying for the new home mortgage, lenders discount rental income to account for risk. 75% is standard (Fannie Mae). Some lenders use 0% for first-time landlords."
         />
       </div>
 
@@ -121,7 +121,7 @@ function CurrentHomeSection() {
           name="currentHome.annualPropertyTaxRate"
           label="Annual Property Tax Rate"
           control={control}
-          description="As a percentage of assessed value (e.g. 2.15% for Kyle, TX)"
+          description="As a percentage of assessed value"
         />
 
         <CurrencyInput
@@ -169,7 +169,7 @@ function CurrentHomeSection() {
           name="currentHome.sellingCostsRate"
           label="Selling Costs Rate"
           control={control}
-          description="Agent commissions + closing costs (typically 6-8% in Texas)"
+          description="Agent commissions + closing costs (typically 6-8%)"
         />
 
         <PercentInput

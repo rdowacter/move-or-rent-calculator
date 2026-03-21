@@ -77,7 +77,7 @@ function InputAccordion({ defaultOpenSections = ['about-you'] }: InputAccordionP
               <Home className="h-4 w-4" />
             </div>
             <div className="text-left">
-              <div className="text-sm font-semibold">Current Home (Kyle)</div>
+              <div className="text-sm font-semibold">Current Home</div>
               <div className="text-xs font-normal text-muted-foreground">Mortgage, rent, property details</div>
             </div>
           </div>
@@ -94,7 +94,7 @@ function InputAccordion({ defaultOpenSections = ['about-you'] }: InputAccordionP
               <Building2 className="h-4 w-4" />
             </div>
             <div className="text-left">
-              <div className="text-sm font-semibold">New Home (Austin)</div>
+              <div className="text-sm font-semibold">New Home</div>
               <div className="text-xs font-normal text-muted-foreground">Purchase price, down payment, costs</div>
             </div>
           </div>

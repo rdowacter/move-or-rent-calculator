@@ -22,7 +22,7 @@ function CommuteSection() {
           control={control}
           type="number"
           inputMode="decimal"
-          description="Round-trip commute distance from Kyle to Austin"
+          description="Current round-trip commute distance"
           info="Used with the IRS mileage rate to estimate total driving cost (gas, wear, maintenance, depreciation)."
         />
 
@@ -43,7 +43,7 @@ function CommuteSection() {
           control={control}
           type="number"
           inputMode="decimal"
-          description="Expected round-trip commute from Austin home"
+          description="Expected round-trip commute from new home"
         />
 
         <CurrencyInput

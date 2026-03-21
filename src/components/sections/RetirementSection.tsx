@@ -81,14 +81,14 @@ function RetirementSection() {
           name="retirement.annualIRAContributionScenarioA"
           label="Annual Contribution — Scenario A"
           control={control}
-          description="Yearly IRA contribution if you sell Kyle and keep IRA intact"
+          description="Yearly IRA contribution if you sell current home and keep IRA intact"
         />
 
         <CurrencyInput
           name="retirement.annualIRAContributionScenarioB"
           label="Annual Contribution — Scenario B"
           control={control}
-          description="Yearly IRA contribution if you keep Kyle as rental and withdraw IRA"
+          description="Yearly IRA contribution if you keep current home as rental and withdraw IRA"
         />
       </div>
 
