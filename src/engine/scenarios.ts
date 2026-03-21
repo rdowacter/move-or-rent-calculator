@@ -1240,7 +1240,7 @@ function generateScenarioBWarnings(
     warnings.push({
       category: 'liquidity',
       severity: 'critical',
-      message: `You're $${Math.round(Math.abs(upfrontCapital.surplus)).toLocaleString()} short of the cash needed. The IRA withdrawal after taxes and penalties doesn't cover the down payment and closing costs.`,
+      message: `You're $${Math.round(Math.abs(upfrontCapital.surplus)).toLocaleString()} short of the cash needed. The retirement withdrawal after taxes and penalties doesn't cover the down payment and closing costs.`,
       dollarImpact: Math.abs(upfrontCapital.surplus),
     })
   }
@@ -1275,14 +1275,14 @@ function generateScenarioBWarnings(
       warnings.push({
         category: 'retirement',
         severity: 'warning',
-        message: `Withdrawing your entire IRA at age ${inputs.personal.age} costs $${Math.round(iraWithdrawalTaxCost).toLocaleString()} in taxes and penalties, leaving this IRA account at $0. This doesn't include other retirement accounts or future contributions you may start.`,
+        message: `Withdrawing your entire retirement account balance at age ${inputs.personal.age} costs $${Math.round(iraWithdrawalTaxCost).toLocaleString()} in taxes and penalties, leaving this retirement account at $0. This doesn't include other retirement accounts or future contributions you may start.`,
         dollarImpact: iraWithdrawalTaxCost,
       })
     } else {
       warnings.push({
         category: 'retirement',
         severity: 'warning',
-        message: `Withdrawing $${Math.round(withdrawalAmount).toLocaleString()} from your IRA at age ${inputs.personal.age} costs $${Math.round(iraWithdrawalTaxCost).toLocaleString()} in taxes and penalties, leaving $${Math.round(remainingIRA).toLocaleString()} invested.`,
+        message: `Withdrawing $${Math.round(withdrawalAmount).toLocaleString()} from your retirement account at age ${inputs.personal.age} costs $${Math.round(iraWithdrawalTaxCost).toLocaleString()} in taxes and penalties, leaving $${Math.round(remainingIRA).toLocaleString()} invested.`,
         dollarImpact: iraWithdrawalTaxCost,
       })
     }
