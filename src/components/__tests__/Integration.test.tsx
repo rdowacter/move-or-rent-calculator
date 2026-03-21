@@ -21,9 +21,18 @@ const mockModelOutput = runModel(defaultValues)
 // Mock useModelOutput — components import from two different paths.
 // Most import from ScenarioModelProvider, but UpfrontCapital uses
 // the separate @/hooks/useModelOutput module.
-let mockReturnValue: { modelOutput: typeof mockModelOutput | null; isComputing?: boolean } = {
+let mockReturnValue: {
+  modelOutput: typeof mockModelOutput | null
+  isComputing?: boolean
+  isReady?: boolean
+  filledCount?: number
+  totalRequired?: number
+} = {
   modelOutput: mockModelOutput,
   isComputing: false,
+  isReady: true,
+  filledCount: 22,
+  totalRequired: 22,
 }
 
 vi.mock('@/components/ScenarioModelProvider', () => ({
@@ -66,13 +75,13 @@ function FormWrapper({ children }: { children: ReactNode }) {
 
 describe('ResultsSections integration', () => {
   it('renders the results-sections wrapper', () => {
-    mockReturnValue = { modelOutput: mockModelOutput, isComputing: false }
+    mockReturnValue = { modelOutput: mockModelOutput, isComputing: false, isReady: true, filledCount: 22, totalRequired: 22 }
     render(<FormWrapper><ResultsSections /></FormWrapper>)
     expect(screen.getByTestId('results-sections')).toBeInTheDocument()
   })
 
   it('renders all six results sections when model output is available', () => {
-    mockReturnValue = { modelOutput: mockModelOutput, isComputing: false }
+    mockReturnValue = { modelOutput: mockModelOutput, isComputing: false, isReady: true, filledCount: 22, totalRequired: 22 }
     render(<FormWrapper><ResultsSections /></FormWrapper>)
 
     // ResultSection wrapper renders "Net Worth Over Time" heading
@@ -94,17 +103,19 @@ describe('ResultsSections integration', () => {
     expect(screen.getAllByText('Baseline').length).toBeGreaterThanOrEqual(1)
   })
 
-  it('renders gracefully when model output is null', () => {
-    mockReturnValue = { modelOutput: null, isComputing: true }
+  it('renders gracefully when model output is null (not ready)', () => {
+    mockReturnValue = { modelOutput: null, isComputing: false, isReady: false, filledCount: 5, totalRequired: 22 }
     render(<FormWrapper><ResultsSections /></FormWrapper>)
 
     // The wrapper should still render
     expect(screen.getByTestId('results-sections')).toBeInTheDocument()
 
-    // ResultSection headings are always rendered (they wrap child components),
-    // but child content should not render when modelOutput is null.
-    // The wrapper headings like "Net Worth Over Time" will still be in the DOM.
-    // Verify that child-specific content (e.g., chart containers) is absent.
+    // ResultsGate should show the progress indicator instead of results
+    expect(screen.getByText('Fill in your details to see your analysis')).toBeInTheDocument()
+    expect(screen.getByText('5 of 22 required fields completed')).toBeInTheDocument()
+
+    // Result sections should NOT be rendered when not ready
+    expect(screen.queryByText('Net Worth Over Time')).not.toBeInTheDocument()
     expect(screen.queryByTestId('responsive-container')).not.toBeInTheDocument()
     expect(screen.queryByTestId('stress-tests')).not.toBeInTheDocument()
   })

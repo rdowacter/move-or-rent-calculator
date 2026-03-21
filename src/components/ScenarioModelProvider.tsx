@@ -42,8 +42,9 @@ export function ScenarioModelProvider({
  * Consumer hook for accessing the financial model output.
  * Must be used inside a ScenarioModelProvider.
  *
- * @returns { modelOutput, isComputing } — the complete model output
- *   (null before first computation) and a loading flag.
+ * @returns { modelOutput, isComputing, isReady, filledCount, totalRequired }
+ *   — the complete model output (null before required fields are filled),
+ *   a loading flag, and progress toward required field completion.
  * @throws If called outside of a ScenarioModelProvider.
  */
 export function useModelOutput(): UseScenarioModelResult {

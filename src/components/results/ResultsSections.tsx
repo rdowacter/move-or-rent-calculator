@@ -16,6 +16,7 @@ import { useFormContext } from 'react-hook-form'
 import type { ScenarioInputs } from '@/engine/types'
 import { FormField } from '@/components/FormField'
 import { ResultSection } from './ResultSection'
+import { ResultsGate } from './ResultsGate'
 import { NetWorthChart } from './NetWorthChart'
 import { NetWorthBreakdown } from './NetWorthBreakdown'
 import { IRATrajectoryChart } from './IRATrajectoryChart'
@@ -58,53 +59,58 @@ export function ResultsSections() {
         </div>
       </div>
 
-      {/* Group 1: Executive Summary — verdict scorecard (accent background) */}
-      <ExecutiveSummary />
+      {/* Results — gated behind required fields */}
+      <ResultsGate>
+        <div className="space-y-10">
+          {/* Group 1: Executive Summary — verdict scorecard (accent background) */}
+          <ExecutiveSummary />
 
-      {/* Group 2: Feasibility — can you actually afford this? */}
-      <div className="space-y-8">
-        <ResultSection icon={Wallet} title="Upfront Capital Requirements" description="Cash needed on day one and where it comes from" accentColor="border-blue-400" iconColor="text-blue-500">
-          <UpfrontCapital />
-        </ResultSection>
+          {/* Group 2: Feasibility — can you actually afford this? */}
+          <div className="space-y-8">
+            <ResultSection icon={Wallet} title="Upfront Capital Requirements" description="Cash needed on day one and where it comes from" accentColor="border-blue-400" iconColor="text-blue-500">
+              <UpfrontCapital />
+            </ResultSection>
 
-        <ResultSection icon={DollarSign} title="Monthly Cash Flow" description="Year 1 income vs. expenses — can you afford this month to month?" accentColor="border-blue-400" iconColor="text-blue-500">
-          <MonthlyCashFlow />
-        </ResultSection>
-      </div>
-
-      {/* Group 3: Risk Signals */}
-      <div className="rounded-lg bg-red-50/40 p-5 dark:bg-red-950/20">
-        <ResultSection icon={AlertTriangle} title="Warnings & Risks" accentColor="border-red-400" iconColor="text-red-500">
-          <WarningsList />
-        </ResultSection>
-      </div>
-
-      {/* Group 4: Long-Range Projections */}
-      <div className="space-y-8 rounded-lg bg-muted/30 p-5">
-        <ResultSection icon={TrendingUp} title="Net Worth Over Time" description="Projected total net worth across all assets" accentColor="border-violet-400" iconColor="text-violet-500">
-          <NetWorthChart />
-          <div className="mt-6 border-t pt-6">
-            <NetWorthBreakdown />
+            <ResultSection icon={DollarSign} title="Monthly Cash Flow" description="Year 1 income vs. expenses — can you afford this month to month?" accentColor="border-blue-400" iconColor="text-blue-500">
+              <MonthlyCashFlow />
+            </ResultSection>
           </div>
-        </ResultSection>
 
-        <ResultSection icon={PiggyBank} title="Retirement Account Trajectory" description="IRA balance comparison — the cost of early withdrawal" accentColor="border-emerald-400" iconColor="text-emerald-500">
-          <IRATrajectoryChart />
-        </ResultSection>
+          {/* Group 3: Risk Signals */}
+          <div className="rounded-lg bg-red-50/40 p-5 dark:bg-red-950/20">
+            <ResultSection icon={AlertTriangle} title="Warnings & Risks" accentColor="border-red-400" iconColor="text-red-500">
+              <WarningsList />
+            </ResultSection>
+          </div>
 
-        <ResultSection icon={Layers} title="Net Worth Composition" description="Where your wealth is — cash, retirement, and home equity over time" accentColor="border-violet-400" iconColor="text-violet-500">
-          <NetWorthComposition />
-        </ResultSection>
+          {/* Group 4: Long-Range Projections */}
+          <div className="space-y-8 rounded-lg bg-muted/30 p-5">
+            <ResultSection icon={TrendingUp} title="Net Worth Over Time" description="Projected total net worth across all assets" accentColor="border-violet-400" iconColor="text-violet-500">
+              <NetWorthChart />
+              <div className="mt-6 border-t pt-6">
+                <NetWorthBreakdown />
+              </div>
+            </ResultSection>
 
-        <ResultSection icon={Table2} title="Year-by-Year Detail" description="Complete financial breakdown for each scenario" accentColor="border-violet-400" iconColor="text-violet-500">
-          <YearByYearTable />
-        </ResultSection>
-      </div>
+            <ResultSection icon={PiggyBank} title="Retirement Account Trajectory" description="IRA balance comparison — the cost of early withdrawal" accentColor="border-emerald-400" iconColor="text-emerald-500">
+              <IRATrajectoryChart />
+            </ResultSection>
 
-      {/* Group 5: Assumptions & Sources */}
-      <ResultSection icon={BookOpen} title="Assumptions & Sources" accentColor="border-slate-400" iconColor="text-slate-500">
-        <AssumptionsDisclosure />
-      </ResultSection>
+            <ResultSection icon={Layers} title="Net Worth Composition" description="Where your wealth is — cash, retirement, and home equity over time" accentColor="border-violet-400" iconColor="text-violet-500">
+              <NetWorthComposition />
+            </ResultSection>
+
+            <ResultSection icon={Table2} title="Year-by-Year Detail" description="Complete financial breakdown for each scenario" accentColor="border-violet-400" iconColor="text-violet-500">
+              <YearByYearTable />
+            </ResultSection>
+          </div>
+
+          {/* Group 5: Assumptions & Sources */}
+          <ResultSection icon={BookOpen} title="Assumptions & Sources" accentColor="border-slate-400" iconColor="text-slate-500">
+            <AssumptionsDisclosure />
+          </ResultSection>
+        </div>
+      </ResultsGate>
     </div>
   )
 }
