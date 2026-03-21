@@ -24,9 +24,12 @@ const ALL_SECTIONS = [
 ] as const
 
 interface InputAccordionProps {
-  /** Which sections to expand by default. Defaults to ['about-you']. */
+  /** Which sections to expand by default. Defaults to primary sections only. */
   defaultOpenSections?: string[]
 }
+
+/** Primary sections open by default — advanced-only sections (Retirement, Commute, Costs) start collapsed */
+const DEFAULT_OPEN_SECTIONS = ['about-you', 'current-home', 'new-home']
 
 /**
  * InputAccordion renders 6 collapsible sections for all scenario inputs.
@@ -34,7 +37,7 @@ interface InputAccordionProps {
  * open at once. Each section uses progressive disclosure — primary fields
  * are always visible when expanded, advanced fields are behind a toggle.
  */
-function InputAccordion({ defaultOpenSections = ['about-you'] }: InputAccordionProps) {
+function InputAccordion({ defaultOpenSections = DEFAULT_OPEN_SECTIONS }: InputAccordionProps) {
   const { currentHomeName, newHomeName } = useHomeNames()
 
   return (
@@ -144,4 +147,4 @@ function InputAccordion({ defaultOpenSections = ['about-you'] }: InputAccordionP
   )
 }
 
-export { InputAccordion, ALL_SECTIONS }
+export { InputAccordion, ALL_SECTIONS, DEFAULT_OPEN_SECTIONS }
