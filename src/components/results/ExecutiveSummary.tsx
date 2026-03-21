@@ -288,6 +288,7 @@ function ScenarioLegend({ scenarioLabels }: { scenarioLabels: ReturnType<typeof 
 export function ExecutiveSummary() {
   const { modelOutput } = useModelOutput()
   const formValues = useWatch<ScenarioInputs>()
+  const { currentHomeName, newHomeName } = useHomeNames()
 
   const verdict = useMemo(() => {
     if (!modelOutput) return null
@@ -305,7 +306,6 @@ export function ExecutiveSummary() {
   }
 
   const timeHorizon = (formValues as ScenarioInputs)?.projection?.timeHorizonYears ?? 10
-  const { currentHomeName, newHomeName } = useHomeNames()
   const scenarioLabels = buildScenarioLabels(currentHomeName, newHomeName)
 
   return (

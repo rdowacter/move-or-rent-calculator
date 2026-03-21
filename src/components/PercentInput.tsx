@@ -116,10 +116,11 @@ function PercentInputInner({
           value={localValue}
           onFocus={() => setIsFocused(true)}
           onBlur={() => {
-            setIsFocused(false)
-            // Normalize display on blur
+            // Normalize display on blur — set localValue BEFORE clearing
+            // isFocused to prevent the sync effect from restoring old values
             const trimmed = localValue.trim()
             if (trimmed === '') {
+              setLocalValue('')
               field.onChange(undefined)
             } else {
               const parsed = Number(trimmed)
@@ -128,6 +129,7 @@ function PercentInputInner({
                 field.onChange(parsed / PERCENT_DISPLAY_MULTIPLIER)
               }
             }
+            setIsFocused(false)
             field.onBlur()
           }}
           ref={field.ref}
