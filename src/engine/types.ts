@@ -87,7 +87,7 @@ export interface RetirementInputs {
   otherRetirementBalance: number
 }
 
-/** Current home (Kyle) inputs — used for baseline, sale in A, rental in B. */
+/** Current home inputs — used for baseline, sale in A, rental in B. */
 export interface CurrentHomeInputs {
   /** Current estimated market value. */
   homeValue: number
@@ -141,7 +141,7 @@ export interface CurrentHomeInputs {
   rentalIncomeDTICreditRate: number
 }
 
-/** New home (Austin) inputs. */
+/** New home inputs — purchase price, mortgage, and cost details for the target property. */
 export interface NewHomeInputs {
   /** Purchase price. */
   purchasePrice: number
@@ -150,12 +150,12 @@ export interface NewHomeInputs {
   /** Loan term in years. */
   loanTermYears: number
   /**
-   * Down payment percentage for Scenario A (sell Kyle, larger down payment).
+   * Down payment percentage for Scenario A (sell current home, larger down payment).
    * E.g. 0.20 for 20%.
    */
   downPaymentPercentScenarioA: number
   /**
-   * Down payment percentage for Scenario B (keep Kyle, smaller down payment).
+   * Down payment percentage for Scenario B (keep current home as rental, smaller down payment).
    * E.g. 0.10 for 10%.
    */
   downPaymentPercentScenarioB: number
@@ -177,7 +177,7 @@ export interface NewHomeInputs {
 
 /** Commute & lifestyle inputs. */
 export interface CommuteInputs {
-  /** Current round-trip commute distance in miles (Kyle to Austin). */
+  /** Current round-trip commute distance in miles. */
   currentRoundTripMiles: number
   /** Number of work days per year. */
   workDaysPerYear: number
@@ -185,7 +185,7 @@ export interface CommuteInputs {
   irsMileageRate: number
   /** Current monthly toll costs. */
   currentMonthlyTolls: number
-  /** New round-trip commute distance in miles (Austin to office). */
+  /** New round-trip commute distance in miles (after moving). */
   newRoundTripMiles: number
   /** New monthly toll costs. */
   newMonthlyTolls: number
@@ -282,11 +282,11 @@ export interface CashFlowBreakdown {
   // ---- Rental property (Scenario B only, all 0 for other scenarios) ----
   /** Monthly rental income (effective gross rent after vacancy). */
   rentalIncome: number
-  /** Monthly Kyle mortgage P&I. */
+  /** Monthly rental property mortgage P&I. */
   rentalMortgagePI: number
-  /** Monthly Kyle property tax. */
+  /** Monthly rental property tax. */
   rentalPropertyTax: number
-  /** Monthly Kyle landlord insurance. */
+  /** Monthly rental property landlord insurance. */
   rentalInsurance: number
   /** Monthly maintenance reserve. */
   rentalMaintenance: number
@@ -310,13 +310,13 @@ export interface YearlySnapshot {
   netWorth: number
   /** IRA / retirement account balance at end of this year. */
   iraBalance: number
-  /** Equity in the current (Kyle) home at end of year (value − mortgage balance). */
+  /** Equity in the current home at end of year (value − mortgage balance). */
   currentHomeEquity: number
-  /** Equity in the new (Austin) home at end of year. */
+  /** Equity in the new home at end of year. */
   newHomeEquity: number
-  /** Remaining mortgage balance on the current (Kyle) home. */
+  /** Remaining mortgage balance on the current home. */
   currentHomeMortgageBalance: number
-  /** Remaining mortgage balance on the new (Austin) home. */
+  /** Remaining mortgage balance on the new home. */
   newHomeMortgageBalance: number
   /** Net annual cash flow (income − all expenses − taxes − debt service). */
   annualCashFlow: number
@@ -566,7 +566,7 @@ export interface StressTestResult {
  * Complete output for a single scenario (Baseline, A, or B).
  */
 export interface ScenarioOutput {
-  /** Display name for this scenario (e.g. "Scenario B: Keep Kyle as Rental"). */
+  /** Display name for this scenario (e.g. "Scenario B: Keep Current Home as Rental, Buy New Home"). */
   name: string
   /** Year-by-year financial snapshots for the projection period. */
   yearlySnapshots: YearlySnapshot[]

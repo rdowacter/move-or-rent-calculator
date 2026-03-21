@@ -3,7 +3,7 @@ import { renderHook, act } from '@testing-library/react'
 import { useForm, FormProvider } from 'react-hook-form'
 import type { ReactNode } from 'react'
 import type { ScenarioInputs } from '@/engine/types'
-import { defaultValues } from '@/schemas/scenarioInputs'
+import { defaultValues, formDefaultValues, REQUIRED_FIELDS } from '@/schemas/scenarioInputs'
 import { useScenarioModel } from '../useScenarioModel'
 import {
   ScenarioModelProvider,
@@ -71,6 +71,47 @@ describe('useScenarioModel', () => {
 
     expect(result.current).toHaveProperty('isComputing')
     expect(typeof result.current.isComputing).toBe('boolean')
+  })
+
+  it('returns isReady, filledCount, and totalRequired when all fields are filled', async () => {
+    vi.useFakeTimers()
+    const { result } = renderHook(() => useScenarioModel(), {
+      wrapper: createFormWrapper(),
+    })
+
+    act(() => {
+      vi.runAllTimers()
+    })
+
+    // defaultValues has all fields populated, so isReady should be true
+    expect(result.current.isReady).toBe(true)
+    expect(result.current.filledCount).toBe(REQUIRED_FIELDS.length)
+    expect(result.current.totalRequired).toBe(REQUIRED_FIELDS.length)
+  })
+
+  it('returns modelOutput null and isReady false when required fields are missing', async () => {
+    vi.useFakeTimers()
+
+    // formDefaultValues has many required fields set to undefined,
+    // simulating a fresh form before the user fills anything in.
+    function IncompleteFormWrapper({ children }: { children: ReactNode }) {
+      const methods = useForm<ScenarioInputs>({
+        defaultValues: formDefaultValues as unknown as ScenarioInputs,
+      })
+      return <FormProvider {...methods}>{children}</FormProvider>
+    }
+
+    const { result } = renderHook(() => useScenarioModel(), {
+      wrapper: IncompleteFormWrapper,
+    })
+
+    act(() => {
+      vi.runAllTimers()
+    })
+
+    expect(result.current.isReady).toBe(false)
+    expect(result.current.modelOutput).toBeNull()
+    expect(result.current.filledCount).toBeLessThan(result.current.totalRequired)
   })
 
   it('produces yearlySnapshots arrays with length matching timeHorizonYears', async () => {

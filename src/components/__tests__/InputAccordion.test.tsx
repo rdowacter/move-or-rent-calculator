@@ -3,6 +3,7 @@ import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { describe, it, expect } from 'vitest'
 import { scenarioInputsSchema, defaultValues } from '@/schemas/scenarioInputs'
+import { DEFAULT_HOME_NAMES } from '@/engine/constants'
 import { InputAccordion, ALL_SECTIONS } from '../InputAccordion'
 
 /**
@@ -27,8 +28,9 @@ describe('InputAccordion', () => {
 
     expect(screen.getByText('About You')).toBeInTheDocument()
     expect(screen.getByText('Retirement')).toBeInTheDocument()
-    expect(screen.getByText('Current Home')).toBeInTheDocument()
-    expect(screen.getByText('New Home')).toBeInTheDocument()
+    // Use DEFAULT_HOME_NAMES so the test stays valid if default names change
+    expect(screen.getByText(DEFAULT_HOME_NAMES.currentHomeName)).toBeInTheDocument()
+    expect(screen.getByText(DEFAULT_HOME_NAMES.newHomeName)).toBeInTheDocument()
     expect(screen.getByText('Commute')).toBeInTheDocument()
     expect(screen.getByText('Costs & Assumptions')).toBeInTheDocument()
   })

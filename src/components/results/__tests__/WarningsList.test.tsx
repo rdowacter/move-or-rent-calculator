@@ -234,9 +234,11 @@ describe('WarningsList', () => {
 
     render(<WarningsList />)
 
-    // The scenario name should appear in the alert description
-    expect(screen.getByText(/Baseline: Stay in Current Home/)).toBeInTheDocument()
-    expect(screen.getByText(/Scenario B: Keep Current Home/)).toBeInTheDocument()
+    // The scenario name should appear as a heading — sourced from the model output
+    // rather than hardcoded, so tests stay valid if home names change.
+    const modelOutput = mockModelOutputValue.modelOutput!
+    expect(screen.getByText(modelOutput.baseline.name)).toBeInTheDocument()
+    expect(screen.getByText(modelOutput.scenarioB.name)).toBeInTheDocument()
   })
 
   it('renders warnings from real model output with default values', () => {

@@ -138,12 +138,12 @@ const newHomeInputsSchema = z.object({
   /** Loan term in years. */
   loanTermYears: z.number().int().min(1).max(40),
   /**
-   * Down payment percentage for Scenario A (sell Kyle, larger down payment).
+   * Down payment percentage for Scenario A (sell current home, larger down payment).
    * E.g. 0.20 for 20%.
    */
   downPaymentPercentScenarioA: rate(),
   /**
-   * Down payment percentage for Scenario B (keep Kyle, smaller down payment).
+   * Down payment percentage for Scenario B (keep current home as rental, smaller down payment).
    * E.g. 0.10 for 10%.
    */
   downPaymentPercentScenarioB: rate(),
@@ -164,7 +164,7 @@ const newHomeInputsSchema = z.object({
 })
 
 const commuteInputsSchema = z.object({
-  /** Current round-trip commute distance in miles (Kyle to Austin). */
+  /** Current round-trip commute distance in miles. */
   currentRoundTripMiles: z.number().min(0),
   /** Number of work days per year. */
   workDaysPerYear: z.number().int().min(0).max(366),
@@ -172,7 +172,7 @@ const commuteInputsSchema = z.object({
   irsMileageRate: z.number().min(0),
   /** Current monthly toll costs. */
   currentMonthlyTolls: currency(),
-  /** New round-trip commute distance in miles (Austin to office). */
+  /** New round-trip commute distance in miles (after moving). */
   newRoundTripMiles: z.number().min(0),
   /** New monthly toll costs. */
   newMonthlyTolls: currency(),
