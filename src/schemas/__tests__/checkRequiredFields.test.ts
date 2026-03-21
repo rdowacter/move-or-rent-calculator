@@ -47,7 +47,7 @@ describe('checkRequiredFields', () => {
   })
 
   it('counts null as missing', () => {
-    const values = structuredClone(defaultValues) as Record<string, unknown>
+    const values = structuredClone(defaultValues) as unknown as Record<string, unknown>
     ;(values.personal as Record<string, unknown>).annualGrossIncome = null
     const result = checkRequiredFields(values)
     expect(result.isReady).toBe(false)
