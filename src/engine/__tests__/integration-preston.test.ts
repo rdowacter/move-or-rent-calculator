@@ -25,12 +25,25 @@ import {
 } from '../constants'
 import type { ScenarioInputs, ModelOutput } from '../types'
 
+// Preston's actual values — defaults were generalized, so we override here
 const prestonInputs: ScenarioInputs = {
-  personal: DEFAULT_PERSONAL_INPUTS,
-  retirement: DEFAULT_RETIREMENT_INPUTS,
+  personal: { ...DEFAULT_PERSONAL_INPUTS, age: 37 },
+  retirement: {
+    ...DEFAULT_RETIREMENT_INPUTS,
+    iraBalance: 30_000,
+    annualIRAContributionScenarioA: 7_000,
+    iraWithdrawalAmountScenarioB: 30_000,
+  },
   currentHome: DEFAULT_CURRENT_HOME_INPUTS,
   newHome: DEFAULT_NEW_HOME_INPUTS,
-  commute: DEFAULT_COMMUTE_INPUTS,
+  commute: {
+    ...DEFAULT_COMMUTE_INPUTS,
+    currentRoundTripMiles: 44,
+    currentMonthlyTolls: 500,
+    newRoundTripMiles: 10,
+    commuteTimeSavedPerDayHours: 2.5,
+    landlordHoursPerMonth: 5,
+  },
   costs: DEFAULT_COST_INPUTS,
   projection: DEFAULT_PROJECTION_INPUTS,
   homeNames: DEFAULT_HOME_NAMES,

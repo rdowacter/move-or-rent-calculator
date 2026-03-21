@@ -280,13 +280,13 @@ export const PASSIVE_LOSS_PHASE_OUT_START = 100_000
 export const PASSIVE_LOSS_PHASE_OUT_END = 150_000
 
 // ---- Default Input Values -------------------------------------------------
-// These provide sensible starting values for the UI. They are based on the
-// specific scenario described in the project brief (Preston's situation)
-// and should be clearly labeled as defaults that the user can override.
+// These provide sensible starting values for the UI. Retirement and commute
+// defaults are zeroed out so they are non-factors unless the user opts in
+// via the advanced sections. Other defaults use generic reasonable values.
 
 /** Default values for PersonalInputs. */
 export const DEFAULT_PERSONAL_INPUTS = {
-  age: 37,
+  age: 30,
   annualGrossIncome: 100_000,
   annualSalaryGrowthRate: 0.03,
   filingStatus: 'single' as const,
@@ -298,12 +298,12 @@ export const DEFAULT_PERSONAL_INPUTS = {
 
 /** Default values for RetirementInputs. */
 export const DEFAULT_RETIREMENT_INPUTS = {
-  iraBalance: 30_000,
+  iraBalance: 0,
   iraType: 'traditional' as const,
   iraExpectedAnnualReturn: 0.07,
-  annualIRAContributionScenarioA: 7_000,
+  annualIRAContributionScenarioA: 0,
   annualIRAContributionScenarioB: 0,
-  iraWithdrawalAmountScenarioB: 30_000, // Default: full balance (matches iraBalance default)
+  iraWithdrawalAmountScenarioB: 0,
   hasEmployerMatch: false,
   employerMatchPercentage: 0.0,
   hasOtherRetirementSavings: false,
@@ -350,14 +350,14 @@ export const DEFAULT_NEW_HOME_INPUTS = {
 
 /** Default values for CommuteInputs. */
 export const DEFAULT_COMMUTE_INPUTS = {
-  currentRoundTripMiles: 44,
+  currentRoundTripMiles: 0,
   workDaysPerYear: 250,
   irsMileageRate: 0.725,
-  currentMonthlyTolls: 500,
-  newRoundTripMiles: 10,
+  currentMonthlyTolls: 0,
+  newRoundTripMiles: 0,
   newMonthlyTolls: 0,
-  commuteTimeSavedPerDayHours: 2.5,
-  landlordHoursPerMonth: 5,
+  commuteTimeSavedPerDayHours: 0,
+  landlordHoursPerMonth: 0,
 } satisfies Record<string, unknown>
 
 /** Default values for CostInputs. */
