@@ -3,7 +3,7 @@
 //
 // Renders three side-by-side stacked area charts (one per scenario) showing
 // how net worth is composed over time: liquid savings, IRA balance,
-// Kyle home equity, and Austin home equity.
+// current home equity, and new home equity.
 // ---------------------------------------------------------------------------
 
 import {
@@ -29,8 +29,8 @@ import type { YearlySnapshot } from '@/engine/types'
 const LAYER_COLORS = {
   liquidSavings: '#3b82f6',  // blue — cash and liquid savings
   ira: '#8b5cf6',            // violet — retirement accounts
-  kyleEquity: '#f59e0b',     // amber — current home (Kyle)
-  austinEquity: '#10b981',   // emerald — new home (Austin)
+  currentHomeEquity: '#f59e0b',  // amber — current home
+  newHomeEquity: '#10b981',     // emerald — new home
 } as const
 
 /** Shape of each data point fed to the stacked area chart. */
@@ -38,8 +38,8 @@ interface CompositionDataPoint {
   year: number
   liquidSavings: number
   ira: number
-  kyleEquity: number
-  austinEquity: number
+  currentHomeEquity: number
+  newHomeEquity: number
 }
 
 /**
@@ -64,8 +64,8 @@ function toCompositionData(
     year: s.year,
     liquidSavings: Math.max(0, deriveLiquidSavings(s)),
     ira: Math.max(0, s.iraBalance),
-    kyleEquity: Math.max(0, s.currentHomeEquity),
-    austinEquity: Math.max(0, s.newHomeEquity),
+    currentHomeEquity: Math.max(0, s.currentHomeEquity),
+    newHomeEquity: Math.max(0, s.newHomeEquity),
   }))
 }
 
@@ -145,20 +145,20 @@ function ScenarioCompositionChart({
           />
           <Area
             type="monotone"
-            dataKey="kyleEquity"
-            name="Kyle Equity"
+            dataKey="currentHomeEquity"
+            name="Current Home Equity"
             stackId="1"
-            stroke={LAYER_COLORS.kyleEquity}
-            fill={LAYER_COLORS.kyleEquity}
+            stroke={LAYER_COLORS.currentHomeEquity}
+            fill={LAYER_COLORS.currentHomeEquity}
             fillOpacity={0.7}
           />
           <Area
             type="monotone"
-            dataKey="austinEquity"
-            name="Austin Equity"
+            dataKey="newHomeEquity"
+            name="New Home Equity"
             stackId="1"
-            stroke={LAYER_COLORS.austinEquity}
-            fill={LAYER_COLORS.austinEquity}
+            stroke={LAYER_COLORS.newHomeEquity}
+            fill={LAYER_COLORS.newHomeEquity}
             fillOpacity={0.7}
           />
         </AreaChart>
@@ -199,8 +199,8 @@ export function NetWorthComposition() {
         {[
           { label: 'Liquid Savings', color: LAYER_COLORS.liquidSavings },
           { label: 'IRA Balance', color: LAYER_COLORS.ira },
-          { label: 'Kyle Equity', color: LAYER_COLORS.kyleEquity },
-          { label: 'Austin Equity', color: LAYER_COLORS.austinEquity },
+          { label: 'Current Home Equity', color: LAYER_COLORS.currentHomeEquity },
+          { label: 'New Home Equity', color: LAYER_COLORS.newHomeEquity },
         ].map(({ label, color }) => (
           <span key={label} className="flex items-center gap-1.5">
             <span

@@ -240,7 +240,7 @@ function RentalBreakdown({ breakdown, cashFlow }: { breakdown: CashFlowBreakdown
           <BreakdownSectionHeader title="Income" />
           <BreakdownLine label="Take-home pay" value={breakdown.takeHomePay} type="income" />
 
-          <BreakdownSectionHeader title="Housing (Austin)" />
+          <BreakdownSectionHeader title="Housing (New Home)" />
           <BreakdownLine label="Mortgage P&I" value={breakdown.mortgagePI} type="expense" />
           <BreakdownLine label="Property Tax" value={breakdown.propertyTax} type="expense" />
           <BreakdownLine label="Insurance" value={breakdown.insurance} type="expense" />
@@ -248,11 +248,11 @@ function RentalBreakdown({ breakdown, cashFlow }: { breakdown: CashFlowBreakdown
             <BreakdownLine label="PMI" value={breakdown.pmi} type="expense" />
           )}
 
-          <BreakdownSectionHeader title="Rental Property (Kyle)" />
+          <BreakdownSectionHeader title="Rental Property" />
           <BreakdownLine label="Rental Income" value={breakdown.rentalIncome} type="income" />
-          <BreakdownLine label="Kyle Mortgage" value={breakdown.rentalMortgagePI} type="expense" />
-          <BreakdownLine label="Kyle Property Tax" value={breakdown.rentalPropertyTax} type="expense" />
-          <BreakdownLine label="Kyle Insurance" value={breakdown.rentalInsurance} type="expense" />
+          <BreakdownLine label="Rental Mortgage" value={breakdown.rentalMortgagePI} type="expense" />
+          <BreakdownLine label="Rental Property Tax" value={breakdown.rentalPropertyTax} type="expense" />
+          <BreakdownLine label="Rental Insurance" value={breakdown.rentalInsurance} type="expense" />
           <BreakdownLine label="Maintenance" value={breakdown.rentalMaintenance} type="expense" />
           {breakdown.rentalManagementFee > 0 && (
             <BreakdownLine label="Management Fee" value={breakdown.rentalManagementFee} type="expense" />

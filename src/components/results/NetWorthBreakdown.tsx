@@ -2,7 +2,7 @@
 // NetWorthBreakdown.tsx — Table showing net worth composition by scenario
 //
 // Renders a breakdown table showing where each scenario's final-year net worth
-// comes from: IRA balance, Kyle home equity, and Austin home equity.
+// comes from: IRA balance, current home equity, and new home equity.
 // Displayed below the Net Worth Projection chart for detailed comparison.
 // ---------------------------------------------------------------------------
 
@@ -61,16 +61,16 @@ export function NetWorthBreakdown() {
       isBold: false,
     },
     {
-      label: 'Kyle Home Equity',
-      // Baseline keeps Kyle home; Scenario A sells it (no equity); Scenario B keeps as rental
+      label: 'Current Home Equity',
+      // Baseline keeps current home; Scenario A sells it (no equity); Scenario B keeps as rental
       baseline: formatCurrency(baselineFinal.currentHomeEquity),
       scenarioA: formatOrDash(scenarioAFinal.currentHomeEquity),
       scenarioB: formatCurrency(scenarioBFinal.currentHomeEquity),
       isBold: false,
     },
     {
-      label: 'Austin Home Equity',
-      // Baseline has no Austin home; Scenario A and B both buy Austin
+      label: 'New Home Equity',
+      // Baseline has no new home; Scenario A and B both buy new home
       baseline: formatOrDash(baselineFinal.newHomeEquity),
       scenarioA: formatCurrency(scenarioAFinal.newHomeEquity),
       scenarioB: formatCurrency(scenarioBFinal.newHomeEquity),

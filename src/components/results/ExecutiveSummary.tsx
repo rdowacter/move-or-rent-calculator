@@ -29,9 +29,9 @@ import { SCENARIO_COLORS } from '@/utils/scenarioColors'
 import { cn } from '@/lib/utils'
 
 const SCENARIO_LABELS = {
-  baseline: { short: 'Baseline', full: 'Stay in Kyle, keep the IRA, keep commuting' },
-  scenarioA: { short: 'Scenario A', full: 'Sell Kyle, buy Austin, keep IRA intact + contributing' },
-  scenarioB: { short: 'Scenario B', full: 'Keep Kyle as rental, withdraw IRA for down payment, buy Austin' },
+  baseline: { short: 'Baseline', full: 'Stay in current home, keep the IRA, keep commuting' },
+  scenarioA: { short: 'Scenario A', full: 'Sell current home, buy new home, keep IRA intact + contributing' },
+  scenarioB: { short: 'Scenario B', full: 'Keep current home as rental, withdraw IRA for down payment, buy new home' },
 } as const
 
 // ---------------------------------------------------------------------------

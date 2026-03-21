@@ -71,8 +71,8 @@ const COLUMNS = [
   { key: 'cashFlow', label: 'Monthly Cash Flow', align: 'right' as const },
   { key: 'liquid', label: 'Liquid Savings', align: 'right' as const },
   { key: 'ira', label: 'IRA Balance', align: 'right' as const },
-  { key: 'kyle', label: 'Kyle Equity', align: 'right' as const },
-  { key: 'austin', label: 'Austin Equity', align: 'right' as const },
+  { key: 'currentHome', label: 'Current Home Equity', align: 'right' as const },
+  { key: 'newHome', label: 'New Home Equity', align: 'right' as const },
   { key: 'netWorth', label: 'Net Worth', align: 'right' as const },
 ] as const
 
@@ -86,12 +86,12 @@ function ScenarioTable({
 }) {
   /**
    * Determine which equity columns show dashes vs values:
-   * - Baseline: no Austin equity (stays in Kyle only)
-   * - Scenario A: no Kyle equity (sells Kyle)
+   * - Baseline: no new home equity (stays in current home only)
+   * - Scenario A: no current home equity (sells current home)
    * - Scenario B: both equities present
    */
-  const showKyleEquityAsDash = scenarioKey === 'scenarioA'
-  const showAustinEquityAsDash = scenarioKey === 'baseline'
+  const showCurrentHomeEquityAsDash = scenarioKey === 'scenarioA'
+  const showNewHomeEquityAsDash = scenarioKey === 'baseline'
 
   return (
     <div className="overflow-x-auto">
@@ -126,12 +126,12 @@ function ScenarioTable({
               <CurrencyCell value={snapshot.monthlyCashFlowBestCase} />
               <CurrencyCell value={deriveLiquidSavings(snapshot)} />
               <CurrencyCell value={snapshot.iraBalance} />
-              {showKyleEquityAsDash ? (
+              {showCurrentHomeEquityAsDash ? (
                 <CurrencyOrDashCell value={snapshot.currentHomeEquity} />
               ) : (
                 <CurrencyCell value={snapshot.currentHomeEquity} />
               )}
-              {showAustinEquityAsDash ? (
+              {showNewHomeEquityAsDash ? (
                 <CurrencyOrDashCell value={snapshot.newHomeEquity} />
               ) : (
                 <CurrencyCell value={snapshot.newHomeEquity} />
