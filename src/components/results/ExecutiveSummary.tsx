@@ -32,9 +32,9 @@ import { cn } from '@/lib/utils'
 /** Build scenario labels from the user's home names. */
 function buildScenarioLabels(currentHomeName: string, newHomeName: string) {
   return {
-    baseline: { short: 'Baseline', full: `Stay in ${currentHomeName}, keep the IRA, keep commuting` },
-    scenarioA: { short: 'Scenario A', full: `Sell ${currentHomeName}, buy ${newHomeName}, keep IRA intact + contributing` },
-    scenarioB: { short: 'Scenario B', full: `Keep ${currentHomeName} as rental, withdraw IRA for down payment, buy ${newHomeName}` },
+    baseline: { short: 'Baseline', full: `Stay in ${currentHomeName}, keep retirement intact` },
+    scenarioA: { short: 'Scenario A', full: `Sell ${currentHomeName}, buy ${newHomeName}, keep retirement account intact` },
+    scenarioB: { short: 'Scenario B', full: `Keep ${currentHomeName} as rental, withdraw from retirement for down payment, buy ${newHomeName}` },
   }
 }
 
@@ -164,7 +164,7 @@ function ScorecardTable({
 
           {/* IRA */}
           <tr>
-            <td className="py-2 pr-2 text-muted-foreground">IRA at {timeHorizon}yr</td>
+            <td className="py-2 pr-2 text-muted-foreground">Retirement at {timeHorizon}yr</td>
             {rows.map((row, i) => (
               <td key={i} className="py-2 px-2 text-right font-medium whitespace-nowrap">
                 {formatCurrency(row.finalIRABalance)}
@@ -232,7 +232,7 @@ function ScorecardCards({
                 </Badge>
               </div>
 
-              <div className="text-muted-foreground">IRA at {timeHorizon}yr</div>
+              <div className="text-muted-foreground">Retirement at {timeHorizon}yr</div>
               <div className="text-right font-medium">{formatCurrency(row.finalIRABalance)}</div>
             </div>
           </div>

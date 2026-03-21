@@ -134,7 +134,7 @@ describe('UpfrontCapital', () => {
     // Scenario B withdraws IRA, so iraWithdrawalNetProceeds should be non-null
     expect(capitalB.iraWithdrawalNetProceeds).not.toBeNull()
     expect(
-      screen.getByText('IRA Withdrawal (after tax/penalty)')
+      screen.getByText('Retirement Withdrawal (after tax/penalty)')
     ).toBeInTheDocument()
   })
 
@@ -207,7 +207,7 @@ describe('UpfrontCapital', () => {
     expect(capitalA.iraWithdrawalNetProceeds).toBeNull()
 
     // Only one "IRA Withdrawal" line should appear (from Scenario B)
-    const iraLines = screen.getAllByText('IRA Withdrawal (after tax/penalty)')
+    const iraLines = screen.getAllByText('Retirement Withdrawal (after tax/penalty)')
     expect(iraLines).toHaveLength(1)
   })
 

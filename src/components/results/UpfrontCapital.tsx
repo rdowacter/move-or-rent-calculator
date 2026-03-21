@@ -108,7 +108,7 @@ function ScenarioCapitalCard({ scenario }: { scenario: ScenarioOutput }) {
               )}
               {capital.iraWithdrawalNetProceeds !== null && (
                 <LineItem
-                  label="IRA Withdrawal (after tax/penalty)"
+                  label="Retirement Withdrawal (after tax/penalty)"
                   value={formatCurrency(capital.iraWithdrawalNetProceeds)}
                 />
               )}

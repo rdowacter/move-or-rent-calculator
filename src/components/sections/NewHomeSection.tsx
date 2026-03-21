@@ -51,7 +51,7 @@ function NewHomeSection() {
           name="newHome.downPaymentPercentScenarioB"
           label="Down Payment % — Scenario B"
           control={control}
-          description="Down payment if keeping current home as rental (smaller, from savings + IRA)"
+          description="Down payment if keeping current home as rental (smaller, from savings + retirement)"
         />
       </div>
 

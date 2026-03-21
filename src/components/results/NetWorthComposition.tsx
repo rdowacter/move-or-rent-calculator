@@ -142,7 +142,7 @@ function ScenarioCompositionChart({
           <Area
             type="monotone"
             dataKey="ira"
-            name="IRA Balance"
+            name="Retirement Balance"
             stackId="1"
             stroke={LAYER_COLORS.ira}
             fill={LAYER_COLORS.ira}
@@ -204,7 +204,7 @@ export function NetWorthComposition() {
       <div className="flex flex-wrap items-center justify-center gap-4 pt-2 text-sm text-muted-foreground">
         {[
           { label: 'Liquid Savings', color: LAYER_COLORS.liquidSavings },
-          { label: 'IRA Balance', color: LAYER_COLORS.ira },
+          { label: 'Retirement Balance', color: LAYER_COLORS.ira },
           { label: `${currentHomeName} Equity`, color: LAYER_COLORS.currentHomeEquity },
           { label: `${newHomeName} Equity`, color: LAYER_COLORS.newHomeEquity },
         ].map(({ label, color }) => (

@@ -161,7 +161,7 @@ export function IRATrajectoryChart() {
 
       {/* Dollar gap callout — highlights the retirement cost of the early withdrawal */}
       <p className="mt-3 text-center text-sm text-muted-foreground">
-        Scenario A IRA is {formatCurrency(Math.abs(gap))} higher at year{' '}
+        Scenario A retirement balance is {formatCurrency(Math.abs(gap))} higher at year{' '}
         {finalYear}
       </p>
     </div>

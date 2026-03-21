@@ -162,7 +162,7 @@ export function YearByYearTable() {
     { key: 'income', label: 'Income', align: 'right' },
     { key: 'cashFlow', label: 'Monthly Cash Flow', align: 'right' },
     { key: 'liquid', label: 'Liquid Savings', align: 'right' },
-    { key: 'ira', label: 'IRA Balance', align: 'right' },
+    { key: 'ira', label: 'Retirement Balance', align: 'right' },
     { key: 'currentHome', label: `${currentHomeName} Equity`, align: 'right' },
     { key: 'newHome', label: `${newHomeName} Equity`, align: 'right' },
     { key: 'netWorth', label: 'Net Worth', align: 'right' },

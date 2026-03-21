@@ -56,8 +56,8 @@ describe('InputAccordion', () => {
       </TestWrapper>
     )
 
-    expect(screen.getByText('IRA Balance')).toBeInTheDocument()
-    expect(screen.getByText('IRA Type')).toBeInTheDocument()
+    expect(screen.getByText('Retirement Balance')).toBeInTheDocument()
+    expect(screen.getByText('Account Type')).toBeInTheDocument()
     expect(screen.getByText('Annual Contribution — Scenario A')).toBeInTheDocument()
     expect(screen.getByText('Annual Contribution — Scenario B')).toBeInTheDocument()
   })
@@ -108,7 +108,7 @@ describe('InputAccordion', () => {
 
     // Both sections should have their primary fields visible
     expect(screen.getByText('Annual Gross Income')).toBeInTheDocument()
-    expect(screen.getByText('IRA Balance')).toBeInTheDocument()
+    expect(screen.getByText('Retirement Balance')).toBeInTheDocument()
   })
 
   it('exports ALL_SECTIONS constant with all 6 section values', () => {

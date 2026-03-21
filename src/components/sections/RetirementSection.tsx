@@ -33,13 +33,13 @@ function RetirementSection() {
       <div className="space-y-3">
         <CurrencyInput
           name="retirement.iraBalance"
-          label="IRA Balance"
+          label="Retirement Balance"
           control={control}
-          description="Current balance of IRA account"
+          description="Current balance of retirement account (401k/IRA)"
         />
 
         <div className="space-y-1.5">
-          <Label htmlFor="retirement.iraType">IRA Type</Label>
+          <Label htmlFor="retirement.iraType">Account Type</Label>
           <Controller
             name="retirement.iraType"
             control={control}
@@ -49,7 +49,7 @@ function RetirementSection() {
                 onValueChange={(value) => field.onChange(value)}
               >
                 <SelectTrigger id="retirement.iraType" className="w-full">
-                  <SelectValue placeholder="Select IRA type" />
+                  <SelectValue placeholder="Select account type" />
                 </SelectTrigger>
                 <SelectContent>
                   {IRA_TYPE_OPTIONS.map((option) => (
@@ -68,9 +68,9 @@ function RetirementSection() {
 
         <CurrencyInput
           name="retirement.iraWithdrawalAmountScenarioB"
-          label="IRA Withdrawal Amount — Scenario B"
+          label="Withdrawal Amount — Scenario B"
           control={control}
-          description="How much to withdraw from IRA for down payment. Set to full balance for complete withdrawal."
+          description="How much to withdraw from retirement account for down payment. Set to full balance for complete withdrawal."
         />
       </div>
 
@@ -81,14 +81,14 @@ function RetirementSection() {
           name="retirement.annualIRAContributionScenarioA"
           label="Annual Contribution — Scenario A"
           control={control}
-          description="Yearly IRA contribution if you sell current home and keep IRA intact"
+          description="Yearly retirement contribution if you sell current home and keep retirement intact"
         />
 
         <CurrencyInput
           name="retirement.annualIRAContributionScenarioB"
           label="Annual Contribution — Scenario B"
           control={control}
-          description="Yearly IRA contribution if you keep current home as rental and withdraw IRA"
+          description="Yearly retirement contribution if you keep current home as rental and withdraw from retirement"
         />
       </div>
 
@@ -99,7 +99,7 @@ function RetirementSection() {
           name="retirement.iraExpectedAnnualReturn"
           label="Expected Annual Return"
           control={control}
-          description="Average annual return on IRA investments (e.g. 7%)"
+          description="Average annual return on retirement investments (e.g. 7%)"
         />
 
         <div className="space-y-1.5">

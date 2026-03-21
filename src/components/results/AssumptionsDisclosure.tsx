@@ -34,11 +34,11 @@ const ASSUMPTION_GROUPS: AssumptionGroup[] = [
         source: 'IRS Rev. Proc. 2023-34',
       },
       {
-        label: 'Early withdrawal penalty: 10% on IRA distributions before age 59.5',
+        label: 'Early withdrawal penalty: 10% on retirement account distributions before age 59.5',
         source: 'IRC \u00A772(t)',
       },
       {
-        label: 'IRA contribution limit: $7,000/year under 50',
+        label: 'Retirement contribution limit: $7,000/year under 50',
         source: 'IRC \u00A7219(b)',
       },
       {

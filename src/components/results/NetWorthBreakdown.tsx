@@ -56,7 +56,7 @@ export function NetWorthBreakdown() {
 
   const rows = [
     {
-      label: 'IRA Balance',
+      label: 'Retirement Balance',
       baseline: formatCurrency(baselineFinal.iraBalance),
       scenarioA: formatCurrency(scenarioAFinal.iraBalance),
       scenarioB: formatCurrency(scenarioBFinal.iraBalance),

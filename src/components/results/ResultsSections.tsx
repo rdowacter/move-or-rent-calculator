@@ -104,7 +104,7 @@ export function ResultsSections() {
               </div>
             </ResultSection>
 
-            <ResultSection icon={PiggyBank} title="Retirement Account Trajectory" description="IRA balance comparison — the cost of early withdrawal" accentColor="border-emerald-400" iconColor="text-emerald-500">
+            <ResultSection icon={PiggyBank} title="Retirement Account Trajectory" description="Retirement balance comparison across scenarios" accentColor="border-emerald-400" iconColor="text-emerald-500">
               <IRATrajectoryChart />
             </ResultSection>
 

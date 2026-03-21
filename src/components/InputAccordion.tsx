@@ -67,7 +67,7 @@ function InputAccordion({ defaultOpenSections = DEFAULT_OPEN_SECTIONS }: InputAc
             </div>
             <div className="text-left">
               <div className="text-sm font-semibold">Retirement</div>
-              <div className="text-xs font-normal text-muted-foreground">IRA balance, withdrawal, contributions</div>
+              <div className="text-xs font-normal text-muted-foreground">Retirement balance, withdrawal, contributions</div>
             </div>
           </div>
         </AccordionTrigger>
