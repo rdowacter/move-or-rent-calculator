@@ -56,10 +56,9 @@ describe('InputAccordion', () => {
       </TestWrapper>
     )
 
-    expect(screen.getByText('Retirement Balance')).toBeInTheDocument()
-    expect(screen.getByText('Account Type')).toBeInTheDocument()
-    expect(screen.getByText('Annual Contribution — Scenario A')).toBeInTheDocument()
-    expect(screen.getByText('Annual Contribution — Scenario B')).toBeInTheDocument()
+    expect(screen.getByText('Total Retirement Balance')).toBeInTheDocument()
+    expect(screen.getByText('Annual Contribution')).toBeInTheDocument()
+    expect(screen.getByText('Expected Annual Return')).toBeInTheDocument()
   })
 
   it('renders "Current Home" primary fields when section is open', () => {
@@ -110,7 +109,7 @@ describe('InputAccordion', () => {
 
     // Both sections should have their primary fields visible
     expect(screen.getByText('Annual Gross Income')).toBeInTheDocument()
-    expect(screen.getByText('Retirement Balance')).toBeInTheDocument()
+    expect(screen.getByText('Total Retirement Balance')).toBeInTheDocument()
   })
 
   it('exports ALL_SECTIONS constant with all 6 section values', () => {

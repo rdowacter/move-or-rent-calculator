@@ -74,7 +74,13 @@ export function useScenarioModel(): UseScenarioModelResult {
     // crash the entire page.
     const safeRunModel = () => {
       try {
-        return runModel(formValues as ScenarioInputs)
+        const inputs = formValues as ScenarioInputs
+        // The UI shows a single "Annual Contribution" field mapped to Scenario A.
+        // Sync it to Scenario B so both scenarios use the same contribution rate
+        // (the withdrawal field is hidden, so separate contributions don't apply).
+        inputs.retirement.annualIRAContributionScenarioB =
+          inputs.retirement.annualIRAContributionScenarioA
+        return runModel(inputs)
       } catch {
         return null
       }
