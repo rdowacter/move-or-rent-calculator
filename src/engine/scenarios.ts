@@ -1215,7 +1215,7 @@ function generateScenarioBWarnings(
     warnings.push({
       category: 'lending',
       severity: 'critical',
-      message: `With two mortgages, your DTI ratio is ${(dtiResult.backEndDTI * 100).toFixed(1)}% — above the 43% maximum. Most lenders will not approve the Austin mortgage. This is an estimate — lenders calculate DTI using their own methods and may reach a different result.`,
+      message: `With two mortgages, your DTI ratio is ${(dtiResult.backEndDTI * 100).toFixed(1)}% — above the 43% maximum. Most lenders will not approve the ${inputs.homeNames.newHomeName} mortgage. This is an estimate — lenders calculate DTI using their own methods and may reach a different result.`,
     })
   } else if (dtiResult.backEndDTI > DTI_BACK_END_TARGET) {
     warnings.push({
@@ -1294,13 +1294,13 @@ function generateScenarioBWarnings(
     warnings.push({
       category: 'landlord',
       severity: 'info',
-      message: `During a vacancy, you'd pay both mortgages from salary alone — an extra $${Math.round(kyleMonthlyMortgagePayment).toLocaleString()}/mo on top of the Austin mortgage until you find a tenant.`,
+      message: `During a vacancy, you'd pay both mortgages from salary alone — an extra $${Math.round(kyleMonthlyMortgagePayment).toLocaleString()}/mo on top of the ${inputs.homeNames.newHomeName} mortgage until you find a tenant.`,
     })
 
     warnings.push({
       category: 'landlord',
       severity: 'info',
-      message: `As a landlord, you're responsible for all repairs on the Kyle property — a new HVAC ($5-8K), roof ($8-15K), or plumbing emergency ($2-5K) comes out of your pocket. Your maintenance reserve may not cover a major repair in the year it occurs.`,
+      message: `As a landlord, you're responsible for all repairs on the ${inputs.homeNames.currentHomeName} property — a new HVAC ($5-8K), roof ($8-15K), or plumbing emergency ($2-5K) comes out of your pocket. Your maintenance reserve may not cover a major repair in the year it occurs.`,
     })
   }
 
