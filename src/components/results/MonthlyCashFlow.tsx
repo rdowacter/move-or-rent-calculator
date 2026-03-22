@@ -403,20 +403,27 @@ export function MonthlyCashFlow() {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-      <SimpleScenarioCard
-        scenario={modelOutput.baseline}
-        colorKey="baseline"
-      />
-      <SimpleScenarioCard
-        scenario={modelOutput.scenarioA}
-        colorKey="scenarioA"
-      />
-      <RentalScenarioCard
-        scenario={modelOutput.scenarioB}
-        currentHomeName={currentHomeName}
-        newHomeName={newHomeName}
-      />
-    </div>
+    <>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <SimpleScenarioCard
+          scenario={modelOutput.baseline}
+          colorKey="baseline"
+        />
+        <SimpleScenarioCard
+          scenario={modelOutput.scenarioA}
+          colorKey="scenarioA"
+        />
+        <RentalScenarioCard
+          scenario={modelOutput.scenarioB}
+          currentHomeName={currentHomeName}
+          newHomeName={newHomeName}
+        />
+      </div>
+      <p className="text-xs text-muted-foreground mt-3">
+        Monthly cash flow estimates are projections, not guarantees. Actual expenses vary month
+        to month. The worst-case scenario shows what happens with zero rental income — a real
+        possibility in any given month.
+      </p>
+    </>
   )
 }

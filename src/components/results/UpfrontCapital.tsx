@@ -165,6 +165,11 @@ export function UpfrontCapital() {
         <ScenarioCapitalCard scenario={modelOutput.scenarioA} />
         <ScenarioCapitalCard scenario={modelOutput.scenarioB} />
       </div>
+      <p className="text-xs text-muted-foreground mt-3">
+        Closing cost and selling cost estimates use percentage-based approximations. Actual costs
+        vary by market, lender, and negotiation. Get written estimates from your lender and title
+        company before committing.
+      </p>
     </section>
   )
 }

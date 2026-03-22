@@ -151,6 +151,10 @@ export function NetWorthChart() {
           />
         </LineChart>
       </ResponsiveContainer>
+      <p className="text-xs text-muted-foreground mt-3 text-center">
+        These projections assume constant annual appreciation rates and investment returns. Actual
+        results will vary — home values, rents, and investment returns fluctuate and can decline significantly.
+      </p>
     </div>
   )
 }

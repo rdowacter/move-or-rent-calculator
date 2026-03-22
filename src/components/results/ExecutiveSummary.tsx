@@ -339,6 +339,10 @@ export function ExecutiveSummary() {
 
       {/* Scenario Legend */}
       <ScenarioLegend scenarioLabels={scenarioLabels} />
+      <p className="text-xs text-muted-foreground mt-3">
+        This summary reflects the assumptions and inputs you provided. It is not a recommendation.
+        Review the full analysis and consult a financial professional before making your decision.
+      </p>
     </div>
   )
 }

@@ -164,6 +164,10 @@ export function IRATrajectoryChart() {
         Scenario A retirement balance is {formatCurrency(Math.abs(gap))} higher at year{' '}
         {finalYear}
       </p>
+      <p className="mt-1 text-center text-xs text-muted-foreground">
+        Retirement projections assume a constant annual return. Actual investment returns vary
+        each year and can be negative. The gap shown grows over time due to compound growth.
+      </p>
     </div>
   )
 }

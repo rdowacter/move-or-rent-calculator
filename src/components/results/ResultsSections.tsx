@@ -74,6 +74,13 @@ export function ResultsSections() {
       {/* Results — gated behind required fields */}
       <ResultsGate>
         <div className="space-y-10">
+          {/* Results disclaimer — frames all output as estimates */}
+          <p className="text-xs text-muted-foreground text-center italic">
+            The results below are estimates based on your inputs and our financial model.
+            They are not predictions or guarantees. All assumptions are adjustable — change
+            any input to see how it affects the outcome.
+          </p>
+
           {/* Group 1: Executive Summary — verdict scorecard (accent background) */}
           <ExecutiveSummary />
 
