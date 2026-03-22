@@ -1240,7 +1240,7 @@ function generateScenarioBWarnings(
     warnings.push({
       category: 'liquidity',
       severity: 'critical',
-      message: `You're $${Math.round(Math.abs(upfrontCapital.surplus)).toLocaleString()} short of the cash needed. The retirement withdrawal after taxes and penalties doesn't cover the down payment and closing costs. Get written estimates from your lender and title company for exact figures.`,
+      message: `You're $${Math.round(Math.abs(upfrontCapital.surplus)).toLocaleString()} short of the cash needed for the down payment and closing costs. You'd need to save more or increase your down payment sources before this scenario is feasible.`,
       dollarImpact: Math.abs(upfrontCapital.surplus),
     })
   }
@@ -1250,17 +1250,18 @@ function generateScenarioBWarnings(
     Math.max(0, upfrontCapital.surplus),
     year1.monthlyCashFlowBestCase
   )
+  const postClosingCash = Math.max(0, upfrontCapital.surplus)
   if (reserveRunway < 3) {
     warnings.push({
       category: 'liquidity',
       severity: 'critical',
-      message: `After closing, you'd have less than ${Math.ceil(reserveRunway)} months of savings. With two properties, any repair, vacancy, or emergency would require borrowing or credit cards.`,
+      message: `After closing, you'd have $${Math.round(postClosingCash).toLocaleString()} in savings. That's not enough for an emergency fund, let alone a major repair or vacancy on a rental property.`,
     })
   } else if (reserveRunway < 6) {
     warnings.push({
       category: 'liquidity',
       severity: 'warning',
-      message: `After closing, you'd have about ${Math.round(reserveRunway)} months of savings. With two properties to maintain, financial advisors recommend at least 6 months.`,
+      message: `After closing, you'd have $${Math.round(postClosingCash).toLocaleString()} in savings — about ${Math.round(reserveRunway)} months of expenses. Financial advisors recommend at least 6 months, especially when managing two properties.`,
     })
   }
 
