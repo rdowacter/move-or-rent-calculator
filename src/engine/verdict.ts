@@ -828,9 +828,14 @@ function buildGuardrailCallout(
   }
 
   // Guardrail 2: Winner has zero IRA balance at projection end
+  // Only fire if the user actually entered retirement data — with defaults all
+  // zeroed out, this guardrail would always trigger and be meaningless.
+  const retirementEngaged = inputs.retirement.iraBalance > 0
+    || inputs.retirement.annualIRAContributionScenarioA > 0
+    || inputs.retirement.iraWithdrawalAmountScenarioB > 0
   const winner = rows.find(r => r.isWinner)
-  if (winner && winner.finalIRABalance === 0) {
-    return `The recommended scenario leaves your IRA account at $0 by age ${endAge} based on current contribution plans. This doesn't account for future contributions you may start, employer retirement plans, or other investment accounts — but it means you'd be rebuilding retirement savings from scratch.`
+  if (retirementEngaged && winner && winner.finalIRABalance === 0) {
+    return `The recommended scenario leaves your retirement account at $0 by age ${endAge} based on current contribution plans. This doesn't account for future contributions you may start, employer retirement plans, or other investment accounts — but it means you'd be rebuilding retirement savings from scratch.`
   }
 
   // Guardrail 3: All scenarios produce less net worth than current position
