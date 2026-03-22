@@ -21,6 +21,11 @@ interface AssumptionGroup {
   items: { label: string; source: string }[]
 }
 
+interface DisclosureGroup {
+  title: string
+  paragraphs: string[]
+}
+
 const ASSUMPTION_GROUPS: AssumptionGroup[] = [
   {
     title: 'Tax Rules (2024 IRS)',
@@ -99,6 +104,49 @@ const ASSUMPTION_GROUPS: AssumptionGroup[] = [
   },
 ]
 
+const DISCLOSURE_GROUPS: DisclosureGroup[] = [
+  {
+    title: 'About Our Tax Estimates',
+    paragraphs: [
+      'Our tax calculations use 2024 federal income tax brackets published by the IRS (Revenue Procedure 2023-34). We calculate taxes using the marginal bracket method — each dollar of income is taxed only at the rate for the bracket it falls into, not a flat rate.',
+      'What we include: Federal income tax on wages and IRA withdrawals, the 10% early withdrawal penalty for traditional IRA distributions before age 59.5, standard deduction, long-term capital gains rates (0%/15%/20%), depreciation recapture at 25%, and passive activity loss rules with AGI phase-out.',
+      'What we do not include: State income taxes beyond a flat rate you enter, Alternative Minimum Tax (AMT), Net Investment Income Tax (3.8%), itemized deductions, tax credits, Qualified Business Income deductions, and future changes to tax law.',
+    ],
+  },
+  {
+    title: 'About Our Rental Income Projections',
+    paragraphs: [
+      'Rental income projections are based on the monthly rent and vacancy rate you enter. We reduce annual rental income by the vacancy percentage to approximate months without a paying tenant.',
+      'What we include: Gross rent, vacancy reduction, property management fees, annual maintenance reserve, landlord insurance premium increase, tenant turnover costs, and annual rent growth.',
+      'What we do not include: Tenant screening costs, legal fees for lease disputes or evictions (which can cost $3,000–$10,000+), property damage beyond normal wear, HOA special assessments, or market-driven rent decreases.',
+    ],
+  },
+  {
+    title: 'About Our Home Value Projections',
+    paragraphs: [
+      'We project future home values using a steady annual appreciation rate that you set. This rate applies uniformly to every year of the projection.',
+      'Home values fluctuate based on local supply and demand, interest rates, economic cycles, and neighborhood-specific factors. During 2008–2011, many US markets experienced 20–40% price declines.',
+      'The net worth projections are highly sensitive to the appreciation rate you choose. A 1% difference in annual appreciation can change the 20-year outcome by $50,000–$100,000 or more.',
+    ],
+  },
+  {
+    title: 'About Our Retirement Account Modeling',
+    paragraphs: [
+      'We model IRA growth using a steady annual return rate that you set. Contributions are added annually and compound at this rate over your selected time horizon.',
+      'What we include: Current IRA balance, annual contributions, compound growth, early withdrawal penalty (10% before age 59.5), and income tax on traditional IRA withdrawals.',
+      'What we do not include: Roth IRA tax-free withdrawal rules, Required Minimum Distributions (RMDs), catch-up contributions for individuals over 50, exceptions to the early withdrawal penalty, or investment-specific risk profiles.',
+    ],
+  },
+  {
+    title: 'How We Calculate Affordability',
+    paragraphs: [
+      'We calculate monthly affordability by comparing your take-home income against all housing costs, living expenses, and debt payments in each scenario.',
+      'The "bad month" scenario shows what your cash flow looks like when the rental property earns zero income — carrying both mortgages on your salary alone. If this number is negative, you would need to draw from savings every month the property is vacant.',
+      'Our DTI estimate uses standard Fannie Mae guidelines and credits rental income at 75%. Your lender may use different calculations. A DTI above 43% may disqualify you from a Qualified Mortgage.',
+    ],
+  },
+]
+
 export function AssumptionsDisclosure() {
   const [open, setOpen] = useState(false)
 
@@ -135,9 +183,25 @@ export function AssumptionsDisclosure() {
               </ul>
             </div>
           ))}
+          {/* Section-level disclosures */}
+          {DISCLOSURE_GROUPS.map((group) => (
+            <div key={group.title}>
+              <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {group.title}
+              </h4>
+              <div className="space-y-2">
+                {group.paragraphs.map((paragraph, i) => (
+                  <p key={i} className="text-xs text-muted-foreground">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </div>
+          ))}
           <p className="text-xs text-muted-foreground pt-2 border-t">
-            All tax rules reflect 2024 IRS schedules. Actual rates, brackets, and limits
-            may change with future legislation. Consult a CPA for personalized tax advice.
+            All tax rules reflect 2024 IRS schedules. Actual rates, brackets, and limits may change with
+            future legislation. This tool does not provide financial, tax, investment, or legal advice.
+            Consult a CPA or financial advisor for guidance specific to your situation.
           </p>
         </div>
       </CollapsibleContent>
