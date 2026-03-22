@@ -1147,13 +1147,13 @@ function generateScenarioAWarnings(
     warnings.push({
       category: 'lending',
       severity: 'critical',
-      message: `Your DTI ratio is ${(dtiResult.backEndDTI * 100).toFixed(1)}% — above the 43% maximum for a qualified mortgage. Most lenders will not approve this loan.`,
+      message: `Your DTI ratio is ${(dtiResult.backEndDTI * 100).toFixed(1)}% — above the 43% maximum for a qualified mortgage. Most lenders will not approve this loan. This is an estimate — lenders calculate DTI using their own methods and may reach a different result.`,
     })
   } else if (dtiResult.backEndDTI > DTI_BACK_END_TARGET) {
     warnings.push({
       category: 'lending',
       severity: 'warning',
-      message: `Your DTI ratio is ${(dtiResult.backEndDTI * 100).toFixed(1)}%, above the 36% conventional target. You may face higher interest rates or need a larger down payment.`,
+      message: `Your DTI ratio is ${(dtiResult.backEndDTI * 100).toFixed(1)}%, above the 36% conventional target. You may face higher interest rates or need a larger down payment. This is an estimate based on general lending guidelines.`,
     })
   }
 
@@ -1172,7 +1172,7 @@ function generateScenarioAWarnings(
     warnings.push({
       category: 'liquidity',
       severity: 'critical',
-      message: `You're $${Math.round(Math.abs(upfrontCapital.surplus)).toLocaleString()} short of the cash needed to execute this plan. You'd need additional savings, a gift, or a loan to close.`,
+      message: `You're $${Math.round(Math.abs(upfrontCapital.surplus)).toLocaleString()} short of the cash needed to execute this plan. You'd need additional savings, a gift, or a loan to close. Get written estimates from your lender and title company for exact figures.`,
       dollarImpact: Math.abs(upfrontCapital.surplus),
     })
   }
@@ -1215,13 +1215,13 @@ function generateScenarioBWarnings(
     warnings.push({
       category: 'lending',
       severity: 'critical',
-      message: `With two mortgages, your DTI ratio is ${(dtiResult.backEndDTI * 100).toFixed(1)}% — above the 43% maximum. Most lenders will not approve the Austin mortgage.`,
+      message: `With two mortgages, your DTI ratio is ${(dtiResult.backEndDTI * 100).toFixed(1)}% — above the 43% maximum. Most lenders will not approve the Austin mortgage. This is an estimate — lenders calculate DTI using their own methods and may reach a different result.`,
     })
   } else if (dtiResult.backEndDTI > DTI_BACK_END_TARGET) {
     warnings.push({
       category: 'lending',
       severity: 'warning',
-      message: `With two mortgages, your DTI ratio is ${(dtiResult.backEndDTI * 100).toFixed(1)}%, above the 36% target. You may face higher rates or stricter requirements.`,
+      message: `With two mortgages, your DTI ratio is ${(dtiResult.backEndDTI * 100).toFixed(1)}%, above the 36% target. You may face higher rates or stricter requirements. This is an estimate based on general lending guidelines.`,
     })
   }
 
@@ -1240,7 +1240,7 @@ function generateScenarioBWarnings(
     warnings.push({
       category: 'liquidity',
       severity: 'critical',
-      message: `You're $${Math.round(Math.abs(upfrontCapital.surplus)).toLocaleString()} short of the cash needed. The retirement withdrawal after taxes and penalties doesn't cover the down payment and closing costs.`,
+      message: `You're $${Math.round(Math.abs(upfrontCapital.surplus)).toLocaleString()} short of the cash needed. The retirement withdrawal after taxes and penalties doesn't cover the down payment and closing costs. Get written estimates from your lender and title company for exact figures.`,
       dollarImpact: Math.abs(upfrontCapital.surplus),
     })
   }
@@ -1275,14 +1275,14 @@ function generateScenarioBWarnings(
       warnings.push({
         category: 'retirement',
         severity: 'warning',
-        message: `Withdrawing your entire retirement account balance at age ${inputs.personal.age} costs $${Math.round(iraWithdrawalTaxCost).toLocaleString()} in taxes and penalties, leaving this retirement account at $0. This doesn't include other retirement accounts or future contributions you may start.`,
+        message: `Withdrawing your entire retirement account balance at age ${inputs.personal.age} costs $${Math.round(iraWithdrawalTaxCost).toLocaleString()} in taxes and penalties, leaving this retirement account at $0. This doesn't include other retirement accounts or future contributions you may start. Certain exceptions to the 10% penalty may apply (including up to $10,000 for a first-time home purchase). Consult a tax professional to determine if any exception applies to you.`,
         dollarImpact: iraWithdrawalTaxCost,
       })
     } else {
       warnings.push({
         category: 'retirement',
         severity: 'warning',
-        message: `Withdrawing $${Math.round(withdrawalAmount).toLocaleString()} from your retirement account at age ${inputs.personal.age} costs $${Math.round(iraWithdrawalTaxCost).toLocaleString()} in taxes and penalties, leaving $${Math.round(remainingIRA).toLocaleString()} invested.`,
+        message: `Withdrawing $${Math.round(withdrawalAmount).toLocaleString()} from your retirement account at age ${inputs.personal.age} costs $${Math.round(iraWithdrawalTaxCost).toLocaleString()} in taxes and penalties, leaving $${Math.round(remainingIRA).toLocaleString()} invested. Certain exceptions to the 10% penalty may apply (including up to $10,000 for a first-time home purchase). Consult a tax professional to determine if any exception applies to you.`,
         dollarImpact: iraWithdrawalTaxCost,
       })
     }
@@ -1300,7 +1300,7 @@ function generateScenarioBWarnings(
     warnings.push({
       category: 'landlord',
       severity: 'info',
-      message: `As a landlord, you're responsible for all repairs on the Kyle property — a new HVAC ($5-8K), roof ($8-15K), or plumbing emergency ($2-5K) comes out of your pocket.`,
+      message: `As a landlord, you're responsible for all repairs on the Kyle property — a new HVAC ($5-8K), roof ($8-15K), or plumbing emergency ($2-5K) comes out of your pocket. Your maintenance reserve may not cover a major repair in the year it occurs.`,
     })
   }
 
