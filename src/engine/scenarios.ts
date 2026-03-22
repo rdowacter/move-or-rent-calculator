@@ -4,9 +4,9 @@
 // The heart of the financial model. Ties all Phase 1 and Phase 2 engine
 // modules together into year-by-year financial projections for three scenarios:
 //
-//   Baseline: Stay in Kyle, keep IRA, keep commuting
-//   Scenario A: Sell Kyle, buy Austin, keep IRA intact + contributing
-//   Scenario B: Keep Kyle as rental, withdraw IRA, buy Austin
+//   Baseline: Stay in current home, keep IRA, keep commuting
+//   Scenario A: Sell current home, buy new home, keep IRA intact + contributing
+//   Scenario B: Keep current home as rental, withdraw IRA, buy new home
 //
 // All functions are pure — zero React, zero DOM, zero side effects.
 // ---------------------------------------------------------------------------
@@ -170,10 +170,10 @@ export function stepAppreciationYear(
 // ---------------------------------------------------------------------------
 
 /**
- * Projects the Baseline scenario: stay in Kyle, keep IRA, keep commuting.
+ * Projects the Baseline scenario: stay in current home, keep IRA, keep commuting.
  *
  * The simplest scenario — no sale, no rental, no IRA withdrawal. The user
- * continues their current trajectory: pay down Kyle mortgage, grow IRA
+ * continues their current trajectory: pay down current home mortgage, grow IRA
  * with contributions, absorb commute costs.
  */
 export function projectBaseline(inputs: ScenarioInputs): ScenarioOutput {
@@ -186,21 +186,21 @@ export function projectBaseline(inputs: ScenarioInputs): ScenarioOutput {
 
   // ---- Setup ----
 
-  // Back-calculate original Kyle loan to get the correct monthly payment
-  const kyleOriginalLoan = calculateOriginalLoanAmount(
+  // Back-calculate original current home loan to get the correct monthly payment
+  const currentHomeOriginalLoan = calculateOriginalLoanAmount(
     currentHome.mortgageBalance,
     currentHome.interestRate,
     currentHome.originalLoanTermYears,
     currentHome.yearsIntoLoan
   )
-  const kyleMonthlyPayment = calculateMonthlyPayment(
-    kyleOriginalLoan,
+  const currentHomeMonthlyPayment = calculateMonthlyPayment(
+    currentHomeOriginalLoan,
     currentHome.interestRate,
     currentHome.originalLoanTermYears
   )
 
-  // Remaining term on Kyle mortgage at projection start
-  const kyleRemainingPayments =
+  // Remaining term on current home mortgage at projection start
+  const currentHomeRemainingPayments =
     (currentHome.originalLoanTermYears - currentHome.yearsIntoLoan) *
     MONTHS_PER_YEAR
 
@@ -214,27 +214,27 @@ export function projectBaseline(inputs: ScenarioInputs): ScenarioOutput {
     liquidSavings: personal.liquidSavings,
   })
 
-  // DTI for baseline: current Kyle mortgage
-  const kyleAnnualPropertyTax =
+  // DTI for baseline: current home mortgage
+  const currentHomeAnnualPropertyTax =
     currentHome.homeValue * currentHome.annualPropertyTaxRate
-  const kyleMonthlyHousing =
-    kyleMonthlyPayment +
-    kyleAnnualPropertyTax / MONTHS_PER_YEAR +
+  const currentHomeMonthlyHousing =
+    currentHomeMonthlyPayment +
+    currentHomeAnnualPropertyTax / MONTHS_PER_YEAR +
     currentHome.annualInsurance / MONTHS_PER_YEAR +
     currentHome.monthlyHOA
 
   const dtiResult = calculateDTI({
     scenario: 'baseline',
     grossMonthlyIncome: personal.annualGrossIncome / MONTHS_PER_YEAR,
-    primaryHousingCost: kyleMonthlyHousing,
+    primaryHousingCost: currentHomeMonthlyHousing,
     otherDebtPayments: personal.monthlyDebtPayments,
   })
 
   // ---- Year-by-year loop ----
 
   const snapshots: YearlySnapshot[] = []
-  let kyleMortgageBalance = currentHome.mortgageBalance
-  let kyleHomeValue = currentHome.homeValue
+  let currentHomeMortgageBalance = currentHome.mortgageBalance
+  let currentHomeValue = currentHome.homeValue
   let iraBalance = retirement.iraBalance
   let liquidSavings = personal.liquidSavings
 
@@ -257,29 +257,29 @@ export function projectBaseline(inputs: ScenarioInputs): ScenarioOutput {
 
     // Escalate property tax and insurance annually
     const escalatedPropertyTax =
-      kyleAnnualPropertyTax *
+      currentHomeAnnualPropertyTax *
       Math.pow(1 + costs.propertyTaxEscalationRate, year - 1)
     const escalatedInsurance =
       currentHome.annualInsurance *
       Math.pow(1 + costs.insuranceEscalationRate, year - 1)
 
-    // Step Kyle mortgage (only if payments remain)
+    // Step current home mortgage (only if payments remain)
     let mortgageResult = { endingBalance: 0, principalPaid: 0, interestPaid: 0 }
     let effectiveMonthlyMortgage = 0
-    if (kyleMortgageBalance > 0 && paymentsMade < kyleRemainingPayments + currentHome.yearsIntoLoan * MONTHS_PER_YEAR) {
+    if (currentHomeMortgageBalance > 0 && paymentsMade < currentHomeRemainingPayments + currentHome.yearsIntoLoan * MONTHS_PER_YEAR) {
       mortgageResult = stepMortgageYear(
-        kyleMortgageBalance,
+        currentHomeMortgageBalance,
         currentHome.interestRate,
-        kyleMonthlyPayment
+        currentHomeMonthlyPayment
       )
-      kyleMortgageBalance = mortgageResult.endingBalance
-      effectiveMonthlyMortgage = kyleMonthlyPayment
+      currentHomeMortgageBalance = mortgageResult.endingBalance
+      effectiveMonthlyMortgage = currentHomeMonthlyPayment
       paymentsMade += MONTHS_PER_YEAR
     }
 
-    // Step Kyle home value
-    kyleHomeValue = stepAppreciationYear(
-      kyleHomeValue,
+    // Step current home value
+    currentHomeValue = stepAppreciationYear(
+      currentHomeValue,
       currentHome.annualAppreciationRate
     )
 
@@ -320,7 +320,7 @@ export function projectBaseline(inputs: ScenarioInputs): ScenarioOutput {
     liquidSavings += annualCashFlow
 
     // Net worth = home equity + IRA + liquid savings
-    const currentHomeEquity = kyleHomeValue - kyleMortgageBalance
+    const currentHomeEquity = currentHomeValue - currentHomeMortgageBalance
     const netWorth = currentHomeEquity + iraBalance + liquidSavings
 
     snapshots.push({
@@ -329,7 +329,7 @@ export function projectBaseline(inputs: ScenarioInputs): ScenarioOutput {
       iraBalance,
       currentHomeEquity,
       newHomeEquity: 0,
-      currentHomeMortgageBalance: kyleMortgageBalance,
+      currentHomeMortgageBalance: currentHomeMortgageBalance,
       newHomeMortgageBalance: 0,
       annualCashFlow,
       monthlyCashFlowBestCase: monthlyCashFlow - annualCommuteCost / MONTHS_PER_YEAR,
@@ -388,10 +388,10 @@ export function projectBaseline(inputs: ScenarioInputs): ScenarioOutput {
 // ---------------------------------------------------------------------------
 
 /**
- * Projects Scenario A: sell Kyle at time 0, buy Austin, keep IRA intact.
+ * Projects Scenario A: sell current home at time 0, buy new home, keep IRA intact.
  *
- * At time 0 the Kyle home is sold, the mortgage is paid off, and net proceeds
- * plus liquid savings fund the Austin down payment and closing costs. The IRA
+ * At time 0 the current home is sold, the mortgage is paid off, and net proceeds
+ * plus liquid savings fund the new home down payment and closing costs. The IRA
  * continues to grow with annual contributions.
  */
 export function projectScenarioA(inputs: ScenarioInputs): ScenarioOutput {
@@ -404,18 +404,18 @@ export function projectScenarioA(inputs: ScenarioInputs): ScenarioOutput {
 
   // ---- Setup ----
 
-  // Kyle sale at time 0
-  const kyleSaleProceeds =
+  // Current home sale at time 0
+  const currentHomeSaleProceeds =
     currentHome.homeValue -
     currentHome.homeValue * currentHome.sellingCostsRate -
     currentHome.mortgageBalance
 
-  // Austin mortgage
-  const austinDownPayment =
+  // New home mortgage
+  const newHomeDownPayment =
     newHome.purchasePrice * newHome.downPaymentPercentScenarioA
-  const austinLoanAmount = newHome.purchasePrice - austinDownPayment
-  const austinMonthlyPayment = calculateMonthlyPayment(
-    austinLoanAmount,
+  const newHomeLoanAmount = newHome.purchasePrice - newHomeDownPayment
+  const newHomeMonthlyPayment = calculateMonthlyPayment(
+    newHomeLoanAmount,
     newHome.interestRate,
     newHome.loanTermYears
   )
@@ -423,7 +423,7 @@ export function projectScenarioA(inputs: ScenarioInputs): ScenarioOutput {
   // PMI: required when LTV > 80%. At exactly 80% (20% down), no PMI.
   // PMI_REQUEST_CANCELLATION_LTV (0.80) is the threshold above which PMI is required.
   // PMI_AUTO_CANCELLATION_LTV (0.78) is where it auto-drops off later.
-  const initialLTV = austinLoanAmount / newHome.purchasePrice
+  const initialLTV = newHomeLoanAmount / newHome.purchasePrice
   let pmiActive = initialLTV > PMI_REQUEST_CANCELLATION_LTV
 
   // Upfront capital
@@ -434,36 +434,36 @@ export function projectScenarioA(inputs: ScenarioInputs): ScenarioOutput {
     closingCostsRate: newHome.closingCostsRate,
     movingCosts: costs.movingCosts,
     liquidSavings: personal.liquidSavings,
-    homeSaleNetProceeds: kyleSaleProceeds,
+    homeSaleNetProceeds: currentHomeSaleProceeds,
   })
 
   // Post-closing liquid savings
   let liquidSavings = upfrontCapital.surplus
 
   // DTI for Scenario A
-  const austinAnnualPropertyTax =
+  const newHomeAnnualPropertyTax =
     newHome.purchasePrice * newHome.annualPropertyTaxRate
   const monthlyPMI = pmiActive
-    ? (austinLoanAmount * newHome.annualPMIRate) / MONTHS_PER_YEAR
+    ? (newHomeLoanAmount * newHome.annualPMIRate) / MONTHS_PER_YEAR
     : 0
-  const austinMonthlyHousing =
-    austinMonthlyPayment +
-    austinAnnualPropertyTax / MONTHS_PER_YEAR +
+  const newHomeMonthlyHousing =
+    newHomeMonthlyPayment +
+    newHomeAnnualPropertyTax / MONTHS_PER_YEAR +
     newHome.annualInsurance / MONTHS_PER_YEAR +
     monthlyPMI
 
   const dtiResult = calculateDTI({
     scenario: 'scenarioA',
     grossMonthlyIncome: personal.annualGrossIncome / MONTHS_PER_YEAR,
-    primaryHousingCost: austinMonthlyHousing,
+    primaryHousingCost: newHomeMonthlyHousing,
     otherDebtPayments: personal.monthlyDebtPayments,
   })
 
   // ---- Year-by-year loop ----
 
   const snapshots: YearlySnapshot[] = []
-  let austinMortgageBalance = austinLoanAmount
-  let austinHomeValue = newHome.purchasePrice
+  let newHomeMortgageBalance = newHomeLoanAmount
+  let newHomeValue = newHome.purchasePrice
   let iraBalance = retirement.iraBalance
   let cumulativeCommuteSavings = 0
 
@@ -479,33 +479,33 @@ export function projectScenarioA(inputs: ScenarioInputs): ScenarioOutput {
       personal.filingStatus
     )
 
-    // Escalate Austin property tax and insurance
+    // Escalate new home property tax and insurance
     const escalatedPropertyTax =
-      austinAnnualPropertyTax *
+      newHomeAnnualPropertyTax *
       Math.pow(1 + costs.propertyTaxEscalationRate, year - 1)
     const escalatedInsurance =
       newHome.annualInsurance *
       Math.pow(1 + costs.insuranceEscalationRate, year - 1)
 
-    // Step Austin mortgage
+    // Step new home mortgage
     const mortgageResult = stepMortgageYear(
-      austinMortgageBalance,
+      newHomeMortgageBalance,
       newHome.interestRate,
-      austinMonthlyPayment
+      newHomeMonthlyPayment
     )
-    austinMortgageBalance = mortgageResult.endingBalance
+    newHomeMortgageBalance = mortgageResult.endingBalance
 
     // PMI check: drops at 78% LTV of ORIGINAL purchase price (per HPA)
-    if (pmiActive && austinMortgageBalance / newHome.purchasePrice <= PMI_AUTO_CANCELLATION_LTV) {
+    if (pmiActive && newHomeMortgageBalance / newHome.purchasePrice <= PMI_AUTO_CANCELLATION_LTV) {
       pmiActive = false
     }
     const currentMonthlyPMI = pmiActive
-      ? (austinLoanAmount * newHome.annualPMIRate) / MONTHS_PER_YEAR
+      ? (newHomeLoanAmount * newHome.annualPMIRate) / MONTHS_PER_YEAR
       : 0
 
-    // Step Austin home value
-    austinHomeValue = stepAppreciationYear(
-      austinHomeValue,
+    // Step new home value
+    newHomeValue = stepAppreciationYear(
+      newHomeValue,
       newHome.annualAppreciationRate
     )
 
@@ -516,7 +516,7 @@ export function projectScenarioA(inputs: ScenarioInputs): ScenarioOutput {
       retirement.annualIRAContributionScenarioA
     )
 
-    // Commute savings vs baseline (shorter commute in Austin)
+    // Commute savings vs baseline (shorter commute from new home)
     const annualSavings = calculateAnnualCommuteSavings(
       commute.currentRoundTripMiles,
       commute.newRoundTripMiles,
@@ -535,14 +535,14 @@ export function projectScenarioA(inputs: ScenarioInputs): ScenarioOutput {
     // Monthly cash flow
     const monthlyNetIncome = (annualIncome - federalTax) / MONTHS_PER_YEAR
     const monthlyExpenses =
-      austinMonthlyPayment +
+      newHomeMonthlyPayment +
       escalatedPropertyTax / MONTHS_PER_YEAR +
       escalatedInsurance / MONTHS_PER_YEAR +
       currentMonthlyPMI +
       escalatedLivingExpenses +
       personal.monthlyDebtPayments
 
-    // Austin commute cost (new, shorter commute)
+    // New home commute cost (shorter commute)
     const annualNewCommuteCost = calculateAnnualCommuteCost(
       commute.newRoundTripMiles,
       commute.workDaysPerYear,
@@ -555,17 +555,17 @@ export function projectScenarioA(inputs: ScenarioInputs): ScenarioOutput {
 
     liquidSavings += annualCashFlow
 
-    const newHomeEquity = austinHomeValue - austinMortgageBalance
+    const newHomeEquity = newHomeValue - newHomeMortgageBalance
     const netWorth = newHomeEquity + iraBalance + liquidSavings
 
     snapshots.push({
       year,
       netWorth,
       iraBalance,
-      currentHomeEquity: 0, // Kyle sold at time 0
+      currentHomeEquity: 0, // Current home sold at time 0
       newHomeEquity,
       currentHomeMortgageBalance: 0,
-      newHomeMortgageBalance: austinMortgageBalance,
+      newHomeMortgageBalance: newHomeMortgageBalance,
       annualCashFlow,
       monthlyCashFlowBestCase: monthlyCashFlow,
       monthlyCashFlowWorstCase: monthlyCashFlow,
@@ -573,7 +573,7 @@ export function projectScenarioA(inputs: ScenarioInputs): ScenarioOutput {
       annualGrossIncome: annualIncome,
       cashFlowBreakdown: {
         takeHomePay: monthlyNetIncome,
-        mortgagePI: austinMonthlyPayment,
+        mortgagePI: newHomeMonthlyPayment,
         propertyTax: escalatedPropertyTax / MONTHS_PER_YEAR,
         insurance: escalatedInsurance / MONTHS_PER_YEAR,
         pmi: currentMonthlyPMI,
@@ -619,10 +619,10 @@ export function projectScenarioA(inputs: ScenarioInputs): ScenarioOutput {
 // ---------------------------------------------------------------------------
 
 /**
- * Projects Scenario B: keep Kyle as rental, withdraw IRA, buy Austin.
+ * Projects Scenario B: keep current home as rental, withdraw IRA, buy new home.
  *
  * The most complex scenario. The IRA is fully withdrawn (triggering taxes
- * and penalties), Kyle becomes a rental property, and a new Austin home is
+ * and penalties), current home becomes a rental property, and a new home is
  * purchased with a smaller down payment (requiring PMI). The rental property
  * is sold at the planned exit year, triggering depreciation recapture.
  */
@@ -649,15 +649,15 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
     retirement.iraType
   )
 
-  // Kyle rental setup
-  const kyleOriginalLoan = calculateOriginalLoanAmount(
+  // Current home rental setup
+  const currentHomeOriginalLoan = calculateOriginalLoanAmount(
     currentHome.mortgageBalance,
     currentHome.interestRate,
     currentHome.originalLoanTermYears,
     currentHome.yearsIntoLoan
   )
-  const kyleMonthlyPayment = calculateMonthlyPayment(
-    kyleOriginalLoan,
+  const currentHomeMonthlyPayment = calculateMonthlyPayment(
+    currentHomeOriginalLoan,
     currentHome.interestRate,
     currentHome.originalLoanTermYears
   )
@@ -670,20 +670,20 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
   // Uses the user-configured land value percentage to determine the depreciable basis
   const annualDepreciationAmount = annualDepreciation(currentHome.homeValue, currentHome.landValuePercentage)
 
-  // Austin mortgage (smaller down payment in Scenario B)
-  const austinDownPayment =
+  // New home mortgage (smaller down payment in Scenario B)
+  const newHomeDownPayment =
     newHome.purchasePrice * newHome.downPaymentPercentScenarioB
-  const austinLoanAmount = newHome.purchasePrice - austinDownPayment
-  const austinMonthlyPayment = calculateMonthlyPayment(
-    austinLoanAmount,
+  const newHomeLoanAmount = newHome.purchasePrice - newHomeDownPayment
+  const newHomeMonthlyPayment = calculateMonthlyPayment(
+    newHomeLoanAmount,
     newHome.interestRate,
     newHome.loanTermYears
   )
 
   // PMI: 10% down = 90% LTV, definitely requires PMI
   // PMI is required when LTV > 80% (PMI_REQUEST_CANCELLATION_LTV)
-  const initialAustinLTV = austinLoanAmount / newHome.purchasePrice
-  let pmiActive = initialAustinLTV > PMI_REQUEST_CANCELLATION_LTV
+  const initialNewHomeLTV = newHomeLoanAmount / newHome.purchasePrice
+  let pmiActive = initialNewHomeLTV > PMI_REQUEST_CANCELLATION_LTV
 
   // Upfront capital
   const upfrontCapital = calculateUpfrontCapital({
@@ -700,31 +700,31 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
   let liquidSavings = upfrontCapital.surplus
 
   // DTI for Scenario B: includes rental income credit
-  const austinAnnualPropertyTax =
+  const newHomeAnnualPropertyTax =
     newHome.purchasePrice * newHome.annualPropertyTaxRate
   const monthlyPMI = pmiActive
-    ? (austinLoanAmount * newHome.annualPMIRate) / MONTHS_PER_YEAR
+    ? (newHomeLoanAmount * newHome.annualPMIRate) / MONTHS_PER_YEAR
     : 0
-  const austinMonthlyHousing =
-    austinMonthlyPayment +
-    austinAnnualPropertyTax / MONTHS_PER_YEAR +
+  const newHomeMonthlyHousing =
+    newHomeMonthlyPayment +
+    newHomeAnnualPropertyTax / MONTHS_PER_YEAR +
     newHome.annualInsurance / MONTHS_PER_YEAR +
     monthlyPMI
 
-  // Kyle PITI for DTI (lenders look at full PITI, not just P&I)
-  const kyleAnnualPropertyTax =
+  // Current home PITI for DTI (lenders look at full PITI, not just P&I)
+  const currentHomeAnnualPropertyTax =
     currentHome.homeValue * currentHome.annualPropertyTaxRate
-  const kyleRentalPITI =
-    kyleMonthlyPayment +
-    kyleAnnualPropertyTax / MONTHS_PER_YEAR +
+  const currentHomeRentalPITI =
+    currentHomeMonthlyPayment +
+    currentHomeAnnualPropertyTax / MONTHS_PER_YEAR +
     landlordInsuranceAnnual / MONTHS_PER_YEAR
 
   const dtiResult = calculateDTI({
     scenario: 'scenarioB',
     grossMonthlyIncome: personal.annualGrossIncome / MONTHS_PER_YEAR,
-    primaryHousingCost: austinMonthlyHousing,
+    primaryHousingCost: newHomeMonthlyHousing,
     otherDebtPayments: personal.monthlyDebtPayments,
-    rentalMortgagePayment: kyleRentalPITI,
+    rentalMortgagePayment: currentHomeRentalPITI,
     expectedMonthlyRent: currentHome.expectedMonthlyRent,
     rentalIncomeCreditRate: currentHome.rentalIncomeDTICreditRate,
   })
@@ -732,10 +732,10 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
   // ---- Year-by-year loop ----
 
   const snapshots: YearlySnapshot[] = []
-  let kyleMortgageBalance = currentHome.mortgageBalance
-  let kyleHomeValue = currentHome.homeValue
-  let austinMortgageBalance = austinLoanAmount
-  let austinHomeValue = newHome.purchasePrice
+  let currentHomeMortgageBal = currentHome.mortgageBalance
+  let currentHomeVal = currentHome.homeValue
+  let newHomeMortgageBalance = newHomeLoanAmount
+  let newHomeValue = newHome.purchasePrice
   let iraBalance = retirement.iraBalance - iraWithdrawalAmount // Remaining IRA after withdrawal
   let cumulativeDepreciation = 0
   let cumulativeCommuteSavings = 0
@@ -749,11 +749,11 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
 
     const standardDeduction = getStandardDeduction(personal.filingStatus)
 
-    // Escalate Austin costs
-    const escalatedAustinPropertyTax =
-      austinAnnualPropertyTax *
+    // Escalate new home costs
+    const escalatedNewHomePropertyTax =
+      newHomeAnnualPropertyTax *
       Math.pow(1 + costs.propertyTaxEscalationRate, year - 1)
-    const escalatedAustinInsurance =
+    const escalatedNewHomeInsurance =
       newHome.annualInsurance *
       Math.pow(1 + costs.insuranceEscalationRate, year - 1)
 
@@ -770,7 +770,7 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
     let rentalMonthlyCashFlow = 0
     let worstCaseMonthlyCashFlow = 0
     let schedulETaxBenefit = 0
-    let kyleMortgageInterest = 0
+    let currentHomeMortgageInterest = 0
     let additionalLandlordCosts = 0
     // Breakdown fields for the rental section of CashFlowBreakdown
     let rentalEffectiveGrossRent = 0
@@ -782,11 +782,11 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
     // When plannedRentalExitYear is null, the rental is held indefinitely (never sold).
     const rentalActiveThisYear = rentalActive && (projection.plannedRentalExitYear === null || year <= projection.plannedRentalExitYear)
     if (rentalActiveThisYear) {
-      // Escalate Kyle rental property costs
-      const escalatedKylePropertyTax =
-        kyleAnnualPropertyTax *
+      // Escalate current home rental property costs
+      const escalatedCurrentHomePropertyTax =
+        currentHomeAnnualPropertyTax *
         Math.pow(1 + costs.propertyTaxEscalationRate, year - 1)
-      const escalatedKyleInsurance =
+      const escalatedCurrentHomeInsurance =
         landlordInsuranceAnnual *
         Math.pow(1 + costs.insuranceEscalationRate, year - 1)
 
@@ -797,29 +797,29 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
 
       // Maintenance based on current (appreciated) home value
       const annualMaintenance =
-        kyleHomeValue * currentHome.maintenanceReserveRate
+        currentHomeVal * currentHome.maintenanceReserveRate
 
-      // Step Kyle mortgage
+      // Step current home mortgage
       const kyleMortgageResult = stepMortgageYear(
-        kyleMortgageBalance,
+        currentHomeMortgageBal,
         currentHome.interestRate,
-        kyleMonthlyPayment
+        currentHomeMonthlyPayment
       )
-      kyleMortgageBalance = kyleMortgageResult.endingBalance
-      kyleMortgageInterest = kyleMortgageResult.interestPaid
+      currentHomeMortgageBal = kyleMortgageResult.endingBalance
+      currentHomeMortgageInterest = kyleMortgageResult.interestPaid
 
-      // Step Kyle home value
-      kyleHomeValue = stepAppreciationYear(
-        kyleHomeValue,
+      // Step current home value
+      currentHomeVal = stepAppreciationYear(
+        currentHomeVal,
         currentHome.annualAppreciationRate
       )
 
       // Rental cash flow
       const rentalCF = monthlyRentalCashFlow({
         monthlyRent: escalatedMonthlyRent,
-        monthlyMortgagePI: kyleMonthlyPayment,
-        annualPropertyTax: escalatedKylePropertyTax,
-        annualInsurance: escalatedKyleInsurance,
+        monthlyMortgagePI: currentHomeMonthlyPayment,
+        annualPropertyTax: escalatedCurrentHomePropertyTax,
+        annualInsurance: escalatedCurrentHomeInsurance,
         annualMaintenance,
         monthlyHOA: currentHome.monthlyHOA,
         vacancyRate: currentHome.vacancyRate,
@@ -856,7 +856,7 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
       const scheduleEResult = scheduleETaxImpact({
         annualRentalIncome: rentalCF.effectiveGrossRent * MONTHS_PER_YEAR,
         annualOperatingExpenses: rentalCF.totalExpenses * MONTHS_PER_YEAR,
-        annualMortgageInterest: kyleMortgageInterest,
+        annualMortgageInterest: currentHomeMortgageInterest,
         annualDepreciation: annualDepreciationAmount,
         agi,
         marginalTaxRate: marginalRate,
@@ -889,14 +889,14 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
       // ---- Rental exit event (only if an explicit exit year is set) ----
       if (projection.plannedRentalExitYear !== null && year === projection.plannedRentalExitYear) {
         const saleTaxResult = rentalSaleTax({
-          salePrice: kyleHomeValue,
+          salePrice: currentHomeVal,
           originalBasis: currentHome.homeValue,
           totalDepreciationClaimed: cumulativeDepreciation,
           sellingCostRate: currentHome.sellingCostsRate,
           yearsOwned: currentHome.yearsIntoLoan + year,
           taxableIncome: Math.max(0, annualIncome - standardDeduction),
           filingStatus: personal.filingStatus,
-          mortgageBalance: kyleMortgageBalance,
+          mortgageBalance: currentHomeMortgageBal,
         })
 
         rentalExitTaxEvent = {
@@ -910,38 +910,38 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
         // Add net sale proceeds to liquid savings
         liquidSavings += saleTaxResult.netSaleProceeds
 
-        // Kyle mortgage is paid off from sale proceeds
-        kyleMortgageBalance = 0
+        // Current home mortgage is paid off from sale proceeds
+        currentHomeMortgageBal = 0
         rentalActive = false
       }
     } else if (!rentalActive) {
       // Post-exit: no rental activity
-      // Kyle equity is 0 after sale
+      // Current home equity is 0 after sale
     }
 
-    // Step Austin mortgage
-    const austinMortgageResult = stepMortgageYear(
-      austinMortgageBalance,
+    // Step new home mortgage
+    const newHomeMortgageResult = stepMortgageYear(
+      newHomeMortgageBalance,
       newHome.interestRate,
-      austinMonthlyPayment
+      newHomeMonthlyPayment
     )
-    austinMortgageBalance = austinMortgageResult.endingBalance
+    newHomeMortgageBalance = newHomeMortgageResult.endingBalance
 
-    // PMI check on Austin: drops at 78% LTV of ORIGINAL purchase price
+    // PMI check on new home: drops at 78% LTV of ORIGINAL purchase price
     if (
       pmiActive &&
-      austinMortgageBalance / newHome.purchasePrice <=
+      newHomeMortgageBalance / newHome.purchasePrice <=
         PMI_AUTO_CANCELLATION_LTV
     ) {
       pmiActive = false
     }
     const currentMonthlyPMI = pmiActive
-      ? (austinLoanAmount * newHome.annualPMIRate) / MONTHS_PER_YEAR
+      ? (newHomeLoanAmount * newHome.annualPMIRate) / MONTHS_PER_YEAR
       : 0
 
-    // Step Austin home value
-    austinHomeValue = stepAppreciationYear(
-      austinHomeValue,
+    // Step new home value
+    newHomeValue = stepAppreciationYear(
+      newHomeValue,
       newHome.annualAppreciationRate
     )
 
@@ -958,7 +958,7 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
       calculateFederalIncomeTax(taxableIncome, personal.filingStatus) -
       schedulETaxBenefit
 
-    // Commute savings (Austin has shorter commute)
+    // Commute savings (new home has shorter commute)
     const annualSavings = calculateAnnualCommuteSavings(
       commute.currentRoundTripMiles,
       commute.newRoundTripMiles,
@@ -979,9 +979,9 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
     // Monthly cash flow
     const monthlyNetIncome = (annualIncome - federalTax) / MONTHS_PER_YEAR
     const monthlyExpenses =
-      austinMonthlyPayment +
-      escalatedAustinPropertyTax / MONTHS_PER_YEAR +
-      escalatedAustinInsurance / MONTHS_PER_YEAR +
+      newHomeMonthlyPayment +
+      escalatedNewHomePropertyTax / MONTHS_PER_YEAR +
+      escalatedNewHomeInsurance / MONTHS_PER_YEAR +
       currentMonthlyPMI +
       escalatedLivingExpenses +
       personal.monthlyDebtPayments +
@@ -1007,20 +1007,20 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
     liquidSavings += annualCashFlow
 
     // Net worth
-    const kyleEquity = rentalActiveThisYear
-      ? kyleHomeValue - kyleMortgageBalance
+    const currentHomeEquityVal = rentalActiveThisYear
+      ? currentHomeVal - currentHomeMortgageBal
       : 0
-    const austinEquity = austinHomeValue - austinMortgageBalance
-    const netWorth = austinEquity + kyleEquity + iraBalance + liquidSavings
+    const newHomeEquity = newHomeValue - newHomeMortgageBalance
+    const netWorth = newHomeEquity + currentHomeEquityVal + iraBalance + liquidSavings
 
     snapshots.push({
       year,
       netWorth,
       iraBalance,
-      currentHomeEquity: kyleEquity,
-      newHomeEquity: austinEquity,
-      currentHomeMortgageBalance: kyleMortgageBalance,
-      newHomeMortgageBalance: austinMortgageBalance,
+      currentHomeEquity: currentHomeEquityVal,
+      newHomeEquity: newHomeEquity,
+      currentHomeMortgageBalance: currentHomeMortgageBal,
+      newHomeMortgageBalance: newHomeMortgageBalance,
       annualCashFlow,
       monthlyCashFlowBestCase: monthlyCashFlowBest,
       monthlyCashFlowWorstCase: monthlyCashFlowWorst,
@@ -1032,16 +1032,16 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
       passiveLossSuspended,
       cashFlowBreakdown: {
         takeHomePay: monthlyNetIncome,
-        mortgagePI: austinMonthlyPayment,
-        propertyTax: escalatedAustinPropertyTax / MONTHS_PER_YEAR,
-        insurance: escalatedAustinInsurance / MONTHS_PER_YEAR,
+        mortgagePI: newHomeMonthlyPayment,
+        propertyTax: escalatedNewHomePropertyTax / MONTHS_PER_YEAR,
+        insurance: escalatedNewHomeInsurance / MONTHS_PER_YEAR,
         pmi: currentMonthlyPMI,
         hoa: 0,
         livingExpenses: escalatedLivingExpenses,
         debtPayments: personal.monthlyDebtPayments,
         commuteCost: annualNewCommuteCost / MONTHS_PER_YEAR,
         rentalIncome: rentalEffectiveGrossRent,
-        rentalMortgagePI: rentalActiveThisYear ? kyleMonthlyPayment : 0,
+        rentalMortgagePI: rentalActiveThisYear ? currentHomeMonthlyPayment : 0,
         rentalPropertyTax: rentalMonthlyPropertyTax,
         rentalInsurance: rentalMonthlyInsurance,
         rentalMaintenance: rentalMonthlyMaintenance,
@@ -1061,8 +1061,8 @@ export function projectScenarioB(inputs: ScenarioInputs): ScenarioOutput {
     monthlyRent: currentHome.expectedMonthlyRent,
     monthlyGrossIncome: personal.annualGrossIncome / MONTHS_PER_YEAR,
     monthlyObligations:
-      austinMonthlyHousing +
-      kyleMonthlyPayment +
+      newHomeMonthlyHousing +
+      currentHomeMonthlyPayment +
       personal.monthlyLivingExpenses +
       personal.monthlyDebtPayments,
     homeValue: currentHome.homeValue,
@@ -1289,12 +1289,12 @@ function generateScenarioBWarnings(
   }
 
   // Dual-mortgage risks — things to think about when carrying two properties
-  const kyleMonthlyMortgagePayment = year1.cashFlowBreakdown.rentalMortgagePI
-  if (kyleMonthlyMortgagePayment > 0) {
+  const currentHomeMortgagePayment = year1.cashFlowBreakdown.rentalMortgagePI
+  if (currentHomeMortgagePayment > 0) {
     warnings.push({
       category: 'landlord',
       severity: 'info',
-      message: `During a vacancy, you'd pay both mortgages from salary alone — an extra $${Math.round(kyleMonthlyMortgagePayment).toLocaleString()}/mo on top of the ${inputs.homeNames.newHomeName} mortgage until you find a tenant.`,
+      message: `During a vacancy, you'd pay both mortgages from salary alone — an extra $${Math.round(currentHomeMortgagePayment).toLocaleString()}/mo on top of the ${inputs.homeNames.newHomeName} mortgage until you find a tenant.`,
     })
 
     warnings.push({

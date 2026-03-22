@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------
 // rental.ts — Rental property cash flow, depreciation, and tax calculations
 //
-// Pure financial math functions for modeling the Kyle home as a rental
+// Pure financial math functions for modeling the current home as a rental
 // property in Scenario B. Covers: straight-line depreciation, monthly cash
 // flow analysis, Schedule E tax impact with passive activity loss rules,
 // and rental sale tax including depreciation recapture.

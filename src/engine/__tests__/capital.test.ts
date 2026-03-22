@@ -39,7 +39,7 @@ describe('calculateUpfrontCapital', () => {
     expect(result.homeSaleNetProceeds).toBeNull()
   })
 
-  it('calculates Scenario A upfront capital (Preston: sell Kyle, buy Austin)', () => {
+  it('calculates Scenario A upfront capital (sell current home, buy new home)', () => {
     // Preston Scenario A:
     // homePrice = $300,000
     // downPayment = 300,000 × 0.20 = $60,000
@@ -72,7 +72,7 @@ describe('calculateUpfrontCapital', () => {
     expect(result.iraWithdrawalNetProceeds).toBeNull()
   })
 
-  it('calculates Scenario B upfront capital (Preston: keep Kyle, withdraw IRA)', () => {
+  it('calculates Scenario B upfront capital (keep current home, withdraw IRA)', () => {
     // Preston Scenario B:
     // homePrice = $300,000
     // downPayment = 300,000 × 0.10 = $30,000

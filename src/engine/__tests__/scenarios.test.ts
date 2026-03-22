@@ -73,7 +73,7 @@ const prestonInputs: ScenarioInputs = {
 
 describe('stepMortgageYear', () => {
   it('advances a mortgage balance by one year correctly', () => {
-    // Kyle mortgage: $199k balance at 2%, back-calculate original loan
+    // current home mortgage: $199k balance at 2%, back-calculate original loan
     const originalLoan = calculateOriginalLoanAmount(199_000, 0.02, 30, 5)
     const monthlyPayment = calculateMonthlyPayment(originalLoan, 0.02, 30)
 
@@ -186,7 +186,7 @@ describe('projectBaseline', () => {
   it('Year 1 net worth is positive and reasonable', () => {
     const year1 = result.yearlySnapshots[0]
     expect(year1.netWorth).toBeGreaterThan(0)
-    // Kyle equity ~$71k + IRA ~$39k + some liquid savings
+    // current home equity ~$71k + IRA ~$39k + some liquid savings
     // Should be in the ballpark of $100k-$200k
     expect(year1.netWorth).toBeGreaterThan(50_000)
     expect(year1.netWorth).toBeLessThan(500_000)
@@ -220,9 +220,9 @@ describe('projectBaseline', () => {
     expect(result.yearlySnapshots[0].annualGrossIncome).toBe(100_000)
   })
 
-  it('Year 1 Kyle home appreciates correctly', () => {
-    // Kyle value year 1 = 270000 × 1.03 = 278,100
-    // Kyle equity = 278100 - endingMortgageBalance
+  it('Year 1 current home home appreciates correctly', () => {
+    // current home value year 1 = 270000 × 1.03 = 278,100
+    // current home equity = 278100 - endingMortgageBalance
     expect(result.yearlySnapshots[0].currentHomeEquity).toBeGreaterThan(0)
   })
 
@@ -230,7 +230,7 @@ describe('projectBaseline', () => {
     expect(result.rentalExitTaxEvent).toBeNull()
   })
 
-  it('no new home equity (stays in Kyle)', () => {
+  it('no new home equity (stays in current home)', () => {
     for (const snapshot of result.yearlySnapshots) {
       expect(snapshot.newHomeEquity).toBe(0)
       expect(snapshot.newHomeMortgageBalance).toBe(0)
@@ -268,14 +268,14 @@ describe('projectScenarioA', () => {
     expect(year20.netWorth).toBeGreaterThan(year1.netWorth)
   })
 
-  it('Kyle is sold: no Kyle equity for any year', () => {
+  it('current home is sold: no current home equity for any year', () => {
     for (const snapshot of result.yearlySnapshots) {
       expect(snapshot.currentHomeEquity).toBe(0)
       expect(snapshot.currentHomeMortgageBalance).toBe(0)
     }
   })
 
-  it('Austin equity grows over time', () => {
+  it('new home equity grows over time', () => {
     const year1 = result.yearlySnapshots[0]
     const year20 = result.yearlySnapshots[19]
     expect(year20.newHomeEquity).toBeGreaterThan(year1.newHomeEquity)
@@ -292,7 +292,7 @@ describe('projectScenarioA', () => {
   })
 
   it('has commute savings (shorter commute)', () => {
-    // Austin commute is shorter than Kyle commute
+    // new home commute is shorter than current home commute
     const year20 = result.yearlySnapshots[19]
     expect(year20.cumulativeCommuteSavings).toBeGreaterThan(0)
   })
@@ -303,12 +303,12 @@ describe('projectScenarioA', () => {
 
   it('upfront capital shows home sale proceeds', () => {
     expect(result.upfrontCapital.homeSaleNetProceeds).not.toBeNull()
-    // Kyle sale: $270k - $16.2k (6% selling costs) - $199k (mortgage) = $54,800
+    // current home sale: $270k - $16.2k (6% selling costs) - $199k (mortgage) = $54,800
     expect(result.upfrontCapital.homeSaleNetProceeds).toBeCloseTo(54_800, 0)
   })
 
-  it('Austin monthly payment matches Phase 1 calculation', () => {
-    // Austin loan = 300000 × 0.80 = 240,000
+  it('new home monthly payment matches Phase 1 calculation', () => {
+    // new home loan = 300000 × 0.80 = 240,000
     // Monthly PI = calculateMonthlyPayment(240000, 0.06, 30) ≈ $1,438.92
     // expectedPayment = calculateMonthlyPayment(240000, 0.06, 30) ≈ $1,438.92
     // Verify via mortgage balance declining correctly
@@ -405,12 +405,12 @@ describe('projectScenarioB', () => {
     )
   })
 
-  it('Austin has PMI with 10% down', () => {
+  it('new home has PMI with 10% down', () => {
     // 10% down = 90% LTV = PMI required
-    // Austin loan = $270,000
+    // new home loan = $270,000
     // Annual PMI = 270000 × 0.007 = $1,890
     // This affects monthly cash flow (PMI is in the housing cost)
-    // Austin loan = $270,000, monthly PI ≈ calculateMonthlyPayment(270000, 0.06, 30)
+    // new home loan = $270,000, monthly PI ≈ calculateMonthlyPayment(270000, 0.06, 30)
     // PITI w/ PMI = PI + (300000 × 0.02)/12 + 2400/12 + (270000 × 0.007)/12
 
     // DTI should include PMI
@@ -423,8 +423,8 @@ describe('projectScenarioB', () => {
     expect(result.dtiResult.rentalIncomeCredit).toBeCloseTo(1_500, 0)
   })
 
-  it('Kyle mortgage balance decreases over time while rental active', () => {
-    // Year 1 Kyle balance should be less than initial
+  it('current home mortgage balance decreases over time while rental active', () => {
+    // Year 1 current home balance should be less than initial
     expect(result.yearlySnapshots[0].currentHomeMortgageBalance).toBeLessThan(
       199_000
     )
@@ -449,7 +449,7 @@ describe('CashFlowBreakdown — Scenario B', () => {
   // Year 1 uses un-escalated values (escalation factor = (1 + rate)^0 = 1).
   const { currentHome, newHome, personal, costs, commute } = prestonInputs
 
-  // Kyle rental property inputs for year 1
+  // current home rental property inputs for year 1
   const kyleAnnualPropertyTax =
     currentHome.homeValue * currentHome.annualPropertyTaxRate
   const landlordInsuranceAnnual =
@@ -457,7 +457,7 @@ describe('CashFlowBreakdown — Scenario B', () => {
   const annualMaintenance =
     currentHome.homeValue * currentHome.maintenanceReserveRate
 
-  // Kyle mortgage payment (back-calculated from remaining balance)
+  // current home mortgage payment (back-calculated from remaining balance)
   const kyleOriginalLoan = calculateOriginalLoanAmount(
     currentHome.mortgageBalance,
     currentHome.interestRate,
@@ -482,7 +482,7 @@ describe('CashFlowBreakdown — Scenario B', () => {
     managementFeeRate: currentHome.propertyManagementFeeRate,
   })
 
-  // Austin mortgage (10% down in Scenario B)
+  // new home mortgage (10% down in Scenario B)
   const austinLoanAmount =
     newHome.purchasePrice * (1 - newHome.downPaymentPercentScenarioB)
   const austinMonthlyPayment = calculateMonthlyPayment(
@@ -491,7 +491,7 @@ describe('CashFlowBreakdown — Scenario B', () => {
     newHome.loanTermYears
   )
 
-  // Austin year 1 costs (un-escalated)
+  // new home year 1 costs (un-escalated)
   const austinAnnualPropertyTax =
     newHome.purchasePrice * newHome.annualPropertyTaxRate
   const monthlyPMI =
@@ -519,7 +519,7 @@ describe('CashFlowBreakdown — Scenario B', () => {
 
   it('PMI is present with 10% down payment', () => {
     // 10% down = 90% LTV → PMI required
-    // Austin loan = $270,000, annual PMI rate = 0.7%
+    // new home loan = $270,000, annual PMI rate = 0.7%
     // Monthly PMI = 270000 × 0.007 / 12 = $157.50
     expect(monthlyPMI).toBeCloseTo(157.5, 1)
     expect(monthlyPMI).toBeGreaterThan(0)
@@ -560,7 +560,7 @@ describe('CashFlowBreakdown — Scenario B', () => {
       personal.filingStatus
     )
 
-    // Primary housing expenses (Austin)
+    // Primary housing expenses (new home)
     const primaryExpenses =
       austinMonthlyPayment +
       austinAnnualPropertyTax / 12 +

@@ -22,7 +22,7 @@ import {
 // Helper: Compute Preston's mortgage payments for use in DTI tests
 // ---------------------------------------------------------------------------
 
-// Austin home: $300,000 purchase price
+// new home home: $300,000 purchase price
 // Scenario A: 20% down → $240,000 loan at 6% for 30 years
 const austinLoanScenarioA = 300_000 * (1 - 0.20) // $240,000
 const austinPIScenarioA = calculateMonthlyPayment(austinLoanScenarioA, 0.06, 30)
@@ -33,27 +33,27 @@ const austinLoanScenarioB = 300_000 * (1 - 0.10) // $270,000
 const austinPIScenarioB = calculateMonthlyPayment(austinLoanScenarioB, 0.06, 30)
 // Verified: ~$1,618.79
 
-// Austin PITI components (same for both scenarios except PI and PMI):
+// new home PITI components (same for both scenarios except PI and PMI):
 const austinMonthlyPropertyTax = 300_000 * 0.02 / 12 // $500/month
 const austinMonthlyInsurance = 2_400 / 12              // $200/month
 
-// Scenario A Austin PITI (no PMI at 20% down):
+// Scenario A new home PITI (no PMI at 20% down):
 // PI (~$1,438.92) + tax ($500) + insurance ($200) = ~$2,138.92
 const austinPITIScenarioA = austinPIScenarioA + austinMonthlyPropertyTax + austinMonthlyInsurance
 
-// Scenario B Austin PITI + PMI (10% down, LTV = 90% > 80%):
+// Scenario B new home PITI + PMI (10% down, LTV = 90% > 80%):
 // PMI = $270,000 × 0.007 / 12 = $157.50/month
 const austinMonthlyPMI = austinLoanScenarioB * 0.007 / 12 // $157.50
 // PI (~$1,618.79) + tax ($500) + insurance ($200) + PMI ($157.50) = ~$2,476.29
 const austinPITIScenarioB = austinPIScenarioB + austinMonthlyPropertyTax + austinMonthlyInsurance + austinMonthlyPMI
 
-// Kyle rental property: $270,000 home, $199,000 balance, 2% rate, 30yr, 5yrs in
+// current home rental property: $270,000 home, $199,000 balance, 2% rate, 30yr, 5yrs in
 // Back-calculate original loan to get correct P&I
 const kyleOriginalLoan = calculateOriginalLoanAmount(199_000, 0.02, 30, 5)
 const kyleMortgagePI = calculateMonthlyPayment(kyleOriginalLoan, 0.02, 30)
 // Verified: ~$843 (from mortgage tests)
 
-// Kyle rental PITI (full rate, no homestead exemption on rental property):
+// current home rental PITI (full rate, no homestead exemption on rental property):
 // Property tax: $270,000 × 0.0215 / 12 = $483.75/month
 // Insurance: $2,400 × 1.20 / 12 = $240/month (landlord premium increase)
 // Note: rentalMortgagePayment in DTI should be the FULL PITI, not just P&I
@@ -70,7 +70,7 @@ const grossMonthlyIncome = 100_000 / 12
 // ---------------------------------------------------------------------------
 
 describe('frontEndDTI', () => {
-  it('calculates front-end DTI for Scenario A (Austin, 20% down)', () => {
+  it('calculates front-end DTI for Scenario A (new home, 20% down)', () => {
     // Front-end DTI = housing cost / gross monthly income
     // = $2,138.92 / $8,333.33
     // = 0.2567 (25.67%)
@@ -78,7 +78,7 @@ describe('frontEndDTI', () => {
     expect(result).toBeCloseTo(0.2567, 3)
   })
 
-  it('calculates front-end DTI for Scenario B (Austin, 10% down + PMI)', () => {
+  it('calculates front-end DTI for Scenario B (new home, 10% down + PMI)', () => {
     // Front-end DTI = $2,476.29 / $8,333.33 = 0.2972 (29.72%)
     const result = frontEndDTI(austinPITIScenarioB, grossMonthlyIncome)
     expect(result).toBeCloseTo(0.2972, 3)
@@ -131,7 +131,7 @@ describe('backEndDTI', () => {
     // = $1,566.75 - $1,500
     // = $66.75 (floored at 0, but positive here)
     //
-    // Total debt = Austin PITI + effective rental debt + other debts
+    // Total debt = new home PITI + effective rental debt + other debts
     // = $2,476.29 + $66.75 + $0
     // = $2,543.04
     //
@@ -273,8 +273,8 @@ describe('calculateDTI', () => {
   })
 
   it('calculates DTI for baseline scenario', () => {
-    // Baseline: stay in Kyle, existing mortgage only
-    // Kyle PITI as primary residence (with homestead exemption — different rate)
+    // Baseline: stay in current home, existing mortgage only
+    // current home PITI as primary residence (with homestead exemption — different rate)
     // For this test, just use a simple housing cost
     const baselineHousingCost = 1_200
     const result = calculateDTI({

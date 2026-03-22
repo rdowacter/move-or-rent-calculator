@@ -14,7 +14,7 @@ import {
 } from '../appreciation'
 
 describe('calculateFutureHomeValue', () => {
-  it('calculates Kyle home at 3% for 20 years', () => {
+  it('calculates current home at 3% for 20 years', () => {
     // Compound growth: value × (1 + rate)^years
     // 270000 × (1.03)^20
     // (1.03)^20 = 1.80611 (verified via calculator)
@@ -22,7 +22,7 @@ describe('calculateFutureHomeValue', () => {
     expect(calculateFutureHomeValue(270_000, 0.03, 20)).toBeCloseTo(487_650, 0)
   })
 
-  it('calculates Austin home at 3.5% for 20 years', () => {
+  it('calculates new home at 3.5% for 20 years', () => {
     // 300000 × (1.035)^20
     // (1.035)^20 = 1.98979 (verified via calculator)
     // 300000 × 1.98979 = 596,937

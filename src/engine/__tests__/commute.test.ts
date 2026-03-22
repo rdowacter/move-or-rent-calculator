@@ -19,14 +19,14 @@ import {
 // ---------------------------------------------------------------------------
 
 describe('calculateAnnualCommuteCost', () => {
-  it('calculates Preston current commute cost (Kyle → Austin round trip)', () => {
+  it('calculates current commute cost (round trip)', () => {
     // Mileage cost: 44 miles × 250 days × $0.725/mile = $7,975
     // Toll cost:    $500/month × 12 = $6,000
     // Total:        $7,975 + $6,000 = $13,975
     expect(calculateAnnualCommuteCost(44, 250, 0.725, 500)).toBeCloseTo(13_975, 2)
   })
 
-  it('calculates Preston new commute cost (within Austin)', () => {
+  it('calculates new commute cost (after move)', () => {
     // Mileage cost: 10 miles × 250 days × $0.725/mile = $1,812.50
     // Toll cost:    $0/month × 12 = $0
     // Total:        $1,812.50
@@ -60,7 +60,7 @@ describe('calculateAnnualCommuteCost', () => {
 // ---------------------------------------------------------------------------
 
 describe('calculateAnnualCommuteSavings', () => {
-  it('calculates Preston commute savings (Kyle→Austin to within Austin)', () => {
+  it('calculates commute savings (before vs after move)', () => {
     // Current cost: 44 mi × 250 days × $0.725/mi + $500/mo × 12 = $13,975
     // New cost:     10 mi × 250 days × $0.725/mi + $0/mo × 12   = $1,812.50
     // Savings:      $13,975 - $1,812.50 = $12,162.50

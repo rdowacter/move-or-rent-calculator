@@ -228,7 +228,7 @@ export interface ProjectionInputs {
 export interface HomeNames {
   /** Display name for the current home (e.g. "Denver Condo"). */
   currentHomeName: string
-  /** Display name for the new home (e.g. "Austin House"). */
+  /** Display name for the new home (e.g. "Lake House"). */
   newHomeName: string
 }
 
