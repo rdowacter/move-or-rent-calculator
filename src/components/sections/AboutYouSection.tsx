@@ -58,7 +58,7 @@ function AboutYouSection() {
           control={control}
           type="text"
           description="Give the home you're buying a name"
-          placeholder="e.g., Austin House, The New Place"
+          placeholder="e.g., Lake House, The New Place"
         />
       </div>
 
