@@ -30,4 +30,13 @@ dist-ssr
 test-results/
 playwright-report/
 blob-report/
+.playwright-mcp/
+
+# Vercel
 .vercel
+
+# Claude Code
+.claude/
+
+# Test coverage
+coverage/
