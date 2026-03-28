@@ -34,14 +34,14 @@ export function MobileLayout({ inputs, results }: MobileLayoutProps) {
             </TabsList>
             <TabsContent value="inputs" className="p-4 overflow-y-auto">
               {inputs}
+              <Footer />
             </TabsContent>
             <TabsContent value="results" className="p-4 overflow-y-auto">
               {results}
+              <Footer />
             </TabsContent>
           </Tabs>
         </div>
-
-        <Footer />
       </div>
     </MobileTabProvider>
   )
